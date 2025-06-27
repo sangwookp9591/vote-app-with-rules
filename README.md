@@ -222,3 +222,16 @@ Docker 환경에서는 자동으로 `docker-compose.yml`의 환경변수가 사�
 - Prisma Client는 Vercel 빌드 단계에서 자동 생성됩니다.
 
 ---
+
+## Sentry 에러 트래킹 연동
+
+- 운영 중 발생하는 에러를 실시간으로 감지/모니터링하기 위해 Sentry를 연동합니다.
+- Sentry 프로젝트를 생성하고 DSN을 발급받아 환경변수에 등록하세요.
+  - `.env.production` 등:
+    - `SENTRY_DSN=발급받은 DSN`
+    - `NEXT_PUBLIC_SENTRY_DSN=발급받은 DSN`
+- 클라이언트/서버 모두에서 에러가 Sentry로 전송됩니다.
+- 자세한 설정은 `sentry.client.config.ts`, `sentry.server.config.ts` 참고
+- [Sentry 공식 문서](https://docs.sentry.io/platforms/javascript/guides/nextjs/) 참고
+
+---
