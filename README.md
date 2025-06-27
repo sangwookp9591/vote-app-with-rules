@@ -37,9 +37,52 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 # vote-app-with-rules
 
-# Next.js 15 + Docker + PostgreSQL + Prisma 연동 가이드
+# Next.js 15 + Docker + PostgreSQL + Prisma + CI 연동 가이드
 
-이 프로젝트는 Next.js 15, Docker, PostgreSQL, Prisma를 함께 사용합니다.
+이 프로젝트는 Next.js 15, Docker, PostgreSQL, Prisma, 그리고 GitHub Actions 기반의 CI(자동화 테스트/빌드) 환경을 함께 사용합니다.
+
+---
+
+## Code Quality & Test Automation (Husky, lint-staged, Jest, React Testing Library)
+
+### 1. 커밋 전 자동화 (Husky + lint-staged)
+
+- 커밋 전에 **lint(ESLint)**와 **포맷(Prettier)**이 자동으로 실행됩니다.
+- 관련 설정: `package.json`의 `lint-staged`, `.husky/pre-commit` hook
+- 커밋 시 코드 스타일/버그를 자동으로 잡아줍니다.
+
+### 2. 테스트 (Jest + React Testing Library)
+
+- 모든 테스트는 **Jest**와 **React Testing Library**로 작성되어 있습니다.
+- 테스트 실행: `npm test` 또는 `npx jest`
+- 테스트 코드는 `src/app/__tests__` 등에서 관리됩니다.
+- 사용자 관점의 컴포넌트 테스트가 가능합니다.
+
+### 3. 실행 예시
+
+```bash
+# 테스트 실행
+npm test
+
+# 커밋 시 자동 lint/format (husky + lint-staged)
+git add .
+git commit -m "feat: something"
+```
+
+---
+
+## 0. GitHub Actions 기반 CI(자동화) 파이프라인
+
+- `.github/workflows/ci.yml` 파일로 CI 파이프라인이 구축되어 있습니다.
+- main 브랜치에 push 또는 pull request가 발생하면 아래 단계가 자동으로 실행됩니다:
+  1. 코드 체크아웃
+  2. Node.js 20 환경 세팅
+  3. 의존성 설치(`npm ci`)
+  4. Lint(`npm run lint`)
+  5. Test(`npm test`)
+  6. Build(`npm run build`)
+- 모든 단계가 성공해야 PR이 머지되거나, 배포가 진행될 수 있습니다.
+- 실행 결과는 GitHub 저장소의 **Actions** 탭에서 확인할 수 있습니다.
 
 ---
 
@@ -108,6 +151,7 @@ Docker 환경에서는 자동으로 `docker-compose.yml`의 환경변수가 사�
 - `docker-compose.yml`: Next.js 앱과 PostgreSQL DB를 함께 실행
 - `prisma/schema.prisma`: Prisma 모델 및 DB 연결 설정
 - `.env`: 로컬 개발용 환경 변수
+- `.github/workflows/ci.yml`: GitHub Actions 기반 CI 파이프라인 설정
 
 ---
 
