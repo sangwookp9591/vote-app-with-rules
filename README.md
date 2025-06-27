@@ -190,3 +190,35 @@ Docker 환경에서는 자동으로 `docker-compose.yml`의 환경변수가 사�
 ---
 
 문의사항은 이슈로 남겨주세요.
+
+---
+
+## Vercel 배포 자동화 및 Prisma(DB) 연동 안내
+
+### 1. Vercel 배포 자동화
+
+- https://vercel.com 에서 "New Project" → GitHub 저장소를 선택해 연동하면 main 브랜치에 push될 때마다 자동으로 배포됩니다.
+- 별도 GitHub Actions 설정 없이도 Vercel이 자동으로 빌드/배포를 관리합니다.
+
+### 2. 환경 변수(DB 접속 정보) 등록
+
+- Vercel 대시보드 > 프로젝트 > Settings > Environment Variables에서 아래와 같이 등록하세요:
+  - `DATABASE_URL=postgres://user:password@db-host:5432/mydb`
+  - (필요시) `NEXT_PUBLIC_API_URL` 등도 등록
+
+### 3. Prisma 마이그레이션/seed 관리
+
+- Vercel 배포와 별도로, 클라우드 DB에 직접 마이그레이션/seed를 적용해야 합니다.
+- 예시:
+  ```bash
+  npx prisma migrate deploy
+  npx prisma db seed
+  ```
+- (운영 환경에서는 DB 마이그레이션을 자동화할 때 주의가 필요합니다)
+
+### 4. 참고
+
+- Vercel은 서버리스 환경이므로, DB는 Supabase, Neon, AWS RDS 등 외부 클라우드 DB를 사용해야 합니다.
+- Prisma Client는 Vercel 빌드 단계에서 자동 생성됩니다.
+
+---
