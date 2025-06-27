@@ -1,0 +1,6 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ... (여기에 모델 정의 추가) 
