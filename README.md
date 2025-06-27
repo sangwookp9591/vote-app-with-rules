@@ -24,8 +24,8 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 To learn more about Next.js, take a look at the following resources:
 
--   [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
--   [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
@@ -51,8 +51,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 docker-compose up --build
 ```
 
--   Next.js 앱: http://localhost:3000
--   PostgreSQL DB: localhost:5432 (컨테이너 내부에서는 db:5432)
+- Next.js 앱: http://localhost:3000
+- PostgreSQL DB: localhost:5432 (컨테이너 내부에서는 db:5432)
 
 ### 1-2. 컨테이너 중지
 
@@ -84,9 +84,9 @@ Prisma가 DB에 정상적으로 연결되는지 확인하려면 아래 명령어
 npx prisma studio
 ```
 
--   브라우저가 열리면 DB 연결이 정상적으로 된 것입니다.
--   테이블/데이터를 직접 확인할 수 있습니다.
--   에러가 발생하면 `.env`의 `DATABASE_URL` 또는 DB 컨테이너 상태를 확인하세요.
+- 브라우저가 열리면 DB 연결이 정상적으로 된 것입니다.
+- 테이블/데이터를 직접 확인할 수 있습니다.
+- 에러가 발생하면 `.env`의 `DATABASE_URL` 또는 DB 컨테이너 상태를 확인하세요.
 
 ---
 
@@ -104,17 +104,17 @@ Docker 환경에서는 자동으로 `docker-compose.yml`의 환경변수가 사�
 
 ## 5. 주요 파일 설명
 
--   `Dockerfile`: Next.js 앱의 Docker 빌드/실행 설정
--   `docker-compose.yml`: Next.js 앱과 PostgreSQL DB를 함께 실행
--   `prisma/schema.prisma`: Prisma 모델 및 DB 연결 설정
--   `.env`: 로컬 개발용 환경 변수
+- `Dockerfile`: Next.js 앱의 Docker 빌드/실행 설정
+- `docker-compose.yml`: Next.js 앱과 PostgreSQL DB를 함께 실행
+- `prisma/schema.prisma`: Prisma 모델 및 DB 연결 설정
+- `.env`: 로컬 개발용 환경 변수
 
 ---
 
 ## 6. 기타
 
--   Prisma Client를 새로 빌드하려면 `npx prisma generate`를 실행하세요.
--   DB 접속 정보, 포트 등은 필요에 따라 수정 가능합니다.
+- Prisma Client를 새로 빌드하려면 `npx prisma generate`를 실행하세요.
+- DB 접속 정보, 포트 등은 필요에 따라 수정 가능합니다.
 
 ---
 
