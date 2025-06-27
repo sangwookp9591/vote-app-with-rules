@@ -162,4 +162,19 @@ Docker 환경에서는 자동으로 `docker-compose.yml`의 환경변수가 사�
 
 ---
 
+## 환경 변수 고도화 관리
+
+- 환경별로 `.env.development`, `.env.production` 파일을 사용해 개발/운영 환경을 분리합니다.
+- 예시 파일은 `.env.example`에서 확인할 수 있습니다.
+- 환경 변수는 Next.js에서 자동으로 로드되며, 코드에서는 `process.env.환경변수명`으로 접근합니다.
+- 예시:
+  ```ts
+  // 환경 변수 사용 예시
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  ```
+- 운영 환경에서는 `.env.production`을, 개발 환경에서는 `.env.development`를 사용하세요.
+- 민감 정보가 외부에 노출되지 않도록 `.env*` 파일은 git에 커밋하지 않습니다.
+
+---
+
 문의사항은 이슈로 남겨주세요.
