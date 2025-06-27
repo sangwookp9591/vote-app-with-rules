@@ -177,4 +177,16 @@ Docker 환경에서는 자동으로 `docker-compose.yml`의 환경변수가 사�
 
 ---
 
+## Storybook 사용법
+
+- UI 컴포넌트 시각적 테스트 및 문서화를 위해 Storybook을 사용합니다.
+- 실행:
+  ```bash
+  npm run storybook
+  ```
+- 브라우저에서 http://localhost:6006 에 접속해 컴포넌트 스토리를 확인할 수 있습니다.
+- 예시: src/features/counter/ui/Counter.stories.tsx
+
+---
+
 문의사항은 이슈로 남겨주세요.
