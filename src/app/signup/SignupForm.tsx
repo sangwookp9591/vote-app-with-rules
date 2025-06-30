@@ -1,10 +1,11 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { signupAction, type SignupFormState } from './actions';
 
 export default function SignupForm() {
-  const [state, formAction] = useFormState<SignupFormState, FormData>(signupAction, {});
+  const [state, formAction] = useActionState<SignupFormState, FormData>(signupAction, {});
 
   return (
     <form
