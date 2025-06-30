@@ -1,3 +1,21 @@
+html.dark {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --primary: #4f9fff;
+  --secondary: #ff4f9f;
+  --gray-100: #f5f5f5;
+  --gray-900: #171717;
+}
+
+html.light {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #4f9fff;
+  --secondary: #ff4f9f;
+  --gray-100: #f5f5f5;
+  --gray-900: #171717;
+}
+
 :root {
   --max-width: 1200px;
   --border-radius: 12px;

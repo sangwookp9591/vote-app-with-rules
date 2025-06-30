@@ -100,7 +100,7 @@ model TeamMember {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  // LoL 관련 정보
+  // LoL SWL/PSW 관련 정보
   lolNickname String
   lolTier     LolTier
   lolRank     Int       // 1-4
