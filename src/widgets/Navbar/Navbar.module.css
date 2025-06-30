@@ -1,0 +1,111 @@
+.navbar {
+  width: 100%;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+  padding: 0 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 2px;
+}
+
+.menu {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.menu li a:hover {
+  background: var(--primary);
+  color: var(--button-text);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--foreground);
+  padding: 6px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.iconButton:hover {
+  background: var(--primary);
+  color: var(--foreground);
+}
+
+.authButton {
+  background: var(--primary);
+  color: var(--foreground);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.authButton:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.sidebarToggle {
+  background: none;
+  border: none;
+  color: var(--foreground);
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 6px 10px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.sidebarToggle:hover {
+  background: var(--primary, #4f9fff);
+  color: var(--button-text);
+}
