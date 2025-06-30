@@ -1,0 +1,92 @@
+.sidebar {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  width: 240px;
+  height: calc(100vh - 64px);
+  background: var(--card-bg);
+  border-right: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 200;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary, var(--foreground));
+  padding: 32px 0 24px 32px;
+  letter-spacing: 2px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 0 0 32px;
+}
+
+.menuItem {
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 10px 0;
+  border-radius: 6px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.menuItem:hover {
+  background: var(--primary, #4f9fff);
+  color: var(--button-text);
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 0 32px 32px;
+}
+
+.utilButton {
+  background: none;
+  border: none;
+  color: var(--foreground);
+  font-size: 1rem;
+  padding: 8px 0;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.utilButton:hover {
+  background: var(--primary, #4f9fff);
+  color: var(--button-text);
+}
+
+.sidebarToggle {
+  background: none;
+  border: none;
+  color: var(--foreground);
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 6px 10px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.sidebarToggle:hover {
+  background: var(--primary, #4f9fff);
+  color: var(--button-text);
+}
