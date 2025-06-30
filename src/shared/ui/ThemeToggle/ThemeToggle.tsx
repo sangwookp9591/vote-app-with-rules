@@ -4,27 +4,25 @@ import { useEffect, useState } from 'react';
 const THEME_KEY = 'theme-mode';
 
 function getSystemTheme() {
-  if (typeof window === 'undefined') return 'dark';
+  if (typeof window === 'undefined') return 'light';
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     const saved = localStorage.getItem(THEME_KEY);
     const initial = saved || getSystemTheme();
     setTheme(initial);
-    document.documentElement.classList.toggle('dark', initial === 'dark');
-    document.documentElement.classList.toggle('light', initial === 'light');
+    document.body.classList.toggle('dark', initial === 'dark');
   }, []);
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     localStorage.setItem(THEME_KEY, next);
-    document.documentElement.classList.toggle('dark', next === 'dark');
-    document.documentElement.classList.toggle('light', next === 'light');
+    document.body.classList.toggle('dark', next === 'dark');
   };
 
   return (

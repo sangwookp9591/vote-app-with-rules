@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+import Provider from '../context/ThemeProvider';
+import ThemeColorUpdater from '../shared/ui/ThemeColorUpdater';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
@@ -12,9 +13,13 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'LoL SWL',
   description: 'PSW 리그오브레전드 상욱 리그 투표 시스템',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+  ],
 };
 
 const themeInitScript = `
@@ -24,18 +29,24 @@ const themeInitScript = `
     if (!theme) {
       theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-    document.documentElement.classList.add(theme);
+    if(theme === 'dark') document.body.classList.add('dark');
+    else document.body.classList.remove('dark');
   } catch (e) {}
 })();
 `;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <Provider>
+          <ThemeColorUpdater />
+          {children}
+        </Provider>
+      </body>
     </html>
   );
 }

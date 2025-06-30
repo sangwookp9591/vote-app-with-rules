@@ -29,8 +29,8 @@
 
 .main {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
-  color: #ffffff;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 /* Hero Section */
@@ -53,6 +53,10 @@
   left: 0;
   right: 0;
   bottom: 0;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+:global(body.dark) .hero::before {
   background: rgba(0, 0, 0, 0.5);
 }
 
@@ -75,7 +79,7 @@
 .subtitle {
   font-size: 1.5rem;
   margin-bottom: 2rem;
-  color: #cccccc;
+  color: var(--foreground);
 }
 
 .cta {
@@ -128,7 +132,7 @@
   font-size: 2rem;
   margin-bottom: 2rem;
   text-align: center;
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 /* Tournament Cards */
@@ -139,15 +143,16 @@
 }
 
 .tournamentCard {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 16px;
   padding: 1.5rem;
   transition: all 0.3s ease;
 }
 
 .tournamentCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(79, 159, 255, 0.2);
+  background: var(--card-bg);
+  box-shadow: 0 8px 20px rgba(var(--foreground-rgb), 0.2);
 }
 
 .streamerInfo {
@@ -162,17 +167,31 @@
   height: 40px;
   border-radius: 50%;
   background: #4f9fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+body.dark .streamerAvatar {
+  background: #4f9fff;
+}
+
+.streamerAvatar img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
 }
 
 .streamerName {
   font-weight: 600;
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 .tournamentTitle {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 .tournamentStats {
@@ -195,7 +214,7 @@
 .statValue {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #4f9fff;
+  color: var(--primary);
 }
 
 .tournamentStatus {
@@ -205,11 +224,16 @@
 }
 
 .statusBadge {
-  background: rgba(79, 159, 255, 0.2);
-  color: #4f9fff;
+  background: var(--primary);
+  color: var(--button-text);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.9rem;
+}
+
+:global(body.dark) .statusBadge {
+  background: #7c3aed;
+  color: #fff;
 }
 
 .timeRemaining {
@@ -228,9 +252,10 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 1rem;
+  border: 1px solid var(--card-border);
   transition: all 0.3s ease;
 }
 
