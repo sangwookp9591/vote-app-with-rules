@@ -26,6 +26,7 @@ model User {
   notifications      Notification[]
   votes             Vote[]          // 유저가 투표한 내역
   teams             TeamMember[]    // 속한 팀 정보
+  applications      TournamentApplication[]
 
   @@map("users")
 }
@@ -61,6 +62,8 @@ model Tournament {
   id          String    @id @default(cuid())
   title       String
   description String?
+  gameType    GameType
+  formSchema  Json? // 게임별 신청 폼 정의(옵션)
   startDate   DateTime
   endDate     DateTime
   status      TournamentStatus @default(PREPARING)
@@ -76,6 +79,7 @@ model Tournament {
   streamer    Streamer  @relation(fields: [streamerId], references: [id])
   teams       Team[]
   votes       Vote[]
+  applications TournamentApplication[]
 
   @@map("tournaments")
 }
@@ -166,6 +170,20 @@ model Notification {
   @@map("notifications")
 }
 
+model TournamentApplication {
+  id           String   @id @default(cuid())
+  tournamentId String
+  userId       String
+  gameData     Json     // 게임별 신청 정보(닉네임, 티어, 포지션 등)
+  status       ApplicationStatus @default(PENDING)
+  createdAt    DateTime @default(now())
+
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@map("tournament_applications")
+}
+
 enum UserRole {
   ADMIN
   USER
@@ -221,4 +239,12 @@ enum NotificationType {
   TOURNAMENT_END
   VOTE_START
   VOTE_END
+}
+
+enum GameType {
+  LOL
+  PUBG
+  OVERWATCH
+  VALORANT
+  ETC
 } 
