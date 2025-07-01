@@ -34,6 +34,11 @@ import {
   dateTimePickerFooter,
   dateTimePickerConfirm,
   dateTimePickerCancel,
+  gameTypeSelector,
+  gameTypeOption,
+  gameTypeIcon,
+  gameTypeLabel,
+  gameTypeDescription,
 } from './create.css';
 
 export default function CreateTournamentPage() {
@@ -50,12 +55,48 @@ export default function CreateTournamentPage() {
   });
 
   const gameTypes = [
-    { value: 'LoL', label: 'League of Legends' },
-    { value: 'PUBG', label: 'PUBG' },
-    { value: 'Overwatch', label: 'Overwatch' },
-    { value: 'Valorant', label: 'Valorant' },
-    { value: 'CS2', label: 'Counter-Strike 2' },
-    { value: 'Dota2', label: 'Dota 2' },
+    {
+      value: 'LoL',
+      label: 'League of Legends',
+      icon: '🎮',
+      description: '5v5 팀 전투 게임',
+      animation: 'lol-animation',
+    },
+    {
+      value: 'PUBG',
+      label: 'PUBG',
+      icon: '🔫',
+      description: '배틀 로얄 슈팅 게임',
+      animation: 'pubg-animation',
+    },
+    {
+      value: 'Overwatch',
+      label: 'Overwatch',
+      icon: '⚡',
+      description: '팀 기반 FPS 게임',
+      animation: 'overwatch-animation',
+    },
+    {
+      value: 'Valorant',
+      label: 'Valorant',
+      icon: '🎯',
+      description: '전술적 FPS 게임',
+      animation: 'valorant-animation',
+    },
+    {
+      value: 'CS2',
+      label: 'Counter-Strike 2',
+      icon: '💣',
+      description: '클래식 FPS 게임',
+      animation: 'cs2-animation',
+    },
+    {
+      value: 'Dota2',
+      label: 'Dota 2',
+      icon: '⚔️',
+      description: 'MOBA 전략 게임',
+      animation: 'dota2-animation',
+    },
   ];
 
   const months = [
@@ -124,6 +165,13 @@ export default function CreateTournamentPage() {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleGameTypeChange = (gameType: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      gameType,
     }));
   };
 
@@ -342,23 +390,20 @@ export default function CreateTournamentPage() {
           </div>
 
           <div className={formGroup}>
-            <label htmlFor="gameType" className={formLabel}>
-              게임 종류 *
-            </label>
-            <select
-              id="gameType"
-              name="gameType"
-              value={formData.gameType}
-              onChange={handleInputChange}
-              className={formSelect}
-              required
-            >
+            <label className={formLabel}>게임 종류 *</label>
+            <div className={gameTypeSelector}>
               {gameTypes.map((game) => (
-                <option key={game.value} value={game.value}>
-                  {game.label}
-                </option>
+                <div
+                  key={game.value}
+                  className={`${gameTypeOption} ${formData.gameType === game.value ? 'selected' : ''}`}
+                  onClick={() => handleGameTypeChange(game.value)}
+                >
+                  <div className={`${gameTypeIcon} ${game.animation}`}>{game.icon}</div>
+                  <div className={gameTypeLabel}>{game.label}</div>
+                  <div className={gameTypeDescription}>{game.description}</div>
+                </div>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className={formGroup}>

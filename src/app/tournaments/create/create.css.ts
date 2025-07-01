@@ -373,3 +373,83 @@ export const dateTimePickerCancel = style({
     borderColor: 'var(--foreground)',
   },
 });
+
+// Game Type Selector
+export const gameTypeSelector = style({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+  gap: '1rem',
+  '@media': {
+    '(max-width: 768px)': {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+    },
+    '(max-width: 480px)': {
+      gridTemplateColumns: '1fr',
+    },
+  },
+});
+
+export const gameTypeOption = style({
+  background: 'var(--card-bg)',
+  border: '2px solid var(--card-border)',
+  borderRadius: '12px',
+  padding: '1.5rem',
+  cursor: 'pointer',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  textAlign: 'center',
+  position: 'relative',
+  overflow: 'hidden',
+  ':hover': {
+    transform: 'translateY(-4px) scale(1.02)',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+    borderColor: '#4f9fff',
+  },
+  selectors: {
+    '&.selected': {
+      borderColor: '#4f9fff',
+      background: 'linear-gradient(135deg, rgba(79, 159, 255, 0.1), rgba(255, 79, 159, 0.1))',
+      boxShadow: '0 8px 25px rgba(79, 159, 255, 0.2)',
+      transform: 'translateY(-2px)',
+    },
+  },
+});
+
+export const gameTypeIcon = style({
+  fontSize: '3rem',
+  marginBottom: '1rem',
+  display: 'block',
+  transition: 'all 0.3s ease',
+  selectors: {
+    '&.lol-animation': {
+      animation: 'lolPulse 2s ease-in-out infinite',
+    },
+    '&.pubg-animation': {
+      animation: 'pubgShake 1.5s ease-in-out infinite',
+    },
+    '&.overwatch-animation': {
+      animation: 'overwatchGlow 2s ease-in-out infinite',
+    },
+    '&.valorant-animation': {
+      animation: 'valorantSpin 3s linear infinite',
+    },
+    '&.cs2-animation': {
+      animation: 'cs2Explode 2.5s ease-in-out infinite',
+    },
+    '&.dota2-animation': {
+      animation: 'dota2Sword 2s ease-in-out infinite',
+    },
+  },
+});
+
+export const gameTypeLabel = style({
+  fontSize: '1.1rem',
+  fontWeight: 700,
+  color: 'var(--foreground)',
+  marginBottom: '0.5rem',
+});
+
+export const gameTypeDescription = style({
+  fontSize: '0.875rem',
+  color: 'var(--muted-foreground)',
+  lineHeight: 1.4,
+});
