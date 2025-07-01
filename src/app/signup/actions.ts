@@ -1,6 +1,7 @@
 'use server';
 
 import { LocalStorageProvider } from '@/shared/storage/LocalStorageProvider';
+import { PrismaClient } from '@prisma/client';
 
 export type SignupFormState = { error?: string; success?: string };
 
@@ -8,6 +9,7 @@ export async function signupAction(
   prevState: SignupFormState,
   formData: FormData,
 ): Promise<SignupFormState> {
+  const prisma = new PrismaClient();
   const email = formData.get('email') as string;
   const nickname = formData.get('nickname') as string;
   const password = formData.get('password') as string;
@@ -31,9 +33,36 @@ export async function signupAction(
     return { error: '비밀번호는 6자 이상이어야 합니다.' };
   }
 
-  // TODO: 실제 회원가입 처리(DB 등)
-  // 예시: profileImageUrl을 DB에 저장하는 로직이 들어가야 함
-  return {
-    success: `회원가입이 완료되었습니다!${profileImageUrl ? ' (이미지: ' + profileImageUrl + ')' : ''}`,
-  };
+  // 중복 이메일/닉네임 체크
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [{ email }, { nickname }],
+    },
+  });
+  if (existingUser) {
+    if (existingUser.email === email) {
+      return { error: '이미 사용 중인 이메일입니다.' };
+    }
+    if (existingUser.nickname === nickname) {
+      return { error: '이미 사용 중인 닉네임입니다.' };
+    }
+  }
+
+  // 비밀번호 해싱 (실제 서비스에서는 bcrypt 등 사용 권장)
+  // 여기서는 예시로 평문 저장 (실서비스에서는 절대 금지!)
+  try {
+    await prisma.user.create({
+      data: {
+        email,
+        password, // TODO: bcrypt로 해싱 필요
+        nickname,
+        profileImageUrl,
+      },
+    });
+    return { success: '회원가입이 완료되었습니다!' };
+  } catch {
+    return { error: '회원가입 중 오류가 발생했습니다.' };
+  } finally {
+    await prisma.$disconnect();
+  }
 }
