@@ -32,7 +32,7 @@ describe('LocalStorageProvider', () => {
 
   it('should save file and return correct URL', async () => {
     const file = new MockFile('test.png', Buffer.from('hello world'));
-    const url = await provider.upload(file as any, { folder: 'test' });
+    const url = await provider.upload(file as unknown as File, { folder: 'test' });
 
     // URL이 올바른지
     expect(url).toMatch(/^\/uploads\/test\/.+\.png$/);
