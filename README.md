@@ -235,3 +235,56 @@ Docker 환경에서는 자동으로 `docker-compose.yml`의 환경변수가 사�
 - [Sentry 공식 문서](https://docs.sentry.io/platforms/javascript/guides/nextjs/) 참고
 
 ---
+
+## ⚠️ Docker/Postgres/Prisma 에러 및 해결법 (Troubleshooting)
+
+### 1. Prisma 인증 실패 (P1000: Authentication failed against database server)
+
+- **에러 메시지:**
+  > Error: P1000: Authentication failed against database server, the provided database credentials for `postgres` are not valid.
+- **원인:**
+  - .env의 DATABASE_URL이 실제 DB 컨테이너와 일치하지 않음
+  - DB 컨테이너가 실행 중이 아니거나, 비밀번호가 다름
+- **해결:**
+  1. `.env` 파일의 DATABASE_URL을 아래와 같이 맞추세요 (Docker Compose 기준)
+     ```
+     DATABASE_URL=postgres://postgres:postgres@db:5432/mydb
+     ```
+  2. DB 컨테이너가 정상적으로 실행 중인지 확인
+     ```bash
+     docker compose ps
+     ```
+  3. DB 볼륨이 오래된 경우, 아래 명령으로 완전 초기화
+     ```bash
+     docker compose down -v
+     docker compose up -d
+     ```
+
+### 2. FATAL: role "postgres" does not exist
+
+- **에러 메시지:**
+  > FATAL: role "postgres" does not exist
+- **원인:**
+  - DB 컨테이너가 예전 볼륨(데이터)을 사용 중이어서, 환경변수로 지정한 유저/비번/DB가 생성되지 않음
+- **해결:**
+  1. DB 볼륨을 완전히 삭제(초기화) 후 재생성
+     ```bash
+     docker compose down -v
+     docker compose up -d
+     ```
+  2. 컨테이너가 뜬 후 아래 명령으로 정상 접속 확인
+     ```bash
+     docker exec -it <컨테이너이름> bash
+     psql -U postgres -d mydb
+     ```
+
+### 3. Prisma 마이그레이션/seed 타입 에러 (예: 'name' does not exist in type ...)
+
+- **에러 메시지:**
+  > Type error: Object literal may only specify known properties, and 'name' does not exist in type ...
+- **원인:**
+  - schema.prisma의 모델에 해당 필드가 없는데 seed.ts 등에서 데이터를 넣으려 할 때 발생
+- **해결:**
+  - schema.prisma에 필드를 추가하고, prisma migrate로 DB에 반영
+
+---

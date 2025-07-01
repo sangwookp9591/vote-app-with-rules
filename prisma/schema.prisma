@@ -16,6 +16,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   profileImageUrl String?   // 프로필 이미지 URL
+  name          String?   // 사용자 이름(시드 데이터용)
 
   // Streamer specific
   streamerApplication StreamerApplication?

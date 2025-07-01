@@ -2,7 +2,7 @@ import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import KakaoProvider from 'next-auth/providers/kakao';
 
-export default NextAuth({
+export const authConfig = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -13,5 +13,7 @@ export default NextAuth({
       clientSecret: process.env.KAKAO_CLIENT_SECRET!,
     }),
   ],
-  // 필요시 콜백, DB 연동 등 추가 설정 가능
-});
+  // 필요시 callbacks, adapter 등 추가
+};
+
+export const { handlers, auth, signOut } = NextAuth(authConfig);

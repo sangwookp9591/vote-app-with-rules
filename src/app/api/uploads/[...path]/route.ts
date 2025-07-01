@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createReadStream, existsSync, statSync } from 'fs';
 import path from 'path';
 
-export async function GET(req: NextRequest, { params }: { params: { path: string[] } }) {
-  const filePath = path.join(process.cwd(), 'uploads', ...params.path);
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+): Promise<NextResponse> {
+  const { path: pathArr } = await params;
+  const filePath = path.join(process.cwd(), 'uploads', ...pathArr);
   if (!existsSync(filePath) || !statSync(filePath).isFile()) {
     return new NextResponse('Not Found', { status: 404 });
   }
