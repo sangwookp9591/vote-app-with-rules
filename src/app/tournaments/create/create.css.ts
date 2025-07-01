@@ -453,3 +453,16 @@ export const gameTypeDescription = style({
   color: 'var(--muted-foreground)',
   lineHeight: 1.4,
 });
+
+export const teamSize = style({
+  fontSize: '0.75rem',
+  color: '#4f9fff',
+  marginTop: '0.75rem',
+  fontWeight: '600',
+  textAlign: 'center',
+  padding: '0.25rem 0.5rem',
+  backgroundColor: 'rgba(79, 159, 255, 0.1)',
+  borderRadius: '0.5rem',
+  border: '1px solid rgba(79, 159, 255, 0.2)',
+  display: 'inline-block',
+});

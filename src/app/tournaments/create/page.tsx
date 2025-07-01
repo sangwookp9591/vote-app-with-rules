@@ -11,7 +11,7 @@ import {
   formLabel,
   formInput,
   formTextarea,
-  formSelect,
+  teamSize,
   submitButton,
   cancelButton,
   buttonGroup,
@@ -50,6 +50,7 @@ export default function CreateTournamentPage() {
     title: '',
     description: '',
     gameType: 'LoL',
+    teamSize: 5,
     startDate: '',
     endDate: '',
   });
@@ -60,6 +61,7 @@ export default function CreateTournamentPage() {
       label: 'League of Legends',
       icon: '🎮',
       description: '5v5 팀 전투 게임',
+      teamSize: 5,
       animation: 'lol-animation',
     },
     {
@@ -67,6 +69,7 @@ export default function CreateTournamentPage() {
       label: 'PUBG',
       icon: '🔫',
       description: '배틀 로얄 슈팅 게임',
+      teamSize: 4,
       animation: 'pubg-animation',
     },
     {
@@ -74,6 +77,7 @@ export default function CreateTournamentPage() {
       label: 'Overwatch',
       icon: '⚡',
       description: '팀 기반 FPS 게임',
+      teamSize: 6,
       animation: 'overwatch-animation',
     },
     {
@@ -81,6 +85,7 @@ export default function CreateTournamentPage() {
       label: 'Valorant',
       icon: '🎯',
       description: '전술적 FPS 게임',
+      teamSize: 5,
       animation: 'valorant-animation',
     },
     {
@@ -88,6 +93,7 @@ export default function CreateTournamentPage() {
       label: 'Counter-Strike 2',
       icon: '💣',
       description: '클래식 FPS 게임',
+      teamSize: 5,
       animation: 'cs2-animation',
     },
     {
@@ -95,6 +101,7 @@ export default function CreateTournamentPage() {
       label: 'Dota 2',
       icon: '⚔️',
       description: 'MOBA 전략 게임',
+      teamSize: 5,
       animation: 'dota2-animation',
     },
   ];
@@ -141,7 +148,10 @@ export default function CreateTournamentPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          streamerId: 'temp-streamer-id', // TODO: 실제 스트리머 ID로 교체
+        }),
       });
 
       if (!response.ok) {
@@ -169,9 +179,11 @@ export default function CreateTournamentPage() {
   };
 
   const handleGameTypeChange = (gameType: string) => {
+    const selectedGame = gameTypes.find((game) => game.value === gameType);
     setFormData((prev) => ({
       ...prev,
       gameType,
+      teamSize: selectedGame?.teamSize || 5,
     }));
   };
 
@@ -401,6 +413,7 @@ export default function CreateTournamentPage() {
                   <div className={`${gameTypeIcon} ${game.animation}`}>{game.icon}</div>
                   <div className={gameTypeLabel}>{game.label}</div>
                   <div className={gameTypeDescription}>{game.description}</div>
+                  <div className={teamSize}>팀원 수: {game.teamSize}명</div>
                 </div>
               ))}
             </div>
