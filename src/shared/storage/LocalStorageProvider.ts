@@ -7,7 +7,7 @@ export class LocalStorageProvider implements IStorageProvider {
   baseDir: string;
   baseUrl: string;
 
-  constructor(baseDir = path.resolve(process.cwd(), 'uploads'), baseUrl = '/uploads') {
+  constructor(baseDir = path.resolve(process.cwd(), 'public/uploads'), baseUrl = '/uploads') {
     this.baseDir = baseDir;
     this.baseUrl = baseUrl;
   }
