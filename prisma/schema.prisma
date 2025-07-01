@@ -63,6 +63,7 @@ model Tournament {
   title       String
   description String?
   gameType    GameType
+  teamSize    Int       // 팀당 팀원 수 (LoL: 5, Overwatch: 6, PUBG: 4 등)
   formSchema  Json? // 게임별 신청 폼 정의(옵션)
   startDate   DateTime
   endDate     DateTime
@@ -246,5 +247,7 @@ enum GameType {
   PUBG
   OVERWATCH
   VALORANT
+  CS2
+  DOTA2
   ETC
 } 
