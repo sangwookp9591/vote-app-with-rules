@@ -25,6 +25,7 @@ interface Tournament {
   title: string;
   description?: string;
   gameType: string;
+  teamSize: number;
   startDate: string;
   endDate: string;
   status: string;
@@ -189,6 +190,12 @@ export default function TournamentDetailPage() {
             <div className={statLabel}>상태</div>
             <div className={statValue}>{getStatusText(tournament.status)}</div>
           </div>
+          <div className={statItem}>
+            <div className={statLabel}>팀원 수</div>
+            <div className={statValue} style={{ color: '#4f9fff', fontWeight: 600 }}>
+              {tournament.teamSize}명
+            </div>
+          </div>
         </div>
       </div>
 
@@ -205,9 +212,14 @@ export default function TournamentDetailPage() {
       {/* Actions */}
       <div className={tournamentActions}>
         {tournament.status === 'UPCOMING' && (
-          <button onClick={handleApply} className={applyButton}>
-            참가 신청하기
-          </button>
+          <>
+            <Link href={`/tournaments/${tournamentId}/teams/create`} className={applyButton}>
+              팀 생성하기
+            </Link>
+            <button onClick={handleApply} className={applyButton}>
+              참가 신청하기
+            </button>
+          </>
         )}
         {tournament.status === 'ONGOING' && (
           <Link href={`/tournaments/${tournamentId}/applications`} className={applyButton}>
