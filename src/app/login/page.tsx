@@ -2,8 +2,11 @@
 
 import { useState, FormEvent } from 'react';
 import SocialLoginButtons from '../signup/SocialLoginButtons';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -15,15 +18,19 @@ export default function LoginPage() {
     setError(null);
     setSuccess(null);
     setLoading(true);
-    // TODO: 로그인 액션 연동
-    setTimeout(() => {
-      setLoading(false);
-      if (email === 'test@example.com' && password === '123456') {
-        setSuccess('로그인 성공!');
-      } else {
-        setError('이메일 또는 비밀번호가 올바르지 않습니다.');
-      }
-    }, 800);
+    // next-auth credentials provider로 로그인 시도
+    const res = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    });
+    setLoading(false);
+    if (res?.ok) {
+      setSuccess('로그인 성공!');
+      router.push('/'); // 메인화면으로 이동
+    } else {
+      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+    }
   }
 
   return (
