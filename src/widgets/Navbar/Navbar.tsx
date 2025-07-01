@@ -36,10 +36,10 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
         <span className={styles.logo}>LoL SWL</span>
         <ul className={styles.menu}>
           <li>
-            <a href="#">홈</a>
+            <Link href="/">홈</Link>
           </li>
           <li>
-            <a href="#">토너먼트</a>
+            <Link href="/tournaments">토너먼트</Link>
           </li>
           <li>
             <a href="#">인기 스트리머</a>

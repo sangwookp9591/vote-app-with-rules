@@ -31,7 +31,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       style={{
         position: 'fixed',
-        top: 24,
+        bottom: 24,
         right: 24,
         zIndex: 1000,
         background: 'rgba(0,0,0,0.5)',
