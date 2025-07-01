@@ -116,6 +116,16 @@ button {
   }
 }
 
+/* Smooth scroll animation for date picker */
+@keyframes smoothScroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
 /* Custom scrollbar for date picker */
 .dateTimePickerScroll::-webkit-scrollbar {
   width: 6px;
@@ -129,10 +139,78 @@ button {
 .dateTimePickerScroll::-webkit-scrollbar-thumb {
   background: var(--card-border);
   border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
 .dateTimePickerScroll::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
+}
+
+/* Smooth scrolling for date picker */
+.dateTimePickerScroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--card-border) var(--gray-alpha-100);
+}
+
+/* Hover effects for scrollable items */
+.dateTimePickerScroll > div {
+  transition: all 0.2s ease;
+}
+
+.dateTimePickerScroll > div:hover {
+  transform: scale(1.05);
+  background: var(--gray-alpha-100);
+}
+
+/* Selected item animation */
+.dateTimePickerScroll > div.selected {
+  animation: pulse 0.3s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Scroll momentum for iOS-like feel */
+.dateTimePickerScroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y mandatory;
+}
+
+.dateTimePickerScroll > div {
+  scroll-snap-align: center;
+}
+
+/* Fade effect for top and bottom of scroll area */
+.dateTimePickerScroll::before,
+.dateTimePickerScroll::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dateTimePickerScroll::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--card-bg) 0%, transparent 100%);
+}
+
+.dateTimePickerScroll::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--card-bg) 0%, transparent 100%);
 }
 
 @media (prefers-color-scheme: dark) {

@@ -203,7 +203,7 @@ export default function CreateTournamentPage() {
                       {years.map((year) => (
                         <div
                           key={year}
-                          className={`${dateTimePickerOption} ${tempDate.year === year ? dateTimePickerOptionSelected : ''}`}
+                          className={`${dateTimePickerOption} ${tempDate.year === year ? dateTimePickerOptionSelected : ''} ${tempDate.year === year ? 'selected' : ''}`}
                           onClick={() => setTempDate((prev) => ({ ...prev, year }))}
                         >
                           {year}
@@ -220,7 +220,7 @@ export default function CreateTournamentPage() {
                       {months.map((month, index) => (
                         <div
                           key={index}
-                          className={`${dateTimePickerOption} ${tempDate.month === index + 1 ? dateTimePickerOptionSelected : ''}`}
+                          className={`${dateTimePickerOption} ${tempDate.month === index + 1 ? dateTimePickerOptionSelected : ''} ${tempDate.month === index + 1 ? 'selected' : ''}`}
                           onClick={() => setTempDate((prev) => ({ ...prev, month: index + 1 }))}
                         >
                           {month}
@@ -237,7 +237,7 @@ export default function CreateTournamentPage() {
                       {days.map((day) => (
                         <div
                           key={day}
-                          className={`${dateTimePickerOption} ${tempDate.day === day ? dateTimePickerOptionSelected : ''}`}
+                          className={`${dateTimePickerOption} ${tempDate.day === day ? dateTimePickerOptionSelected : ''} ${tempDate.day === day ? 'selected' : ''}`}
                           onClick={() => setTempDate((prev) => ({ ...prev, day }))}
                         >
                           {day}
@@ -261,7 +261,7 @@ export default function CreateTournamentPage() {
                       {hours.map((hour) => (
                         <div
                           key={hour}
-                          className={`${dateTimePickerOption} ${tempDate.hour === hour ? dateTimePickerOptionSelected : ''}`}
+                          className={`${dateTimePickerOption} ${tempDate.hour === hour ? dateTimePickerOptionSelected : ''} ${tempDate.hour === hour ? 'selected' : ''}`}
                           onClick={() => setTempDate((prev) => ({ ...prev, hour }))}
                         >
                           {hour.toString().padStart(2, '0')}
@@ -278,7 +278,7 @@ export default function CreateTournamentPage() {
                       {minutes.map((minute) => (
                         <div
                           key={minute}
-                          className={`${dateTimePickerOption} ${tempDate.minute === minute ? dateTimePickerOptionSelected : ''}`}
+                          className={`${dateTimePickerOption} ${tempDate.minute === minute ? dateTimePickerOptionSelected : ''} ${tempDate.minute === minute ? 'selected' : ''}`}
                           onClick={() => setTempDate((prev) => ({ ...prev, minute }))}
                         >
                           {minute.toString().padStart(2, '0')}

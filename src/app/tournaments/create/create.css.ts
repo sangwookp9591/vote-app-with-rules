@@ -314,6 +314,7 @@ export const dateTimePickerOption = style({
   transition: 'all 0.2s ease',
   fontSize: '0.875rem',
   color: 'var(--foreground)',
+  position: 'relative',
   ':hover': {
     background: 'var(--gray-alpha-100)',
   },
