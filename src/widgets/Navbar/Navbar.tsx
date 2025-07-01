@@ -40,7 +40,9 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
             🔔
           </span>
         </button>
-        <button className={styles.authButton}>로그인</button>
+        <Link href={'/login'} className={styles.authButton}>
+          로그인
+        </Link>
         <Link href={'/signup'} className={styles.authButton}>
           회원가입
         </Link>
