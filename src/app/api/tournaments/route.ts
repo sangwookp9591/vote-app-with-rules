@@ -7,7 +7,8 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, description, gameType, formSchema, startDate, endDate, streamerId } = body;
+    const { title, description, gameType, teamSize, formSchema, startDate, endDate, streamerId } =
+      body;
     if (!title || !gameType || !startDate || !endDate || !streamerId) {
       return NextResponse.json({ error: '필수 입력값 누락' }, { status: 400 });
     }
@@ -16,6 +17,7 @@ export async function POST(req: NextRequest) {
         title,
         description,
         gameType,
+        teamSize: teamSize || 5, // 기본값 5명
         formSchema,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
@@ -38,6 +40,7 @@ export async function GET() {
         title: true,
         description: true,
         gameType: true,
+        teamSize: true,
         startDate: true,
         endDate: true,
         status: true,
