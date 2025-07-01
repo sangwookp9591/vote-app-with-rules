@@ -3,83 +3,71 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { signupAction, type SignupFormState } from './actions';
+import {
+  formStyle,
+  titleStyle,
+  labelStyle,
+  inputStyle,
+  checkboxLabelStyle,
+  errorStyle,
+  successStyle,
+  submitButtonStyle,
+  imageStyle,
+  profileImageInputStyle,
+  profileImagePreviewStyle,
+} from './signup.css';
+import Image from 'next/image';
+import React, { useRef, useState } from 'react';
 
 export default function SignupForm() {
   const [state, formAction] = useActionState<SignupFormState, FormData>(signupAction, {});
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
+  }
 
   return (
-    <form
-      action={formAction}
-      style={{
-        background: 'var(--card-bg)',
-        border: '1px solid var(--card-border)',
-        borderRadius: 12,
-        padding: 32,
-        minWidth: 320,
-        boxShadow: '0 4px 24px rgba(0,0,0,0.04)',
-      }}
-    >
-      <h2 style={{ marginBottom: 24, textAlign: 'center' }}>회원가입</h2>
-      <label style={{ display: 'block', marginBottom: 8 }}>
+    <form action={formAction} className={formStyle}>
+      <Image src="/globe.svg" alt="Signup" width={64} height={64} className={imageStyle} />
+      <h2 className={titleStyle}>회원가입</h2>
+      <label className={profileImageInputStyle}>
+        프로필 이미지
+        <input
+          name="profileImage"
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleImageChange}
+        />
+      </label>
+      {preview && <img src={preview} alt="미리보기" className={profileImagePreviewStyle} />}
+      <label className={labelStyle}>
         이메일
-        <input
-          name="email"
-          type="email"
-          required
-          style={{
-            width: '100%',
-            marginTop: 4,
-            marginBottom: 16,
-            padding: 8,
-            borderRadius: 6,
-            border: '1px solid var(--input-border)',
-            background: 'var(--input-bg)',
-            color: 'var(--input-text)',
-          }}
-        />
+        <input name="email" type="email" required className={inputStyle} />
       </label>
-      <label style={{ display: 'block', marginBottom: 8 }}>
+      <label className={labelStyle}>
         닉네임
-        <input
-          name="nickname"
-          type="text"
-          required
-          style={{
-            width: '100%',
-            marginTop: 4,
-            marginBottom: 16,
-            padding: 8,
-            borderRadius: 6,
-            border: '1px solid var(--input-border)',
-            background: 'var(--input-bg)',
-            color: 'var(--input-text)',
-          }}
-        />
+        <input name="nickname" type="text" required className={inputStyle} />
       </label>
-      <label style={{ display: 'block', marginBottom: 8 }}>
+      <label className={labelStyle}>
         비밀번호
-        <input
-          name="password"
-          type="password"
-          required
-          style={{
-            width: '100%',
-            marginTop: 4,
-            marginBottom: 16,
-            padding: 8,
-            borderRadius: 6,
-            border: '1px solid var(--input-border)',
-            background: 'var(--input-bg)',
-            color: 'var(--input-text)',
-          }}
-        />
+        <input name="password" type="password" required className={inputStyle} />
       </label>
-      <label style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
+      <label className={checkboxLabelStyle}>
         <input name="isStreamer" type="checkbox" style={{ marginRight: 8 }} />
         스트리머로 신청합니다
       </label>
-      {state?.error && <div style={{ color: 'red', marginBottom: 12 }}>{state.error}</div>}
-      {state?.success && <div style={{ color: 'green', marginBottom: 12 }}>{state.success}</div>}
+      {state?.error && <div className={errorStyle}>{state.error}</div>}
+      {state?.success && <div className={successStyle}>{state.success}</div>}
       <SubmitButton />
     </form>
   );
@@ -88,22 +76,7 @@ export default function SignupForm() {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      style={{
-        width: '100%',
-        padding: 12,
-        borderRadius: 6,
-        background: 'var(--primary, #4f9fff)',
-        color: 'var(--button-text)',
-        border: 'none',
-        fontWeight: 600,
-        fontSize: 16,
-        cursor: 'pointer',
-        marginTop: 8,
-      }}
-      disabled={pending}
-    >
+    <button type="submit" className={submitButtonStyle} disabled={pending}>
       {pending ? '가입 중...' : '회원가입'}
     </button>
   );

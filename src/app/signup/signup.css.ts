@@ -63,3 +63,31 @@ export const submitButtonStyle = style({
   cursor: 'pointer',
   marginTop: 8,
 });
+
+export const imageStyle = style({
+  display: 'block',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  marginBottom: 20,
+  marginTop: 4,
+  width: 64,
+  height: 64,
+});
+
+export const profileImageInputStyle = style({
+  display: 'block',
+  marginBottom: 12,
+  marginTop: 8,
+  fontWeight: 500,
+});
+
+export const profileImagePreviewStyle = style({
+  display: 'block',
+  margin: '8px auto 16px auto',
+  width: 80,
+  height: 80,
+  objectFit: 'cover',
+  borderRadius: '50%',
+  border: '2px solid var(--card-border)',
+  background: '#f5f5f5',
+});
