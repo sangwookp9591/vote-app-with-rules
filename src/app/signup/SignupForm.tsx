@@ -18,6 +18,7 @@ import {
   profileImagePreviewStyle,
 } from './signup.css';
 import React, { useRef, useState } from 'react';
+import SocialLoginButtons from './SocialLoginButtons';
 
 export default function SignupForm() {
   const [state, formAction] = useActionState<SignupFormState, FormData>(signupAction, {});
@@ -76,6 +77,7 @@ export default function SignupForm() {
       {state?.error && <div className={errorStyle}>{state.error}</div>}
       {state?.success && <div className={successStyle}>{state.success}</div>}
       <SubmitButton />
+      <SocialLoginButtons />
     </form>
   );
 }
