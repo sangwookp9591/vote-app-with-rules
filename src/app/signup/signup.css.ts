@@ -34,11 +34,10 @@ export const checkboxLabelStyle = style({
   display: 'flex',
   alignItems: 'center',
   marginBottom: 16,
-  selectors: {
-    '& > input': {
-      marginRight: 8,
-    },
-  },
+});
+
+export const checkboxInputStyle = style({
+  marginRight: 8,
 });
 
 export const errorStyle = style({
