@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import SocialLoginButtons from '../signup/SocialLoginButtons';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -90,24 +91,27 @@ export default function LoginPage() {
         </label>
         {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
         {success && <div style={{ color: 'green', marginBottom: 12 }}>{success}</div>}
-        <button
-          type="submit"
-          style={{
-            width: '100%',
-            padding: 12,
-            borderRadius: 6,
-            background: 'var(--primary, #4f9fff)',
-            color: 'var(--button-text)',
-            border: 'none',
-            fontWeight: 600,
-            fontSize: 16,
-            cursor: 'pointer',
-            marginTop: 8,
-          }}
-          disabled={loading}
-        >
-          {loading ? '로그인 중...' : '로그인'}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              padding: 12,
+              borderRadius: 6,
+              background: 'var(--primary, #4f9fff)',
+              color: 'var(--button-text)',
+              border: 'none',
+              fontWeight: 600,
+              fontSize: 16,
+              cursor: 'pointer',
+              marginTop: 8,
+            }}
+            disabled={loading}
+          >
+            {loading ? '로그인 중...' : '로그인'}
+          </button>
+          <SocialLoginButtons />
+        </div>
       </form>
     </main>
   );
