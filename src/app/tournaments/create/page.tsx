@@ -27,7 +27,8 @@ import {
   dateTimePickerBody,
   dateTimePickerSection,
   dateTimePickerSectionTitle,
-  dateTimePickerGrid,
+  dateTimePickerRow,
+  dateTimePickerColumn,
   dateTimePickerOption,
   dateTimePickerOptionSelected,
   dateTimePickerFooter,
@@ -189,14 +190,15 @@ export default function CreateTournamentPage() {
             </div>
 
             <div className={dateTimePickerBody}>
+              {/* 날짜 선택 */}
               <div className={dateTimePickerSection}>
                 <div className={dateTimePickerSectionTitle}>날짜</div>
-                <div className={dateTimePickerGrid}>
-                  <div>
+                <div className={dateTimePickerRow}>
+                  <div className={dateTimePickerColumn}>
                     <div className={dateTimePickerSectionTitle}>년도</div>
                     <div
                       className="dateTimePickerScroll"
-                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                      style={{ maxHeight: '130px', overflowY: 'auto' }}
                     >
                       {years.map((year) => (
                         <div
@@ -209,11 +211,11 @@ export default function CreateTournamentPage() {
                       ))}
                     </div>
                   </div>
-                  <div>
+                  <div className={dateTimePickerColumn}>
                     <div className={dateTimePickerSectionTitle}>월</div>
                     <div
                       className="dateTimePickerScroll"
-                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                      style={{ maxHeight: '130px', overflowY: 'auto' }}
                     >
                       {months.map((month, index) => (
                         <div
@@ -226,11 +228,11 @@ export default function CreateTournamentPage() {
                       ))}
                     </div>
                   </div>
-                  <div>
+                  <div className={dateTimePickerColumn}>
                     <div className={dateTimePickerSectionTitle}>일</div>
                     <div
                       className="dateTimePickerScroll"
-                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                      style={{ maxHeight: '130px', overflowY: 'auto' }}
                     >
                       {days.map((day) => (
                         <div
@@ -246,14 +248,15 @@ export default function CreateTournamentPage() {
                 </div>
               </div>
 
+              {/* 시간 선택 */}
               <div className={dateTimePickerSection}>
                 <div className={dateTimePickerSectionTitle}>시간</div>
-                <div className={dateTimePickerGrid}>
-                  <div>
+                <div className={dateTimePickerRow}>
+                  <div className={dateTimePickerColumn}>
                     <div className={dateTimePickerSectionTitle}>시</div>
                     <div
                       className="dateTimePickerScroll"
-                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                      style={{ maxHeight: '130px', overflowY: 'auto' }}
                     >
                       {hours.map((hour) => (
                         <div
@@ -266,11 +269,11 @@ export default function CreateTournamentPage() {
                       ))}
                     </div>
                   </div>
-                  <div>
+                  <div className={dateTimePickerColumn}>
                     <div className={dateTimePickerSectionTitle}>분</div>
                     <div
                       className="dateTimePickerScroll"
-                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                      style={{ maxHeight: '130px', overflowY: 'auto' }}
                     >
                       {minutes.map((minute) => (
                         <div

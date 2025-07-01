@@ -285,15 +285,25 @@ export const dateTimePickerSectionTitle = style({
   textAlign: 'center',
 });
 
-export const dateTimePickerGrid = style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
+export const dateTimePickerRow = style({
+  display: 'flex',
   gap: '1rem',
+  justifyContent: 'center',
+  alignItems: 'flex-start',
   '@media': {
     '(max-width: 768px)': {
-      gridTemplateColumns: 'repeat(2, 1fr)',
+      flexDirection: 'column',
+      alignItems: 'center',
     },
   },
+});
+
+export const dateTimePickerColumn = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  minWidth: '80px',
+  flex: 1,
 });
 
 export const dateTimePickerOption = style({
