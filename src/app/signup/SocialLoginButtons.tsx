@@ -7,6 +7,7 @@ export default function SocialLoginButtons() {
         type="button"
         onClick={() => signIn('google')}
         style={{
+          width: '100%',
           background: '#fff',
           color: '#222',
           border: '1px solid #eee',
@@ -14,6 +15,9 @@ export default function SocialLoginButtons() {
           padding: 10,
           fontWeight: 600,
           cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         <img
@@ -27,6 +31,7 @@ export default function SocialLoginButtons() {
         type="button"
         onClick={() => signIn('kakao')}
         style={{
+          width: '100%',
           background: '#fee500',
           color: '#222',
           border: 'none',
@@ -34,6 +39,9 @@ export default function SocialLoginButtons() {
           padding: 10,
           fontWeight: 600,
           cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         <img

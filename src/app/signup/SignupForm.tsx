@@ -76,8 +76,10 @@ export default function SignupForm() {
       </label>
       {state?.error && <div className={errorStyle}>{state.error}</div>}
       {state?.success && <div className={successStyle}>{state.success}</div>}
-      <SubmitButton />
-      <SocialLoginButtons />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <SubmitButton />
+        <SocialLoginButtons />
+      </div>
     </form>
   );
 }
