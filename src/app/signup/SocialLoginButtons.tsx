@@ -17,7 +17,7 @@ export default function SocialLoginButtons() {
         }}
       >
         <img
-          src="/google.svg"
+          src="/svg/google_logo.svg"
           alt="Google"
           style={{ width: 20, height: 20, verticalAlign: 'middle', marginRight: 8 }}
         />
@@ -37,7 +37,7 @@ export default function SocialLoginButtons() {
         }}
       >
         <img
-          src="/kakao.svg"
+          src="/svg/KakaoTalk_logo.svg"
           alt="Kakao"
           style={{ width: 20, height: 20, verticalAlign: 'middle', marginRight: 8 }}
         />
