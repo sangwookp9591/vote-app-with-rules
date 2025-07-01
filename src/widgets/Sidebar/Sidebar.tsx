@@ -4,7 +4,7 @@ import styles from './Sidebar.module.css';
 
 const menu = [
   { label: '홈', href: '#' },
-  { label: '토너먼트', href: '#' },
+  { label: '토너먼트', href: '/tournaments' },
   { label: '인기 스트리머', href: '#' },
   { label: '팀 관리', href: '#' },
 ];
