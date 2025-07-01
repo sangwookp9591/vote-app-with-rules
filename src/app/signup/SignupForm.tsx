@@ -9,11 +9,14 @@ import {
   labelStyle,
   inputStyle,
   checkboxLabelStyle,
+  checkboxInputStyle,
   errorStyle,
   successStyle,
   submitButtonStyle,
   imageStyle,
+  profileImageUploadWrapperStyle,
   profileImageInputStyle,
+  profileImageLabelStyle,
   profileImagePreviewStyle,
 } from './signup.css';
 import Image from 'next/image';
@@ -39,17 +42,24 @@ export default function SignupForm() {
     <form action={formAction} className={formStyle}>
       <Image src="/globe.svg" alt="Signup" width={64} height={64} className={imageStyle} />
       <h2 className={titleStyle}>회원가입</h2>
-      <label className={profileImageInputStyle}>
-        프로필 이미지
-        <input
-          name="profileImage"
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageChange}
-        />
-      </label>
-      {preview && <img src={preview} alt="미리보기" className={profileImagePreviewStyle} />}
+      <div className={profileImageUploadWrapperStyle}>
+        <label className={profileImageLabelStyle} htmlFor="profileImage">
+          {preview ? (
+            <img src={preview} alt="미리보기" className={profileImagePreviewStyle} />
+          ) : (
+            <span style={{ color: '#aaa', fontSize: 14 }}>이미지 선택</span>
+          )}
+          <input
+            id="profileImage"
+            name="profileImage"
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            className={profileImageInputStyle}
+          />
+        </label>
+      </div>
       <label className={labelStyle}>
         이메일
         <input name="email" type="email" required className={inputStyle} />
@@ -63,7 +73,7 @@ export default function SignupForm() {
         <input name="password" type="password" required className={inputStyle} />
       </label>
       <label className={checkboxLabelStyle}>
-        <input name="isStreamer" type="checkbox" style={{ marginRight: 8 }} />
+        <input name="isStreamer" type="checkbox" className={checkboxInputStyle} />
         스트리머로 신청합니다
       </label>
       {state?.error && <div className={errorStyle}>{state.error}</div>}

@@ -73,20 +73,41 @@ export const imageStyle = style({
   height: 64,
 });
 
+export const profileImageUploadWrapperStyle = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  marginBottom: 16,
+});
+
 export const profileImageInputStyle = style({
-  display: 'block',
-  marginBottom: 12,
-  marginTop: 8,
-  fontWeight: 500,
+  display: 'none',
+});
+
+export const profileImageLabelStyle = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 96,
+  height: 96,
+  borderRadius: '50%',
+  border: '2px dashed var(--card-border)',
+  background: '#f5f5f5',
+  cursor: 'pointer',
+  marginBottom: 8,
+  overflow: 'hidden',
+  transition: 'border-color 0.2s',
+  selectors: {
+    '&:hover': {
+      borderColor: 'var(--primary, #4f9fff)',
+    },
+  },
 });
 
 export const profileImagePreviewStyle = style({
-  display: 'block',
-  margin: '8px auto 16px auto',
-  width: 80,
-  height: 80,
+  width: 96,
+  height: 96,
   objectFit: 'cover',
   borderRadius: '50%',
-  border: '2px solid var(--card-border)',
-  background: '#f5f5f5',
+  display: 'block',
 });
