@@ -30,6 +30,7 @@ interface Tournament {
   title: string;
   description?: string;
   gameType: string;
+  teamSize: number;
   startDate: string;
   endDate: string;
   status: string;
@@ -168,6 +169,12 @@ export default function TournamentListPage() {
                     종료일
                   </span>
                   <span style={{ fontWeight: 600 }}>{formatDate(tournament.endDate)}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <span style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>
+                    팀원 수
+                  </span>
+                  <span style={{ fontWeight: 600, color: '#4f9fff' }}>{tournament.teamSize}명</span>
                 </div>
               </div>
 
