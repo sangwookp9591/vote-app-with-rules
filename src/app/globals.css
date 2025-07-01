@@ -1,29 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Light mode */
 :root {
   --background: #ffffff;
   --foreground: #0a0a0a;
-  --foreground-rgb: 10, 10, 10;
-  --card-bg: #f5f5f5;
-  --card-border: #ddd;
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
   --button-bg: #0a0a0a;
   --button-text: #ffffff;
   --input-bg: #ffffff;
   --input-border: #ccc;
   --input-text: #0a0a0a;
+  --primary: #4f9fff;
+  --secondary: #ff4f9f;
+  --muted-foreground: #6b7280;
+  --gray-alpha-100: rgba(0, 0, 0, 0.05);
 }
 
 /* Dark mode */
 body.dark {
   --background: #0a0a0a;
   --foreground: #fafafa;
-  --foreground-rgb: 250, 250, 250;
-  --card-bg: #222;
-  --card-border: #444;
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+  --card-bg: #1f2937;
+  --card-border: #374151;
   --button-bg: #fafafa;
   --button-text: #fafafa;
   --input-bg: #333;
   --input-border: #555;
   --input-text: #fafafa;
+  --muted-foreground: #9ca3af;
+  --gray-alpha-100: rgba(255, 255, 255, 0.06);
+}
+
+body.light {
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --muted-foreground: #6b7280;
+  --gray-alpha-100: rgba(0, 0, 0, 0.05);
 }
 
 html {
@@ -34,8 +55,9 @@ html {
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  background: var(--background);
-  color: var(--foreground);
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb)))
+    rgb(var(--background-start-rgb));
   font-family:
     var(--font-geist-sans),
     -apple-system,
@@ -80,6 +102,37 @@ button {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--foreground);
+}
+
+/* Apple Style DateTime Picker Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Custom scrollbar for date picker */
+.dateTimePickerScroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dateTimePickerScroll::-webkit-scrollbar-track {
+  background: var(--gray-alpha-100);
+  border-radius: 3px;
+}
+
+.dateTimePickerScroll::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 3px;
+}
+
+.dateTimePickerScroll::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
 }
 
 @media (prefers-color-scheme: dark) {

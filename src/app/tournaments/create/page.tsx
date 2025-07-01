@@ -12,15 +12,34 @@ import {
   formInput,
   formTextarea,
   formSelect,
-  formDateInput,
   submitButton,
   cancelButton,
   buttonGroup,
+  dateTimePicker,
+  dateTimePickerInput,
+  dateTimePickerButton,
+  dateTimePickerModal,
+  dateTimePickerOverlay,
+  dateTimePickerContent,
+  dateTimePickerHeader,
+  dateTimePickerTitle,
+  dateTimePickerClose,
+  dateTimePickerBody,
+  dateTimePickerSection,
+  dateTimePickerSectionTitle,
+  dateTimePickerGrid,
+  dateTimePickerOption,
+  dateTimePickerOptionSelected,
+  dateTimePickerFooter,
+  dateTimePickerConfirm,
+  dateTimePickerCancel,
 } from './create.css';
 
 export default function CreateTournamentPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -37,6 +56,38 @@ export default function CreateTournamentPage() {
     { value: 'CS2', label: 'Counter-Strike 2' },
     { value: 'Dota2', label: 'Dota 2' },
   ];
+
+  const months = [
+    '1월',
+    '2월',
+    '3월',
+    '4월',
+    '5월',
+    '6월',
+    '7월',
+    '8월',
+    '9월',
+    '10월',
+    '11월',
+    '12월',
+  ];
+
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const minutes = Array.from({ length: 60 }, (_, i) => i);
+
+  const formatDateTime = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +124,181 @@ export default function CreateTournamentPage() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const CustomDateTimePicker = ({
+    isOpen,
+    onClose,
+    value,
+    onChange,
+    title,
+  }: {
+    isOpen: boolean;
+    onClose: () => void;
+    value: string;
+    onChange: (value: string) => void;
+    title: string;
+  }) => {
+    const [tempDate, setTempDate] = useState(() => {
+      if (value) {
+        const date = new Date(value);
+        return {
+          year: date.getFullYear(),
+          month: date.getMonth() + 1,
+          day: date.getDate(),
+          hour: date.getHours(),
+          minute: date.getMinutes(),
+        };
+      }
+      return {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth() + 1,
+        day: new Date().getDate(),
+        hour: new Date().getHours(),
+        minute: new Date().getMinutes(),
+      };
+    });
+
+    const handleConfirm = () => {
+      const date = new Date(
+        tempDate.year,
+        tempDate.month - 1,
+        tempDate.day,
+        tempDate.hour,
+        tempDate.minute,
+      );
+      onChange(date.toISOString());
+      onClose();
+    };
+
+    const handleCancel = () => {
+      onClose();
+    };
+
+    if (!isOpen) return null;
+
+    return (
+      <div className={dateTimePickerOverlay} onClick={onClose}>
+        <div className={dateTimePickerModal} onClick={(e) => e.stopPropagation()}>
+          <div className={dateTimePickerContent}>
+            <div className={dateTimePickerHeader}>
+              <h3 className={dateTimePickerTitle}>{title}</h3>
+              <button className={dateTimePickerClose} onClick={onClose}>
+                ✕
+              </button>
+            </div>
+
+            <div className={dateTimePickerBody}>
+              <div className={dateTimePickerSection}>
+                <div className={dateTimePickerSectionTitle}>날짜</div>
+                <div className={dateTimePickerGrid}>
+                  <div>
+                    <div className={dateTimePickerSectionTitle}>년도</div>
+                    <div
+                      className="dateTimePickerScroll"
+                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                    >
+                      {years.map((year) => (
+                        <div
+                          key={year}
+                          className={`${dateTimePickerOption} ${tempDate.year === year ? dateTimePickerOptionSelected : ''}`}
+                          onClick={() => setTempDate((prev) => ({ ...prev, year }))}
+                        >
+                          {year}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className={dateTimePickerSectionTitle}>월</div>
+                    <div
+                      className="dateTimePickerScroll"
+                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                    >
+                      {months.map((month, index) => (
+                        <div
+                          key={index}
+                          className={`${dateTimePickerOption} ${tempDate.month === index + 1 ? dateTimePickerOptionSelected : ''}`}
+                          onClick={() => setTempDate((prev) => ({ ...prev, month: index + 1 }))}
+                        >
+                          {month}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className={dateTimePickerSectionTitle}>일</div>
+                    <div
+                      className="dateTimePickerScroll"
+                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                    >
+                      {days.map((day) => (
+                        <div
+                          key={day}
+                          className={`${dateTimePickerOption} ${tempDate.day === day ? dateTimePickerOptionSelected : ''}`}
+                          onClick={() => setTempDate((prev) => ({ ...prev, day }))}
+                        >
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className={dateTimePickerSection}>
+                <div className={dateTimePickerSectionTitle}>시간</div>
+                <div className={dateTimePickerGrid}>
+                  <div>
+                    <div className={dateTimePickerSectionTitle}>시</div>
+                    <div
+                      className="dateTimePickerScroll"
+                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                    >
+                      {hours.map((hour) => (
+                        <div
+                          key={hour}
+                          className={`${dateTimePickerOption} ${tempDate.hour === hour ? dateTimePickerOptionSelected : ''}`}
+                          onClick={() => setTempDate((prev) => ({ ...prev, hour }))}
+                        >
+                          {hour.toString().padStart(2, '0')}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className={dateTimePickerSectionTitle}>분</div>
+                    <div
+                      className="dateTimePickerScroll"
+                      style={{ maxHeight: '200px', overflowY: 'auto' }}
+                    >
+                      {minutes.map((minute) => (
+                        <div
+                          key={minute}
+                          className={`${dateTimePickerOption} ${tempDate.minute === minute ? dateTimePickerOptionSelected : ''}`}
+                          onClick={() => setTempDate((prev) => ({ ...prev, minute }))}
+                        >
+                          {minute.toString().padStart(2, '0')}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={dateTimePickerFooter}>
+              <button className={dateTimePickerCancel} onClick={handleCancel}>
+                취소
+              </button>
+              <button className={dateTimePickerConfirm} onClick={handleConfirm}>
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -133,32 +359,64 @@ export default function CreateTournamentPage() {
           </div>
 
           <div className={formGroup}>
-            <label htmlFor="startDate" className={formLabel}>
-              시작일 *
-            </label>
-            <input
-              type="datetime-local"
-              id="startDate"
-              name="startDate"
+            <label className={formLabel}>시작일 *</label>
+            <div className={dateTimePicker}>
+              <input
+                type="text"
+                value={formatDateTime(formData.startDate)}
+                readOnly
+                className={dateTimePickerInput}
+                placeholder="시작일을 선택하세요"
+                required
+              />
+              <button
+                type="button"
+                className={dateTimePickerButton}
+                onClick={() => setShowStartPicker(true)}
+              >
+                📅
+              </button>
+            </div>
+            <CustomDateTimePicker
+              isOpen={showStartPicker}
+              onClose={() => setShowStartPicker(false)}
               value={formData.startDate}
-              onChange={handleInputChange}
-              className={formDateInput}
-              required
+              onChange={(value) => {
+                setFormData((prev) => ({ ...prev, startDate: value }));
+                setShowStartPicker(false);
+              }}
+              title="시작일 선택"
             />
           </div>
 
           <div className={formGroup}>
-            <label htmlFor="endDate" className={formLabel}>
-              종료일 *
-            </label>
-            <input
-              type="datetime-local"
-              id="endDate"
-              name="endDate"
+            <label className={formLabel}>종료일 *</label>
+            <div className={dateTimePicker}>
+              <input
+                type="text"
+                value={formatDateTime(formData.endDate)}
+                readOnly
+                className={dateTimePickerInput}
+                placeholder="종료일을 선택하세요"
+                required
+              />
+              <button
+                type="button"
+                className={dateTimePickerButton}
+                onClick={() => setShowEndPicker(true)}
+              >
+                📅
+              </button>
+            </div>
+            <CustomDateTimePicker
+              isOpen={showEndPicker}
+              onClose={() => setShowEndPicker(false)}
               value={formData.endDate}
-              onChange={handleInputChange}
-              className={formDateInput}
-              required
+              onChange={(value) => {
+                setFormData((prev) => ({ ...prev, endDate: value }));
+                setShowEndPicker(false);
+              }}
+              title="종료일 선택"
             />
           </div>
 
