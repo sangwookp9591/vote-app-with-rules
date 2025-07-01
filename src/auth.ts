@@ -4,6 +4,13 @@ import KakaoProvider from 'next-auth/providers/kakao';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
+import { Session, User } from 'next-auth';
+import { JWT as DefaultJWT } from 'next-auth/jwt';
+
+type JWT = DefaultJWT & {
+  nickname?: string;
+  profileImageUrl?: string;
+};
 
 const prisma = new PrismaClient();
 
@@ -23,7 +30,7 @@ export const authConfig = {
         email: { label: '이메일', type: 'email', placeholder: 'your@email.com' },
         password: { label: '비밀번호', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User | null> {
         const email = credentials?.email as string;
         const password = credentials?.password as string;
         if (!email || !password) {
@@ -42,11 +49,28 @@ export const authConfig = {
           email: user.email,
           name: user.name,
           nickname: user.nickname,
+          profileImageUrl: user.profileImageUrl ?? undefined,
           role: user.role,
         };
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }: { session: Session; token: JWT; user?: User }) {
+      if (session.user) {
+        session.user.nickname = user?.nickname ?? token.nickname;
+        session.user.profileImageUrl = user?.profileImageUrl ?? token.profileImageUrl;
+      }
+      return session;
+    },
+    async jwt({ token, user }: { token: JWT; user?: User }) {
+      if (user) {
+        token.nickname = user.nickname;
+        token.profileImageUrl = user.profileImageUrl ?? undefined;
+      }
+      return token;
+    },
+  },
   // 필요시 callbacks, adapter 등 추가
 };
 
