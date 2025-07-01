@@ -1,5 +1,6 @@
 import styles from './Navbar.module.css';
 import ThemeToggle from '../../shared/ui/ThemeToggle';
+import Link from 'next/link';
 
 interface NavbarProps {
   onSidebarToggle?: () => void;
@@ -40,7 +41,9 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
           </span>
         </button>
         <button className={styles.authButton}>로그인</button>
-        <button className={styles.authButton}>회원가입</button>
+        <Link href={'/signup'} className={styles.authButton}>
+          회원가입
+        </Link>
         <ThemeToggle />
       </div>
     </nav>
