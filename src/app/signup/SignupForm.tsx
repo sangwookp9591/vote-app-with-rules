@@ -5,7 +5,6 @@ import { useFormStatus } from 'react-dom';
 import { signupAction, type SignupFormState } from './actions';
 import {
   formStyle,
-  titleStyle,
   labelStyle,
   inputStyle,
   checkboxLabelStyle,
@@ -13,13 +12,11 @@ import {
   errorStyle,
   successStyle,
   submitButtonStyle,
-  imageStyle,
   profileImageUploadWrapperStyle,
   profileImageInputStyle,
   profileImageLabelStyle,
   profileImagePreviewStyle,
 } from './signup.css';
-import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 
 export default function SignupForm() {
@@ -40,14 +37,14 @@ export default function SignupForm() {
 
   return (
     <form action={formAction} className={formStyle}>
-      <Image src="/globe.svg" alt="Signup" width={64} height={64} className={imageStyle} />
-      <h2 className={titleStyle}>회원가입</h2>
+      {/* <Image src="/globe.svg" alt="Signup" width={64} height={64} className={imageStyle} /> */}
+      {/* <h2 className={titleStyle}>회원가입</h2> */}
       <div className={profileImageUploadWrapperStyle}>
         <label className={profileImageLabelStyle} htmlFor="profileImage">
           {preview ? (
             <img src={preview} alt="미리보기" className={profileImagePreviewStyle} />
           ) : (
-            <span style={{ color: '#aaa', fontSize: 14 }}>이미지 선택</span>
+            <span style={{ color: '#aaa', fontSize: 14 }}></span>
           )}
           <input
             id="profileImage"
