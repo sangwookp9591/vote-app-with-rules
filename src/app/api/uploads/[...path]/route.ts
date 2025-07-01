@@ -19,7 +19,7 @@ export async function GET(req: NextRequest, { params }: { params: { path: string
             ? 'image/webp'
             : 'application/octet-stream';
   const stream = createReadStream(filePath);
-  return new NextResponse(stream as any, {
+  return new NextResponse(stream as unknown as ReadableStream, {
     headers: { 'Content-Type': mimeType },
   });
 }
