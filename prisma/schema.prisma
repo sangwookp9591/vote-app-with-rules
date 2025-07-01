@@ -15,6 +15,7 @@ model User {
   role          UserRole  @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  profileImageUrl String?   // 프로필 이미지 URL
 
   // Streamer specific
   streamerApplication StreamerApplication?
