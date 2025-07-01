@@ -20,6 +20,9 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/mydb
     depends_on:
       - db
+    volumes:
+      - uploads_data:/app/uploads
 
 volumes:
   db_data:
+  uploads_data:
