@@ -117,6 +117,31 @@ docker-compose down
 npx prisma migrate dev
 ```
 
+### 2-3. Prisma 마이그레이션 적용 및 네이밍 규칙
+
+#### 마이그레이션 적용 방법
+
+```bash
+npx prisma migrate dev --name <migration_name>
+```
+
+- 예시: `npx prisma migrate dev --name add_game_type_and_application`
+- 마이그레이션이 성공하면 `prisma/migrations/` 폴더에 새로운 마이그레이션이 생성됩니다.
+
+#### 마이그레이션 이름 짓기 규칙(실무 팁)
+
+- **영문 소문자, snake_case**로 작성
+- 변경의 목적/핵심을 명확히 드러내기
+  - 예시: `add_profile_image_to_user`, `add_game_type_and_application`, `remove_unused_field_from_team`
+- 여러 변경이 한 번에 들어갈 경우, 가장 중요한 변경 위주로 네이밍
+- 너무 길게 쓰지 않기(핵심만)
+
+#### 마이그레이션 관리 팁
+
+- 마이그레이션을 적용한 뒤에는 반드시 DB와 코드가 동기화되었는지 확인하세요.
+- 불필요한 마이그레이션 파일은 삭제하지 말고, 롤백이 필요할 때만 관리하세요.
+- 팀원과 협업 시, 마이그레이션 파일을 커밋/푸시하는 것을 잊지 마세요.
+
 ---
 
 ## 3. DB 연결 확인 (Prisma Studio)
