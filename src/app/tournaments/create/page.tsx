@@ -61,7 +61,7 @@ export default function CreateTournamentPage() {
     {
       value: 'LOL',
       label: 'League of Legends',
-      icon: '🎮',
+      icon: '/images/lol.png',
       description: '5v5 팀 전투 게임',
       teamSize: 5,
       animation: 'lol-animation',
@@ -69,43 +69,43 @@ export default function CreateTournamentPage() {
     {
       value: 'PUBG',
       label: 'PUBG',
-      icon: '🔫',
+      icon: '/images/pubg.png',
       description: '배틀 로얄 슈팅 게임',
       teamSize: 4,
       animation: 'pubg-animation',
     },
-    {
-      value: 'Overwatch',
-      label: 'Overwatch',
-      icon: '⚡',
-      description: '팀 기반 FPS 게임',
-      teamSize: 6,
-      animation: 'overwatch-animation',
-    },
+    // {
+    //   value: 'Overwatch',
+    //   label: 'Overwatch',
+    //   icon: '/images/pubg.png',
+    //   description: '팀 기반 FPS 게임',
+    //   teamSize: 6,
+    //   animation: 'overwatch-animation',
+    // },
     {
       value: 'Valorant',
       label: 'Valorant',
-      icon: '🎯',
+      icon: '/images/Valorant.png',
       description: '전술적 FPS 게임',
       teamSize: 5,
       animation: 'valorant-animation',
     },
-    {
-      value: 'CS2',
-      label: 'Counter-Strike 2',
-      icon: '💣',
-      description: '클래식 FPS 게임',
-      teamSize: 5,
-      animation: 'cs2-animation',
-    },
-    {
-      value: 'Dota2',
-      label: 'Dota 2',
-      icon: '⚔️',
-      description: 'MOBA 전략 게임',
-      teamSize: 5,
-      animation: 'dota2-animation',
-    },
+    // {
+    //   value: 'CS2',
+    //   label: 'Counter-Strike 2',
+    //   icon: '/images/Valorant.png',
+    //   description: '클래식 FPS 게임',
+    //   teamSize: 5,
+    //   animation: 'cs2-animation',
+    // },
+    // {
+    //   value: 'Dota2',
+    //   label: 'Dota 2',
+    //   icon: '/images/Valorant.png',
+    //   description: 'MOBA 전략 게임',
+    //   teamSize: 5,
+    //   animation: 'dota2-animation',
+    // },
   ];
 
   const months = [
@@ -413,7 +413,18 @@ export default function CreateTournamentPage() {
                   className={`${gameTypeOption} ${formData.gameType === game.value ? 'selected' : ''}`}
                   onClick={() => handleGameTypeChange(game.value)}
                 >
-                  <div className={`${gameTypeIcon} ${game.animation}`}>{game.icon}</div>
+                  <img
+                    className={`${gameTypeIcon} ${game.animation}`}
+                    src={game.icon}
+                    alt=""
+                    style={{
+                      width: 56,
+                      height: 56,
+                      objectFit: 'contain',
+                      display: 'block',
+                      margin: '0 auto',
+                    }}
+                  ></img>
                   <div className={gameTypeLabel}>{game.label}</div>
                   <div className={gameTypeDescription}>{game.description}</div>
                   <div className={teamSize}>팀원 수: {game.teamSize}명</div>

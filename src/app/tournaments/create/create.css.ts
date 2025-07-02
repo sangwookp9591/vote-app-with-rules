@@ -398,40 +398,61 @@ export const gameTypeOption = style({
   textAlign: 'center',
   position: 'relative',
   overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '0.7rem',
   ':hover': {
-    transform: 'translateY(-4px) scale(1.02)',
-    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+    transform: 'translateY(-4px) scale(1.04)',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.18)',
     borderColor: '#4f9fff',
   },
   selectors: {
     '&.selected': {
       borderColor: '#4f9fff',
-      background: 'linear-gradient(135deg, rgba(79, 159, 255, 0.1), rgba(255, 79, 159, 0.1))',
-      boxShadow: '0 8px 25px rgba(79, 159, 255, 0.2)',
+      background: 'linear-gradient(135deg, rgba(79, 159, 255, 0.13), rgba(255, 79, 159, 0.13))',
+      boxShadow: '0 8px 25px rgba(79, 159, 255, 0.22)',
       transform: 'translateY(-2px)',
     },
   },
 });
 
 export const gameTypeIcon = style({
-  fontSize: '3rem',
-  marginBottom: '1rem',
-  display: 'block',
-  transition: 'all 0.3s ease',
+  width: 72,
+  height: 72,
+  minWidth: 72,
+  minHeight: 72,
+  maxWidth: 72,
+  maxHeight: 72,
+  borderRadius: 18,
+  background: 'linear-gradient(135deg, #f8fbff 60%, #e3f0ff 100%)',
+  boxShadow: '0 4px 16px rgba(79,159,255,0.10)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: '1.1rem',
+  marginTop: '0.2rem',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  border: '2px solid #e3f0ff',
   selectors: {
+    '&:hover': {
+      boxShadow: '0 8px 32px rgba(79,159,255,0.18)',
+      borderColor: '#4f9fff',
+    },
     '&.lol-animation': {
       animation: 'lolPulse 2s ease-in-out infinite',
     },
-    '&.pubg-animation': {
+    '&.cs2-animation': {
       animation: 'pubgShake 1.5s ease-in-out infinite',
     },
-    '&.overwatch-animation': {
+    '&.valorant-animation': {
       animation: 'overwatchGlow 2s ease-in-out infinite',
     },
-    '&.valorant-animation': {
+    '&.overwatch-animation': {
       animation: 'valorantSpin 3s linear infinite',
     },
-    '&.cs2-animation': {
+    '&.pubg-animation': {
       animation: 'cs2Explode 2.5s ease-in-out infinite',
     },
     '&.dota2-animation': {
