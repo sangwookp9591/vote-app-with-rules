@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { style } from '@vanilla-extract/css';
 
 // CSS 스타일
@@ -222,6 +223,7 @@ export default function CreateTeamPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
   const tournamentId = params?.id as string;
 
   const [teamName, setTeamName] = useState('');
@@ -257,7 +259,7 @@ export default function CreateTeamPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: data.name,
-          leaderId: data.members[0], // 첫 번째 멤버가 팀장
+          leaderId: session?.user?.id, // 현재 로그인한 사용자가 팀장
           members: data.members,
         }),
       });
@@ -312,6 +314,10 @@ export default function CreateTeamPage() {
       members: selectedMembers,
     });
   };
+
+  if (!session?.user?.id) {
+    return <div>로그인이 필요합니다.</div>;
+  }
 
   if (!tournament) {
     return <div>로딩 중...</div>;

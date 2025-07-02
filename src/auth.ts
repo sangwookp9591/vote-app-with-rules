@@ -8,6 +8,7 @@ import { Session, User } from 'next-auth';
 import { JWT as DefaultJWT } from 'next-auth/jwt';
 
 type JWT = DefaultJWT & {
+  id?: string;
   nickname?: string;
   profileImageUrl?: string;
 };
@@ -79,6 +80,7 @@ export const authConfig = {
   callbacks: {
     async session({ session, token, user }: { session: Session; token: JWT; user?: User }) {
       if (session.user) {
+        session.user.id = user?.id ?? token.id ?? '';
         session.user.nickname = user?.nickname ?? token.nickname;
         session.user.profileImageUrl = user?.profileImageUrl ?? token.profileImageUrl;
       }
@@ -86,6 +88,7 @@ export const authConfig = {
     },
     async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
+        token.id = user.id;
         token.nickname = user.nickname;
         token.profileImageUrl = user.profileImageUrl ?? undefined;
       }
