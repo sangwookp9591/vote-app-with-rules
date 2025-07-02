@@ -2,100 +2,106 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import {
-  tournamentListWrapper,
-  tournamentHeader,
-  tournamentTitle,
-  tournamentSubtitle,
-  tournamentGrid,
-  tournamentCard,
-  tournamentCardHeader,
-  tournamentCardTitle,
-  tournamentCardMeta,
-  tournamentCardStats,
-  tournamentCardStatus,
-  statusBadge,
-  statusBadgeUpcoming,
-  statusBadgeOngoing,
-  statusBadgeCompleted,
-  tournamentCardDescription,
-  createButton,
-  emptyState,
-  loadingState,
-  errorState,
-} from './tournaments.css';
+import { tournamentsApi } from '@/features/tournaments';
+import { TournamentCard } from '@/features/tournaments';
+import { style } from '@vanilla-extract/css';
 
-interface Tournament {
-  id: string;
-  title: string;
-  description?: string;
-  gameType: string;
-  teamSize: number;
-  startDate: string;
-  endDate: string;
-  status: string;
-  createdAt: string;
-}
+const tournamentListWrapper = style({
+  maxWidth: '1200px',
+  margin: '0 auto',
+  padding: '2rem',
+});
+
+const tournamentHeader = style({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  marginBottom: '2rem',
+  '@media': {
+    '(max-width: 768px)': {
+      flexDirection: 'column',
+      gap: '1rem',
+    },
+  },
+});
+
+const tournamentTitle = style({
+  fontSize: '2.5rem',
+  fontWeight: 700,
+  color: 'var(--foreground)',
+  marginBottom: '0.5rem',
+});
+
+const tournamentSubtitle = style({
+  fontSize: '1.125rem',
+  color: 'var(--muted-foreground)',
+  lineHeight: 1.5,
+});
+
+const createButton = style({
+  background: 'linear-gradient(45deg, #4f9fff, #ff4f9f)',
+  color: 'white',
+  padding: '0.75rem 1.5rem',
+  borderRadius: '8px',
+  textDecoration: 'none',
+  fontWeight: 600,
+  transition: 'all 0.3s ease',
+  ':hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 5px 15px rgba(79, 159, 255, 0.4)',
+  },
+});
+
+const tournamentGrid = style({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+  gap: '1.5rem',
+  '@media': {
+    '(max-width: 768px)': {
+      gridTemplateColumns: '1fr',
+    },
+  },
+});
+
+const loadingState = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '4rem 2rem',
+  textAlign: 'center',
+  color: 'var(--muted-foreground)',
+});
+
+const errorState = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '4rem 2rem',
+  textAlign: 'center',
+  color: '#dc3545',
+});
+
+const emptyState = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '4rem 2rem',
+  textAlign: 'center',
+  color: 'var(--muted-foreground)',
+});
 
 export default function TournamentListPage() {
-  const { data, isLoading, error } = useQuery<Tournament[]>({
+  const {
+    data: tournaments,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['tournaments'],
-    queryFn: async () => {
-      const res = await fetch('/api/tournaments');
-      if (!res.ok) throw new Error('토너먼트 목록 조회 실패');
-      return res.json();
-    },
+    queryFn: () => tournamentsApi.getTournaments(),
   });
-
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case 'UPCOMING':
-        return statusBadgeUpcoming;
-      case 'ONGOING':
-        return statusBadgeOngoing;
-      case 'COMPLETED':
-        return statusBadgeCompleted;
-      default:
-        return statusBadgeUpcoming;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'UPCOMING':
-        return '예정';
-      case 'ONGOING':
-        return '진행중';
-      case 'COMPLETED':
-        return '완료';
-      default:
-        return status;
-    }
-  };
-
-  const getGameIcon = (gameType: string) => {
-    switch (gameType.toLowerCase()) {
-      case 'lol':
-      case 'league of legends':
-        return '🎮';
-      case 'pubg':
-        return '🔫';
-      case 'overwatch':
-        return '⚡';
-      case 'valorant':
-        return '🎯';
-      default:
-        return '🏆';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   if (isLoading) {
     return (
@@ -133,87 +139,17 @@ export default function TournamentListPage() {
       </div>
 
       {/* Tournament Grid */}
-      {data && data.length > 0 ? (
+      {tournaments && tournaments.length > 0 ? (
         <div className={tournamentGrid}>
-          {data.map((tournament) => (
-            <div key={tournament.id} className={tournamentCard}>
-              <div className={tournamentCardHeader}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.5rem' }}>{getGameIcon(tournament.gameType)}</span>
-                  <span style={{ fontWeight: 600, color: 'var(--foreground)' }}>
-                    {tournament.gameType}
-                  </span>
-                </div>
-                <div className={tournamentCardStatus}>
-                  <span className={`${statusBadge} ${getStatusBadgeClass(tournament.status)}`}>
-                    {getStatusText(tournament.status)}
-                  </span>
-                </div>
-              </div>
-
-              <h3 className={tournamentCardTitle}>{tournament.title}</h3>
-
-              {tournament.description && (
-                <p className={tournamentCardDescription}>{tournament.description}</p>
-              )}
-
-              <div className={tournamentCardStats}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <span style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>
-                    시작일
-                  </span>
-                  <span style={{ fontWeight: 600 }}>{formatDate(tournament.startDate)}</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <span style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>
-                    종료일
-                  </span>
-                  <span style={{ fontWeight: 600 }}>{formatDate(tournament.endDate)}</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <span style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>
-                    팀원 수
-                  </span>
-                  <span style={{ fontWeight: 600, color: '#4f9fff' }}>{tournament.teamSize}명</span>
-                </div>
-              </div>
-
-              <div className={tournamentCardMeta}>
-                <Link
-                  href={`/tournaments/${tournament.id}`}
-                  style={{
-                    background: 'linear-gradient(45deg, #4f9fff, #ff4f9f)',
-                    color: 'white',
-                    padding: '0.75rem 1.5rem',
-                    borderRadius: '8px',
-                    textDecoration: 'none',
-                    fontWeight: 600,
-                    textAlign: 'center',
-                    transition: 'all 0.3s ease',
-                    display: 'block',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 5px 15px rgba(79, 159, 255, 0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  자세히 보기
-                </Link>
-              </div>
-            </div>
+          {tournaments.map((tournament) => (
+            <TournamentCard key={tournament.id} tournament={tournament} />
           ))}
         </div>
       ) : (
         <div className={emptyState}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏆</div>
-          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }}>등록된 토너먼트가 없습니다</h3>
-          <p style={{ color: 'var(--muted-foreground)', marginBottom: '2rem' }}>
-            첫 번째 토너먼트를 생성해보세요!
-          </p>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏆</div>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>아직 토너먼트가 없습니다</h3>
+          <p style={{ marginBottom: '1.5rem' }}>첫 번째 토너먼트를 생성해보세요!</p>
           <Link href="/tournaments/create" className={createButton}>
             토너먼트 생성하기
           </Link>
