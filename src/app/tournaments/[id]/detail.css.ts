@@ -4,7 +4,6 @@ export const tournamentDetailWrapper = style({
   maxWidth: 1000,
   margin: '0 auto',
   padding: '32px 16px',
-  marginTop: 64,
 });
 
 export const tournamentHeader = style({

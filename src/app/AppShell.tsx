@@ -16,11 +16,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <TanstackProvider>
         <AuthProvider>
           <Sidebar open={sidebarOpen} />
-          <div style={{ marginLeft: sidebarOpen ? 240 : 0, transition: 'margin-left 0.2s' }}>
+          <div className={`main-content ${!sidebarOpen ? 'collapsed' : ''}`}>
             <Navbar onSidebarToggle={() => setSidebarOpen((v) => !v)} sidebarOpen={sidebarOpen} />
             <Provider>
               <ThemeColorUpdater />
-              {children}
+              <div className="page-container">{children}</div>
             </Provider>
           </div>
         </AuthProvider>

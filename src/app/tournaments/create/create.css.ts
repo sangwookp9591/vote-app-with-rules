@@ -4,7 +4,6 @@ export const createPageWrapper = style({
   maxWidth: 800,
   margin: '0 auto',
   padding: '32px 16px',
-  marginTop: 64,
 });
 
 export const createForm = style({
