@@ -11,6 +11,7 @@ type JWT = DefaultJWT & {
   id?: string;
   nickname?: string;
   profileImageUrl?: string;
+  role?: string;
 };
 
 const prisma = new PrismaClient();
@@ -83,6 +84,7 @@ export const authConfig = {
         session.user.id = user?.id ?? token.id ?? '';
         session.user.nickname = user?.nickname ?? token.nickname;
         session.user.profileImageUrl = user?.profileImageUrl ?? token.profileImageUrl;
+        session.user.role = user?.role ?? token.role;
       }
       return session;
     },
@@ -91,6 +93,7 @@ export const authConfig = {
         token.id = user.id;
         token.nickname = user.nickname;
         token.profileImageUrl = user.profileImageUrl ?? undefined;
+        token.role = user.role ?? undefined;
       }
       return token;
     },
