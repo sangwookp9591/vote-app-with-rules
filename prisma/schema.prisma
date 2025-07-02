@@ -55,7 +55,37 @@ model Streamer {
   userId      String    @unique
   user        User      @relation(fields: [userId], references: [id])
 
+  // 게임별 프로필
+  lolProfile      LolProfile?
+  valorantProfile ValorantProfile?
+
   @@map("streamers")
+}
+
+model LolProfile {
+  id          String   @id @default(cuid())
+  streamerId  String   @unique
+  streamer    Streamer @relation(fields: [streamerId], references: [id])
+  nickname    String
+  tier        LolTier
+  rank        Int
+  position    LolPosition
+  mainChampions Json // ex: ["Yasuo", "Ahri"]
+  winRate     Float?
+  gamesPlayed Int?
+}
+
+model ValorantProfile {
+  id          String   @id @default(cuid())
+  streamerId  String   @unique
+  streamer    Streamer @relation(fields: [streamerId], references: [id])
+  nickname    String
+  tier        ValorantTier
+  position    ValorantPosition
+  mainAgents  Json // ex: ["Jett", "Sage"]
+  role        String?
+  winRate     Float?
+  gamesPlayed Int?
 }
 
 model Tournament {
@@ -250,4 +280,23 @@ enum GameType {
   CS2
   DOTA2
   ETC
+}
+
+enum ValorantTier {
+  IRON
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+  ASCENDANT
+  IMMORTAL
+  RADIANT
+}
+
+enum ValorantPosition {
+  DUELIST
+  SENTINEL
+  INITIATOR
+  CONTROLLER
 } 
