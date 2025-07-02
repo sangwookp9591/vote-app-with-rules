@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import 'vanilla-extract/css';
-
 /* Light mode */
 :root {
   --background: #ffffff;
