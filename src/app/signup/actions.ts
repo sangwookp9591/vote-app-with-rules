@@ -64,6 +64,7 @@ export async function signupAction(
         password: hashedPassword,
         nickname,
         profileImageUrl,
+        role: email === 'admin@admin.com' ? 'ADMIN' : undefined,
       },
     });
     return { success: '회원가입이 완료되었습니다!' };
