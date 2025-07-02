@@ -51,7 +51,7 @@ export default function CreateTournamentPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    gameType: 'LoL',
+    gameType: 'LOL',
     teamSize: 5,
     startDate: '',
     endDate: '',
@@ -59,7 +59,7 @@ export default function CreateTournamentPage() {
 
   const gameTypes = [
     {
-      value: 'LoL',
+      value: 'LOL',
       label: 'League of Legends',
       icon: '🎮',
       description: '5v5 팀 전투 게임',
@@ -153,7 +153,7 @@ export default function CreateTournamentPage() {
         },
         body: JSON.stringify({
           ...formData,
-          streamerId: session?.user.id, // TODO: 실제 스트리머 ID로 교체
+          hostId: session?.user.id,
         }),
       });
 

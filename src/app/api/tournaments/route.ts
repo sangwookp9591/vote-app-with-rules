@@ -12,22 +12,21 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json();
-    console.log('body :', body);
-
-    const { title, description, gameType, teamSize, formSchema, startDate, endDate, streamerId } =
-      body;
-    if (!title || !gameType || !startDate || !endDate || !streamerId) {
+    const { title, description, gameType, teamSize, formSchema, startDate, endDate } = body;
+    if (!title || !gameType || !startDate || !endDate) {
       return NextResponse.json({ error: '필수 입력값 누락' }, { status: 400 });
     }
-    // streamerId는 실제로 userId이므로, 해당 user의 streamer를 찾아서 연결
-    const streamer = await prisma.streamer.findUnique({
-      where: { userId: streamerId },
-    });
+    console.log('body : ', body);
+    // hostId는 세션의 ADMIN userId로 자동 지정
+    const hostId = token.id as string;
 
-    if (!streamer) {
-      return NextResponse.json({ error: '스트리머를 찾을 수 없습니다.' }, { status: 404 });
+    console.log('hostId : ', hostId);
+    // hostId가 실제로 ADMIN인지 확인(이중 체크)
+    const host = await prisma.user.findUnique({ where: { id: hostId } });
+    console.log('host : ', host);
+    if (!host || host.role !== 'ADMIN') {
+      return NextResponse.json({ error: '주최자는 반드시 관리자여야 합니다.' }, { status: 403 });
     }
-
     const tournament = await prisma.tournament.create({
       data: {
         title,
@@ -37,11 +36,12 @@ export async function POST(req: NextRequest) {
         formSchema,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        streamer: { connect: { id: streamer.id } },
+        host: { connect: { id: hostId } },
       },
     });
     return NextResponse.json(tournament, { status: 201 });
   } catch (e) {
+    console.log('e : ', e);
     return NextResponse.json({ error: '토너먼트 생성 실패', detail: String(e) }, { status: 500 });
   }
 }

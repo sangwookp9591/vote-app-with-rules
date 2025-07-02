@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { getToken } from 'next-auth/jwt';
 
 const prisma = new PrismaClient();
 
@@ -52,5 +53,26 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       { error: '토너먼트 참가 신청 실패', detail: String(e) },
       { status: 500 },
     );
+  }
+}
+
+// 토너먼트 상태 변경 (PATCH)
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token?.role || token.role !== 'ADMIN') {
+    return NextResponse.json({ error: '관리자 권한이 필요합니다.' }, { status: 403 });
+  }
+  const { status } = await req.json();
+  if (!status) {
+    return NextResponse.json({ error: '상태 값이 필요합니다.' }, { status: 400 });
+  }
+  try {
+    const updated = await prisma.tournament.update({
+      where: { id: params.id },
+      data: { status },
+    });
+    return NextResponse.json(updated);
+  } catch (e) {
+    return NextResponse.json({ error: '상태 변경 실패', detail: String(e) }, { status: 500 });
   }
 }

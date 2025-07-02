@@ -19,6 +19,9 @@ import {
   statLabel,
   statValue,
 } from './detail.css';
+import { useSession } from 'next-auth/react';
+import { tournamentsApi } from '@/features/tournaments/api/tournaments';
+import { useState } from 'react';
 
 interface Tournament {
   id: string;
@@ -36,6 +39,9 @@ export default function TournamentDetailPage() {
   const params = useParams();
   const router = useRouter();
   const tournamentId = params?.id as string;
+  const { data: session } = useSession();
+  const [statusUpdating, setStatusUpdating] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   const {
     data: tournament,
@@ -116,6 +122,20 @@ export default function TournamentDetailPage() {
 
   const handleApply = () => {
     router.push(`/tournaments/${tournamentId}/apply`);
+  };
+
+  // 상태 변경 핸들러
+  const handleStatusChange = async () => {
+    if (!selectedStatus) return;
+    setStatusUpdating(true);
+    try {
+      await tournamentsApi.changeStatus(tournamentId, selectedStatus);
+      router.refresh();
+    } catch (e) {
+      alert('상태 변경 실패: ' + (e as Error).message);
+    } finally {
+      setStatusUpdating(false);
+    }
   };
 
   if (isLoading) {
@@ -230,6 +250,29 @@ export default function TournamentDetailPage() {
           <Link href={`/tournaments/${tournamentId}/results`} className={applyButton}>
             결과 보기
           </Link>
+        )}
+        {/* 관리자만 상태 변경 UI 노출 */}
+        {session?.user?.role === 'ADMIN' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <select
+              value={selectedStatus || tournament.status}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              style={{ padding: '0.5rem', borderRadius: 6, fontWeight: 600 }}
+              disabled={statusUpdating}
+            >
+              <option value="PREPARING">준비중</option>
+              <option value="IN_PROGRESS">진행중</option>
+              <option value="COMPLETED">완료</option>
+              <option value="CANCELLED">취소</option>
+            </select>
+            <button
+              className={applyButton}
+              onClick={handleStatusChange}
+              disabled={statusUpdating || !selectedStatus || selectedStatus === tournament.status}
+            >
+              {statusUpdating ? '변경 중...' : '상태 변경'}
+            </button>
+          </div>
         )}
       </div>
     </div>

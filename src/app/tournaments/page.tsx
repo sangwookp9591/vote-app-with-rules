@@ -15,8 +15,10 @@ import {
   errorState,
   emptyState,
 } from './tournaments.css';
+import { useSession } from 'next-auth/react';
 
 export default function TournamentListPage() {
+  const { data: session } = useSession();
   const {
     data: tournaments,
     isLoading,
@@ -56,9 +58,11 @@ export default function TournamentListPage() {
           <h1 className={tournamentTitle}>토너먼트</h1>
           <p className={tournamentSubtitle}>PSW 최고의 게이머들이 모이는 토너먼트에 참가하세요</p>
         </div>
-        <Link href="/tournaments/create" className={createButton}>
-          토너먼트 생성
-        </Link>
+        {session?.user?.role === 'ADMIN' && (
+          <Link href="/tournaments/create" className={createButton}>
+            토너먼트 생성
+          </Link>
+        )}
       </div>
 
       {/* Tournament Grid */}
@@ -72,10 +76,14 @@ export default function TournamentListPage() {
         <div className={emptyState}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏆</div>
           <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>아직 토너먼트가 없습니다</h3>
-          <p style={{ marginBottom: '1.5rem' }}>첫 번째 토너먼트를 생성해보세요!</p>
-          <Link href="/tournaments/create" className={createButton}>
-            토너먼트 생성하기
-          </Link>
+          {session?.user?.role === 'ADMIN' && (
+            <>
+              <p style={{ marginBottom: '1.5rem' }}>첫 번째 토너먼트를 생성해보세요!</p>
+              <Link href="/tournaments/create" className={createButton}>
+                토너먼트 생성하기
+              </Link>
+            </>
+          )}
         </div>
       )}
     </div>

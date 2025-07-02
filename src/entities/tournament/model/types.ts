@@ -10,7 +10,7 @@ export interface Tournament {
   createdAt: string;
   voteStartDate?: string;
   voteEndDate?: string;
-  streamerId: string;
+  hostId: string;
 }
 
 export enum GameType {
@@ -39,7 +39,7 @@ export interface CreateTournamentData {
   teamSize: number;
   startDate: string;
   endDate: string;
-  streamerId: string;
+  hostId: string;
 }
 
 export interface TournamentFilters {

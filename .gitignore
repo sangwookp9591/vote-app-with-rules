@@ -47,3 +47,5 @@ storybook-static/
 .cache/
 *storybook.log
 storybook-static
+
+/public/uploads

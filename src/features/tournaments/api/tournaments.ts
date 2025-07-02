@@ -81,4 +81,20 @@ export const tournamentsApi = {
       throw new Error(errorData.error || '토너먼트 삭제 실패');
     }
   },
+
+  // 토너먼트 상태 변경
+  changeStatus: async (id: string, status: string): Promise<Tournament> => {
+    const response = await fetch(`${API_BASE}/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || '상태 변경 실패');
+    }
+    return response.json();
+  },
 };

@@ -27,6 +27,7 @@ model User {
   votes             Vote[]          // 유저가 투표한 내역
   teams             TeamMember[]    // 속한 팀 정보
   applications      TournamentApplication[]
+  hostedTournaments  Tournament[]    @relation("UserHostedTournaments")
 
   @@map("users")
 }
@@ -53,7 +54,6 @@ model Streamer {
   // Relations
   userId      String    @unique
   user        User      @relation(fields: [userId], references: [id])
-  tournaments Tournament[]
 
   @@map("streamers")
 }
@@ -76,8 +76,8 @@ model Tournament {
   voteEndDate   DateTime?
   
   // Relations
-  streamerId  String
-  streamer    Streamer  @relation(fields: [streamerId], references: [id])
+  hostId     String
+  host       User      @relation("UserHostedTournaments", fields: [hostId], references: [id])
   teams       Team[]
   votes       Vote[]
   applications TournamentApplication[]
