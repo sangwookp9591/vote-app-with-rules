@@ -7,6 +7,7 @@ const menu = [
   { label: '토너먼트', href: '/tournaments' },
   { label: '인기 스트리머', href: '#' },
   { label: '팀 관리', href: '#' },
+  { label: '스트리머 승인', href: '/admin/streamer-applications' },
 ];
 
 export default function Sidebar({ open }: { open: boolean }) {
