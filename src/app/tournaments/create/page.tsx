@@ -146,23 +146,23 @@ export default function CreateTournamentPage() {
 
     try {
       console.log('session : ', session?.user);
-      // const response = await fetch('/api/tournaments', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     ...formData,
-      //     streamerId: session?.user.id, // TODO: 실제 스트리머 ID로 교체
-      //   }),
-      // });
+      const response = await fetch('/api/tournaments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          streamerId: session?.user.id, // TODO: 실제 스트리머 ID로 교체
+        }),
+      });
 
-      // if (!response.ok) {
-      //   throw new Error('토너먼트 생성에 실패했습니다.');
-      // }
+      if (!response.ok) {
+        throw new Error('토너먼트 생성에 실패했습니다.');
+      }
 
-      // const result = await response.json();
-      // router.push(`/tournaments/${result.id}`);
+      const result = await response.json();
+      router.push(`/tournaments/${result.id}`);
     } catch (error) {
       console.error('토너먼트 생성 오류:', error);
       alert('토너먼트 생성에 실패했습니다.');

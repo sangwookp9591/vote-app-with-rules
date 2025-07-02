@@ -14,6 +14,15 @@ export async function POST(req: NextRequest) {
     if (!title || !gameType || !startDate || !endDate || !streamerId) {
       return NextResponse.json({ error: '필수 입력값 누락' }, { status: 400 });
     }
+    // streamerId는 실제로 userId이므로, 해당 user의 streamer를 찾아서 연결
+    const streamer = await prisma.streamer.findUnique({
+      where: { userId: streamerId },
+    });
+
+    if (!streamer) {
+      return NextResponse.json({ error: '스트리머를 찾을 수 없습니다.' }, { status: 404 });
+    }
+
     const tournament = await prisma.tournament.create({
       data: {
         title,
@@ -23,7 +32,7 @@ export async function POST(req: NextRequest) {
         formSchema,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        streamer: { connect: { id: streamerId } },
+        streamer: { connect: { id: streamer.id } },
       },
     });
     return NextResponse.json(tournament, { status: 201 });
