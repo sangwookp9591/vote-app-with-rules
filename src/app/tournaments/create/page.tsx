@@ -414,7 +414,11 @@ export default function CreateTournamentPage() {
                   onClick={() => handleGameTypeChange(game.value)}
                 >
                   <img
-                    className={`${gameTypeIcon} ${game.animation}`}
+                    className={
+                      formData.gameType === game.value
+                        ? `${gameTypeIcon} ${game.animation}`
+                        : gameTypeIcon
+                    }
                     src={game.icon}
                     alt=""
                     style={{
