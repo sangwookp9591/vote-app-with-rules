@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import AppShell from './AppShell';
 
@@ -10,6 +11,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+const nanumBarunGothic = localFont({
+  src: '../../public/fonts/NanumBarunGothic.ttf',
+  display: 'swap',
+  weight: '400',
+  variable: '--font-nanumbarun',
 });
 
 export const metadata = {
@@ -39,11 +47,11 @@ const themeInitScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning className={nanumBarunGothic.variable}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${nanumBarunGothic.className}`}>
         <AppShell>{children}</AppShell>
       </body>
     </html>

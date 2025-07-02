@@ -1,6 +1,16 @@
+@import url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/NanumBarunGothic.woff');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'NanumBarunGothic';
+  src: url('/fonts/NanumBarunGothic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* Light mode */
 :root {
@@ -62,14 +72,16 @@ body {
   background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb)))
     rgb(var(--background-start-rgb));
   font-family:
-    var(--font-geist-sans),
+    var(--font-nanumbarun),
+    system-ui,
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
     Roboto,
     'Helvetica Neue',
     Arial,
-    sans-serif;
+    sans-serif !important;
+  font-weight: bold !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -78,6 +90,7 @@ body {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-weight: bold !important;
 }
 
 a {
