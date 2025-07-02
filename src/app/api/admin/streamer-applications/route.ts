@@ -22,6 +22,8 @@ export async function GET() {
       },
     });
 
+    console.log('applications: ', applications);
+
     return NextResponse.json(applications);
   } catch (error) {
     console.error('스트리머 신청 목록 조회 오류:', error);

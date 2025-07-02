@@ -58,15 +58,34 @@ export async function signupAction(
   }
 
   try {
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         nickname,
         profileImageUrl,
-        role: email === 'admin2@admin.com' ? 'ADMIN' : undefined,
+        role: email === 'admin@admin.com' ? 'ADMIN' : undefined,
       },
     });
+
+    // isStreamer 체크 시 스트리머 신청 자동 생성
+    const isStreamer = formData.get('isStreamer') === 'on';
+    if (isStreamer) {
+      // 이미 신청한 적이 없고, 이미 스트리머가 아닌 경우에만 생성
+      const existingApplication = await prisma.streamerApplication.findUnique({
+        where: { userId: user.id },
+      });
+      const existingStreamer = await prisma.streamer.findUnique({ where: { userId: user.id } });
+      if (!existingApplication && !existingStreamer) {
+        await prisma.streamerApplication.create({
+          data: {
+            userId: user.id,
+            status: 'PENDING',
+          },
+        });
+      }
+    }
+
     return { success: '회원가입이 완료되었습니다!' };
   } catch {
     return { error: '회원가입 중 오류가 발생했습니다.' };

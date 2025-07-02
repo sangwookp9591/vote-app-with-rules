@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { getToken } from 'next-auth/jwt';
 
 const prisma = new PrismaClient();
 
 // 토너먼트 생성 (POST)
 export async function POST(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token?.role || token.role !== 'ADMIN') {
+    return NextResponse.json({ error: '관리자 권한이 필요합니다.' }, { status: 403 });
+  }
   try {
     const body = await req.json();
     console.log('body :', body);
