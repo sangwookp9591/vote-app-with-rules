@@ -40,8 +40,10 @@ import {
   gameTypeLabel,
   gameTypeDescription,
 } from './create.css';
+import { useSession } from 'next-auth/react';
 
 export default function CreateTournamentPage() {
+  const { data: session } = useSession();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showStartPicker, setShowStartPicker] = useState(false);
@@ -143,23 +145,24 @@ export default function CreateTournamentPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/tournaments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          streamerId: 'temp-streamer-id', // TODO: 실제 스트리머 ID로 교체
-        }),
-      });
+      console.log('session : ', session?.user);
+      // const response = await fetch('/api/tournaments', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     ...formData,
+      //     streamerId: session?.user.id, // TODO: 실제 스트리머 ID로 교체
+      //   }),
+      // });
 
-      if (!response.ok) {
-        throw new Error('토너먼트 생성에 실패했습니다.');
-      }
+      // if (!response.ok) {
+      //   throw new Error('토너먼트 생성에 실패했습니다.');
+      // }
 
-      const result = await response.json();
-      router.push(`/tournaments/${result.id}`);
+      // const result = await response.json();
+      // router.push(`/tournaments/${result.id}`);
     } catch (error) {
       console.error('토너먼트 생성 오류:', error);
       alert('토너먼트 생성에 실패했습니다.');

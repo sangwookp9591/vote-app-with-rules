@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: 'LoL SWL',
   description: 'PSW 리그오브레전드 상욱 리그 투표 시스템',
+};
+
+export const viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },

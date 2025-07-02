@@ -31,27 +31,48 @@ export const authConfig = {
         password: { label: '비밀번호', type: 'password' },
       },
       async authorize(credentials): Promise<User | null> {
-        const email = credentials?.email as string;
-        const password = credentials?.password as string;
-        if (!email || !password) {
+        try {
+          const email = credentials?.email as string;
+          const password = credentials?.password as string;
+
+          if (!email || !password) {
+            console.log('Credentials missing');
+            return null;
+          }
+
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
+
+          if (!user) {
+            console.log('User not found:', email);
+            return null;
+          }
+
+          if (!user.password) {
+            console.log('User has no password (social login user)');
+            return null;
+          }
+
+          const isValid = await bcrypt.compare(password, user.password);
+          if (!isValid) {
+            console.log('Invalid password for user:', email);
+            return null;
+          }
+
+          // next-auth 세션에 저장할 유저 정보
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            nickname: user.nickname,
+            profileImageUrl: user.profileImageUrl ?? undefined,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
           return null;
         }
-
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
-        if (!user) return null;
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) return null;
-        // next-auth 세션에 저장할 유저 정보
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          nickname: user.nickname,
-          profileImageUrl: user.profileImageUrl ?? undefined,
-          role: user.role,
-        };
       },
     }),
   ],
@@ -70,6 +91,10 @@ export const authConfig = {
       }
       return token;
     },
+  },
+  pages: {
+    signIn: '/login',
+    error: '/login',
   },
   // 필요시 callbacks, adapter 등 추가
 };
