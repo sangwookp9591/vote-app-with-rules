@@ -109,7 +109,7 @@ const memberEmail = style({
   color: 'var(--muted-foreground)',
 });
 
-const selectedMembers = style({
+const styleSelectedMembers = style({
   display: 'flex',
   flexWrap: 'wrap',
   gap: '0.5rem',
@@ -373,7 +373,7 @@ export default function CreateTeamPage() {
             </div>
 
             {selectedMembers.length > 0 && (
-              <div className={selectedMembers}>
+              <div className={styleSelectedMembers}>
                 <strong>선택된 팀원:</strong>
                 {selectedMembers.map((memberId) => {
                   const user = users?.find((u) => u.id === memberId);
