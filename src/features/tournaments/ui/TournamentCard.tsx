@@ -63,6 +63,13 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
       <Link href={`/tournaments/${tournament.id}`} className={viewButton}>
         자세히 보기
       </Link>
+      <Link
+        href={`/tournaments/${tournament.id}/apply`}
+        className={viewButton}
+        style={{ marginTop: 8 }}
+      >
+        참가 신청
+      </Link>
     </div>
   );
 }

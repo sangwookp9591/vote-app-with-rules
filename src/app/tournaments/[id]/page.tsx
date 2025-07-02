@@ -167,6 +167,9 @@ export default function TournamentDetailPage() {
         <Link href="/tournaments" className={backButton}>
           ← 토너먼트 목록으로
         </Link>
+        {/* <Link href="/streamer-profile" className={applyButton} style={{ marginLeft: 16 }}>
+          프로필 등록/수정
+        </Link> */}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
           <span style={{ fontSize: '2rem' }}>{getGameIcon(tournament.gameType)}</span>
@@ -236,44 +239,23 @@ export default function TournamentDetailPage() {
             <Link href={`/tournaments/${tournamentId}/teams/create`} className={applyButton}>
               팀 생성하기
             </Link>
-            <button onClick={handleApply} className={applyButton}>
-              참가 신청하기
-            </button>
+            <Link href={`/tournaments/${tournamentId}/apply`} className={applyButton}>
+              참가 신청
+            </Link>
           </>
         )}
+        {/*
         {tournament.status === 'ONGOING' && (
-          <Link href={`/tournaments/${tournamentId}/applications`} className={applyButton}>
+          <Link href={``} className={applyButton}>
             참가자 목록 보기
           </Link>
         )}
         {tournament.status === 'COMPLETED' && (
-          <Link href={`/tournaments/${tournamentId}/results`} className={applyButton}>
+          <Link href={``} className={applyButton}>
             결과 보기
           </Link>
         )}
-        {/* 관리자만 상태 변경 UI 노출 */}
-        {session?.user?.role === 'ADMIN' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <select
-              value={selectedStatus || tournament.status}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              style={{ padding: '0.5rem', borderRadius: 6, fontWeight: 600 }}
-              disabled={statusUpdating}
-            >
-              <option value="PREPARING">준비중</option>
-              <option value="IN_PROGRESS">진행중</option>
-              <option value="COMPLETED">완료</option>
-              <option value="CANCELLED">취소</option>
-            </select>
-            <button
-              className={applyButton}
-              onClick={handleStatusChange}
-              disabled={statusUpdating || !selectedStatus || selectedStatus === tournament.status}
-            >
-              {statusUpdating ? '변경 중...' : '상태 변경'}
-            </button>
-          </div>
-        )}
+        */}
       </div>
     </div>
   );
