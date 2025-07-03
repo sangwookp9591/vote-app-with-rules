@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import * as styles from './teams.css';
+import { leaderCrown } from './teams.css';
 
 interface Team {
   id: string;
@@ -79,7 +80,40 @@ export default function TeamsPage() {
                     {team.leader?.nickname?.charAt(0).toUpperCase()}
                   </span>
                 )}
-                <span className={styles.leaderName}>{team.leader?.nickname}</span>
+                <span className={styles.leaderName}>
+                  {team.leader?.nickname}
+                  <span className={leaderCrown} title="팀장">
+                    👑
+                  </span>
+                </span>
+              </div>
+              <div style={{ margin: '8px 0 4px 0' }}>
+                <span className={styles.leaderLabel}>팀원</span>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+                  {team.members.length === 0 ? (
+                    <span style={{ color: '#aaa', fontSize: 13 }}>아직 팀원이 없습니다.</span>
+                  ) : (
+                    team.members.map((member) => (
+                      <div
+                        key={member.id}
+                        style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+                      >
+                        {member.profileImageUrl ? (
+                          <img
+                            src={member.profileImageUrl}
+                            alt={member.nickname}
+                            className={styles.leaderAvatar}
+                          />
+                        ) : (
+                          <span className={styles.leaderAvatar}>
+                            {member.nickname.charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                        <span className={styles.leaderName}>{member.nickname}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
               <div className={styles.memberCount}>팀원 수: {team.members.length}</div>
               <Link
