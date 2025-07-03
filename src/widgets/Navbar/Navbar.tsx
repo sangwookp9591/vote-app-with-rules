@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
+import { io, Socket } from 'socket.io-client';
 
 interface NavbarProps {
   onSidebarToggle?: () => void;
@@ -37,6 +38,7 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   // 알림 fetch (실제 구현)
   useEffect(() => {
@@ -45,6 +47,30 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
       .then((res) => res.json())
       .then((data) => setNotifications(data))
       .catch(() => setNotifications([]));
+  }, [user]);
+
+  // socket.io 연결 (최상위에서 1회만)
+  useEffect(() => {
+    if (!user) return;
+    if (socketRef.current) return;
+    const socket = io({ path: '/api/socket', transports: ['websocket'] });
+    socketRef.current = socket;
+    socket.on('connect', () => {
+      console.log('Socket connected:', socket.id);
+      // 테스트: 서버에 ping 보내기
+      socket.emit('ping');
+    });
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+    socket.on('pong', () => {
+      console.log('서버로부터 pong 수신!');
+    });
+    // TODO: 알림 이벤트 수신 핸들러 추가 예정
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
   }, [user]);
 
   // 외부 클릭 시 드롭다운 닫기
