@@ -144,6 +144,8 @@ model TeamMember {
   lolPosition LolPosition
   lolPoints   Int
 
+  inviteStatus InvitationStatus @default(PENDING)
+
   // Relations
   userId      String
   user        User      @relation(fields: [userId], references: [id])
