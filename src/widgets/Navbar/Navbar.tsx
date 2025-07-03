@@ -25,6 +25,7 @@ interface NotificationItem {
   content: string;
   isRead: boolean;
   createdAt: string;
+  type: string;
   link?: string;
 }
 
@@ -65,6 +66,29 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
     setDropdownOpen(false);
     if (link) window.location.href = link;
   };
+
+  function getNotificationIcon(type: string) {
+    switch (type) {
+      case 'TEAM_INVITATION':
+        return '👥';
+      case 'TEAM_INVITATION_RESPONSE':
+        return '✅';
+      case 'TEAM_LEAVE_REQUEST':
+        return '🚪';
+      default:
+        return '🔔';
+    }
+  }
+
+  function timeAgo(dateString: string) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (diff < 60) return `${diff}초 전`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
+    return date.toLocaleDateString('ko-KR');
+  }
 
   return (
     <nav className={styles.navbar}>
@@ -108,21 +132,43 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
           {dropdownOpen && (
             <div className={styles.notificationDropdown} ref={dropdownRef}>
               {notifications.length === 0 ? (
-                <div className={styles.emptyNotification}>알림이 없습니다.</div>
+                <div
+                  style={{ textAlign: 'center', padding: '32px 0', color: '#aaa', fontSize: 15 }}
+                >
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>🔕</div>
+                  <div>알림이 없습니다.</div>
+                </div>
               ) : (
-                notifications.map((n) => (
+                notifications.map((n: NotificationItem, i) => (
                   <div
                     key={n.id}
                     className={clsx(styles.notificationItem, !n.isRead && 'unread')}
                     onClick={() => handleNotificationClick(n.id, n.link)}
-                    style={{ background: n.isRead ? undefined : 'rgba(79,159,255,0.07)' }}
+                    style={{
+                      background: n.isRead ? undefined : 'rgba(79,159,255,0.07)',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 10,
+                      cursor: 'pointer',
+                      borderBottom:
+                        i !== notifications.length - 1 ? '1px solid #f0f0f0' : undefined,
+                      padding: '12px 10px',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.background = '#f0f6ff')}
+                    onMouseOut={(e) =>
+                      (e.currentTarget.style.background = n.isRead ? '' : 'rgba(79,159,255,0.07)')
+                    }
                   >
-                    <div>
-                      <div className={styles.notificationTitle}>{n.title}</div>
-                      <div className={styles.notificationContent}>{n.content}</div>
-                      <div className={styles.notificationTime}>
-                        {new Date(n.createdAt).toLocaleString('ko-KR')}
+                    <span style={{ fontSize: 22, marginTop: 2 }}>
+                      {getNotificationIcon((n as NotificationItem).type)}
+                    </span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{n.title}</div>
+                      <div style={{ fontSize: 13, color: '#555', margin: '2px 0 4px 0' }}>
+                        {n.content}
                       </div>
+                      <div style={{ fontSize: 12, color: '#aaa' }}>{timeAgo(n.createdAt)}</div>
                     </div>
                   </div>
                 ))
