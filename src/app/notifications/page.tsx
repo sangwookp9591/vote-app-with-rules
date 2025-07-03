@@ -28,11 +28,21 @@ export default function NotificationsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
+  const handleRead = async (id: string) => {
+    try {
+      await fetch(`/api/notifications/${id}`, { method: 'PATCH' });
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
+    } catch {
+      alert('알림 읽음 처리에 실패했습니다.');
+    }
   };
-  const handleDelete = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  const handleDelete = async (id: string) => {
+    try {
+      await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    } catch {
+      alert('알림 삭제에 실패했습니다.');
+    }
   };
 
   function getNotificationIcon(type: string) {
