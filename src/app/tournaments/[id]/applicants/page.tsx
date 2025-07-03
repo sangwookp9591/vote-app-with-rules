@@ -15,6 +15,7 @@ interface Applicant {
   gameData: {
     position?: string;
     tier?: string;
+    nickname?: string;
     [key: string]: unknown;
   };
   createdAt: string;
@@ -154,15 +155,9 @@ export default function ApplicantsPage() {
                 )}
               </div>
               <div className={styles.nickname}>{a.user.nickname}</div>
-              <div className={styles.positionPill}>
-                <span className={styles.position}>{'포지션'}</span>
-                <img
-                  src={changePositionToImg(a.gameData.position || '-')}
-                  alt={a.gameData.position}
-                  style={{ width: 24, height: 24, objectFit: 'contain', marginRight: 2 }}
-                />
-              </div>
+              <div className={styles.nickname}>{a.gameData.nickname}</div>
               <div className={styles.tierPill}>
+                <span className={styles.tier}>{'TIER'}</span>
                 {getTierInfo(a.gameData.tier)?.icon && (
                   <img
                     src={getTierInfo(a.gameData.tier)?.icon}
@@ -170,8 +165,16 @@ export default function ApplicantsPage() {
                     style={{ width: 24, height: 24, objectFit: 'contain', marginRight: 2 }}
                   />
                 )}
-                <span className={styles.tier}>{a.gameData.tier || '-'}</span>
               </div>
+              <div className={styles.positionPill}>
+                <span className={styles.position}>{'POS'}</span>
+                <img
+                  src={changePositionToImg(a.gameData.position || '-')}
+                  alt={a.gameData.position}
+                  style={{ width: 24, height: 24, objectFit: 'contain', marginRight: 2 }}
+                />
+              </div>
+
               <div className={styles.createdAt}>
                 {new Date(a.createdAt).toLocaleString('ko-KR')}
               </div>
