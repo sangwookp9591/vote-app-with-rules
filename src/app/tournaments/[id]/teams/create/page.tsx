@@ -252,6 +252,20 @@ export default function CreateTeamPage() {
     },
   });
 
+  // 토너먼트 신청 여부 확인
+  const { data: myApplications, isLoading: loadingApplications } = useQuery({
+    queryKey: ['myTournamentApplications', tournamentId, session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return [];
+      const res = await fetch(
+        `/api/tournaments/${tournamentId}/applications?userId=${session.user.id}`,
+      );
+      if (!res.ok) throw new Error('신청 내역 조회 실패');
+      return res.json();
+    },
+    enabled: !!tournamentId && !!session?.user?.id,
+  });
+
   // 팀 생성 뮤테이션
   const createTeamMutation = useMutation({
     mutationFn: async (data: { name: string; members: string[] }) => {
@@ -337,110 +351,131 @@ export default function CreateTeamPage() {
     return <div>로딩 중...</div>;
   }
 
+  // 신청 여부에 따라 조건부 렌더링
   return (
     <div className={createTeamWrapper}>
       <h1 className={formTitle}>팀 생성</h1>
-
-      <div className={teamSizeInfo}>
-        {tournament.gameType} 토너먼트 - 팀원 {tournament.teamSize}명 필요
-      </div>
-
-      <form onSubmit={handleSubmit}>
-        <div className={formGroup}>
-          <label htmlFor="teamName" className={formLabel}>
-            팀 이름 *
-          </label>
-          <input
-            type="text"
-            id="teamName"
-            value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}
-            className={formInput}
-            placeholder="팀 이름을 입력하세요"
-            required
-          />
-        </div>
-        <div className={formGroup}>
-          <label htmlFor="teamDescription" className={formLabel}>
-            팀 소개 *
-          </label>
-          <textarea
-            id="teamDescription"
-            value={teamDescription}
-            onChange={(e) => setTeamDescription(e.target.value)}
-            className={formInput}
-            placeholder="팀을 소개해 주세요"
-            required
-            rows={3}
-            style={{ resize: 'vertical' }}
-          />
-        </div>
-
-        <div className={formGroup}>
-          <label className={formLabel}>
-            팀원 선택 ({selectedMembers.length}/{tournament.teamSize})
-          </label>
-          <div className={memberSelector}>
-            <div className={memberList}>
-              {users?.map((user) => (
-                <div
-                  key={user.id}
-                  className={`${memberItem} ${selectedMembers.includes(user.id) ? 'selected' : ''}`}
-                  onClick={() => handleMemberToggle(user.id)}
-                >
-                  <div className={memberAvatar}>
-                    {user.profileImageUrl ? (
-                      <img
-                        src={user.profileImageUrl}
-                        alt={user.nickname}
-                        style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-                      />
-                    ) : (
-                      user.nickname.charAt(0).toUpperCase()
-                    )}
-                  </div>
-                  <div className={memberInfo}>
-                    <div className={memberName}>{user.nickname}</div>
-                    <div className={memberEmail}>{user.email}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {selectedMembers.length > 0 && (
-              <div className={styleSelectedMembers}>
-                <strong>선택된 팀원:</strong>
-                {selectedMembers.map((memberId) => {
-                  const user = users?.find((u) => u.id === memberId);
-                  return (
-                    <div key={memberId} className={selectedMemberTag}>
-                      <span>{user?.nickname}</span>
-                      <button
-                        type="button"
-                        className={removeButton}
-                        onClick={() => handleMemberToggle(memberId)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {error && <div className={errorMessage}>{error}</div>}
-
-        <div className={buttonGroup}>
-          <Link href={`/tournaments/${tournamentId}`} className={cancelButton}>
-            취소
+      {loadingApplications ? (
+        <div>신청 내역을 확인 중...</div>
+      ) : !myApplications || myApplications.length === 0 ? (
+        <div style={{ color: '#ff4f9f', fontWeight: 600, fontSize: '1.1rem', margin: '2rem 0' }}>
+          해당 토너먼트에 참가 신청을 완료해야 팀을 생성할 수 있습니다.
+          <br />
+          <Link
+            href={`/tournaments/${tournamentId}/apply`}
+            style={{
+              color: '#4f9fff',
+              textDecoration: 'underline',
+              marginTop: 12,
+              display: 'inline-block',
+            }}
+          >
+            참가 신청하러 가기
           </Link>
-          <button type="submit" className={submitButton} disabled={createTeamMutation.isPending}>
-            {createTeamMutation.isPending ? '생성 중...' : '팀 생성'}
-          </button>
         </div>
-      </form>
+      ) : (
+        <>
+          <div className={teamSizeInfo}>
+            {tournament.gameType} 토너먼트 - 팀원 {tournament.teamSize}명 필요
+          </div>
+          <form onSubmit={handleSubmit}>
+            <div className={formGroup}>
+              <label htmlFor="teamName" className={formLabel}>
+                팀 이름 *
+              </label>
+              <input
+                type="text"
+                id="teamName"
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+                className={formInput}
+                placeholder="팀 이름을 입력하세요"
+                required
+              />
+            </div>
+            <div className={formGroup}>
+              <label htmlFor="teamDescription" className={formLabel}>
+                팀 소개 *
+              </label>
+              <textarea
+                id="teamDescription"
+                value={teamDescription}
+                onChange={(e) => setTeamDescription(e.target.value)}
+                className={formInput}
+                placeholder="팀을 소개해 주세요"
+                required
+                rows={3}
+                style={{ resize: 'vertical' }}
+              />
+            </div>
+            <div className={formGroup}>
+              <label className={formLabel}>
+                팀원 선택 ({selectedMembers.length}/{tournament.teamSize})
+              </label>
+              <div className={memberSelector}>
+                <div className={memberList}>
+                  {users?.map((user) => (
+                    <div
+                      key={user.id}
+                      className={`${memberItem} ${selectedMembers.includes(user.id) ? 'selected' : ''}`}
+                      onClick={() => handleMemberToggle(user.id)}
+                    >
+                      <div className={memberAvatar}>
+                        {user.profileImageUrl ? (
+                          <img
+                            src={user.profileImageUrl}
+                            alt={user.nickname}
+                            style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                          />
+                        ) : (
+                          user.nickname.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      <div className={memberInfo}>
+                        <div className={memberName}>{user.nickname}</div>
+                        <div className={memberEmail}>{user.email}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {selectedMembers.length > 0 && (
+                  <div className={styleSelectedMembers}>
+                    <strong>선택된 팀원:</strong>
+                    {selectedMembers.map((memberId) => {
+                      const user = users?.find((u) => u.id === memberId);
+                      return (
+                        <div key={memberId} className={selectedMemberTag}>
+                          <span>{user?.nickname}</span>
+                          <button
+                            type="button"
+                            className={removeButton}
+                            onClick={() => handleMemberToggle(memberId)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+            {error && <div className={errorMessage}>{error}</div>}
+            <div className={buttonGroup}>
+              <Link href={`/tournaments/${tournamentId}`} className={cancelButton}>
+                취소
+              </Link>
+              <button
+                type="submit"
+                className={submitButton}
+                disabled={createTeamMutation.isPending}
+              >
+                {createTeamMutation.isPending ? '생성 중...' : '팀 생성'}
+              </button>
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 }
