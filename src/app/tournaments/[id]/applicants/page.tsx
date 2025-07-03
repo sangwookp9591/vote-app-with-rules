@@ -143,18 +143,30 @@ export default function ApplicantsPage() {
         <div className={styles.applicantsGrid}>
           {filtered.map((a) => (
             <div key={a.id} className={styles.applicantCard}>
-              <div className={styles.avatar}>
-                {a.user.profileImageUrl ? (
-                  <img
-                    src={a.user.profileImageUrl}
-                    alt={a.user.nickname}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                ) : (
-                  a.user.nickname.charAt(0).toUpperCase()
-                )}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  marginBottom: 6,
+                  gap: 10,
+                }}
+              >
+                <div className={styles.avatar}>
+                  {a.user.profileImageUrl ? (
+                    <img
+                      src={a.user.profileImageUrl}
+                      alt={a.user.nickname}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    a.user.nickname.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div className={styles.nickname}>{a.user.nickname}</div>
               </div>
-              <div className={styles.nickname}>{a.user.nickname}</div>
+
               <div className={styles.nickname}>{a.gameData.nickname}</div>
               <div className={styles.tierPill}>
                 <span className={styles.tier}>{'TIER'}</span>
