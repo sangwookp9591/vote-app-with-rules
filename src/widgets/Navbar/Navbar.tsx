@@ -37,28 +37,13 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 더미 fetch (실제 구현 시 /api/notifications fetch)
+  // 알림 fetch (실제 구현)
   useEffect(() => {
     if (!user) return;
-    // 예시: 최근 3개 알림
-    setNotifications([
-      {
-        id: '1',
-        title: '팀 신청 승인',
-        content: '팀장이 신청을 승인했습니다.',
-        isRead: false,
-        createdAt: new Date().toISOString(),
-        link: '/tournaments/123/teams/456',
-      },
-      {
-        id: '2',
-        title: '팀 초대',
-        content: '팀장으로부터 초대를 받았습니다.',
-        isRead: true,
-        createdAt: new Date(Date.now() - 3600 * 1000).toISOString(),
-        link: '/tournaments/123/teams/456',
-      },
-    ]);
+    fetch('/api/notifications')
+      .then((res) => res.json())
+      .then((data) => setNotifications(data))
+      .catch(() => setNotifications([]));
   }, [user]);
 
   // 외부 클릭 시 드롭다운 닫기
