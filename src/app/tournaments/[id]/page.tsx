@@ -234,6 +234,9 @@ export default function TournamentDetailPage() {
 
       {/* Actions */}
       <div className={tournamentActions}>
+        <Link href={`/tournaments/${tournamentId}/teams`} className={applyButton}>
+          팀 목록
+        </Link>
         {tournament.status === 'UPCOMING' && (
           <>
             <Link href={`/tournaments/${tournamentId}/teams/create`} className={applyButton}>
