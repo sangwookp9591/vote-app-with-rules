@@ -57,6 +57,10 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
     socketRef.current = socket;
     socket.on('connect', () => {
       console.log('Socket connected:', socket.id);
+      // 실무 패턴: 로그인한 유저의 userId로 room join
+      if (user && user.email) {
+        socket.emit('join', user.email); // user.id가 있으면 user.id 사용
+      }
       // 테스트: 서버에 ping 보내기
       socket.emit('ping');
     });
@@ -66,7 +70,10 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
     socket.on('pong', () => {
       console.log('서버로부터 pong 수신!');
     });
-    // TODO: 알림 이벤트 수신 핸들러 추가 예정
+    // 실시간 알림 수신 핸들러
+    socket.on('notification', (notification: NotificationItem) => {
+      setNotifications((prev) => [notification, ...prev]);
+    });
     return () => {
       socket.disconnect();
       socketRef.current = null;
