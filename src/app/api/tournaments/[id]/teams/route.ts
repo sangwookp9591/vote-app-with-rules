@@ -52,6 +52,7 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
             lolRank: 4,
             lolPosition: 'TOP',
             lolPoints: 0,
+            inviteStatus: index === 0 ? 'ACCEPTED' : 'PENDING',
           })),
         },
       },
@@ -69,6 +70,24 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
         },
       },
     });
+
+    // 팀장 정보
+    const leader = team.members.find((m) => m.isLeader);
+    // 팀장 이외의 멤버에게 알림 생성
+    await Promise.all(
+      team.members
+        .filter((m) => !m.isLeader)
+        .map((m) =>
+          prisma.notification.create({
+            data: {
+              type: 'TEAM_INVITATION',
+              title: '팀 초대 알림',
+              content: `팀장 ${leader?.user.nickname}님이 ${team.name} 팀에 초대했습니다. 수락/거절을 선택해 주세요.`,
+              userId: m.userId,
+            },
+          }),
+        ),
+    );
 
     return NextResponse.json(team, { status: 201 });
   } catch (e) {
