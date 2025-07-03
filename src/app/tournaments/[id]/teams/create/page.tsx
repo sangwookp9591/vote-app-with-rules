@@ -227,6 +227,7 @@ export default function CreateTeamPage() {
   const tournamentId = params?.id as string;
 
   const [teamName, setTeamName] = useState('');
+  const [teamDescription, setTeamDescription] = useState('');
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [error, setError] = useState('');
 
@@ -298,21 +299,34 @@ export default function CreateTeamPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     if (!teamName.trim()) {
-      setError('팀 이름을 입력해주세요.');
+      setError('팀명을 입력하세요.');
       return;
     }
-
-    if (selectedMembers.length !== (tournament?.teamSize || 5)) {
-      setError(`${tournament?.gameType}은 ${tournament?.teamSize}명이 필요합니다.`);
+    if (!teamDescription.trim()) {
+      setError('팀 소개를 입력하세요.');
       return;
     }
-
-    createTeamMutation.mutate({
-      name: teamName,
-      members: selectedMembers,
-    });
+    if (selectedMembers.length === 0) {
+      setError('팀원을 1명 이상 선택하세요.');
+      return;
+    }
+    try {
+      const res = await fetch(`/api/tournaments/${tournamentId}/teams`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teamName,
+          teamDescription,
+          memberIds: selectedMembers,
+        }),
+      });
+      if (!res.ok) throw new Error('팀 생성 실패');
+      await queryClient.invalidateQueries({ queryKey: ['tournament', tournamentId] });
+      router.push(`/tournaments/${tournamentId}/teams`);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   };
 
   if (!session?.user?.id) {
@@ -344,6 +358,21 @@ export default function CreateTeamPage() {
             className={formInput}
             placeholder="팀 이름을 입력하세요"
             required
+          />
+        </div>
+        <div className={formGroup}>
+          <label htmlFor="teamDescription" className={formLabel}>
+            팀 소개 *
+          </label>
+          <textarea
+            id="teamDescription"
+            value={teamDescription}
+            onChange={(e) => setTeamDescription(e.target.value)}
+            className={formInput}
+            placeholder="팀을 소개해 주세요"
+            required
+            rows={3}
+            style={{ resize: 'vertical' }}
           />
         </div>
 
