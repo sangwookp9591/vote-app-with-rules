@@ -157,9 +157,9 @@ export default function CreateTeamPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          teamName,
-          teamDescription,
-          memberIds: selectedMembers,
+          name: teamName,
+          leaderId: session?.user?.id,
+          members: selectedMembers,
         }),
       });
       if (!res.ok) throw new Error('팀 생성 실패');

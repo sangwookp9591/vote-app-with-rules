@@ -4,7 +4,8 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // 팀 생성 (POST)
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, context: { params: { id: string } }) {
+  const { params } = context;
   try {
     const body = await req.json();
     const { name, leaderId, members } = body;
@@ -23,13 +24,15 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     // 팀원 수 검증
-    if (members.length !== tournament.teamSize) {
+    if (members.length < 1) {
       return NextResponse.json(
-        {
-          error: `팀원 수가 맞지 않습니다. ${tournament.gameType}은 ${tournament.teamSize}명이 필요합니다.`,
-          requiredTeamSize: tournament.teamSize,
-          currentTeamSize: members.length,
-        },
+        { error: '팀원은 최소 1명(팀장) 이상이어야 합니다.' },
+        { status: 400 },
+      );
+    }
+    if (members.length > tournament.teamSize) {
+      return NextResponse.json(
+        { error: `팀원 수가 너무 많습니다. 최대 ${tournament.teamSize}명까지 가능합니다.` },
         { status: 400 },
       );
     }
@@ -74,7 +77,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 }
 
 // 토너먼트의 팀 목록 조회 (GET)
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, context: { params: { id: string } }) {
+  const { params } = context;
   try {
     const teams = await prisma.team.findMany({
       where: { tournamentId: params.id },

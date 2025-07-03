@@ -109,3 +109,10 @@ export const applyButton = style({
 export const error = style({
   color: '#ff4f9f',
 });
+
+export const leaderCrown = style({
+  marginLeft: 4,
+  fontSize: '1.1em',
+  color: '#ffd700',
+  verticalAlign: 'middle',
+});
