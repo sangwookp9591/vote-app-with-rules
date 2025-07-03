@@ -1,10 +1,13 @@
-import { NextRequest } from 'next/server';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { Server } from 'socket.io';
-import { NextApiResponse } from 'next';
 
 // Next.js app router에서 socket.io 서버를 싱글턴으로 관리하는 패턴
 // (서버리스 환경에서 여러 번 생성되는 것을 방지)
-let io: Server | undefined = (global as any).io;
+interface CustomGlobal {
+  io?: Server;
+}
+const customGlobal = globalThis as unknown as CustomGlobal;
+let io: Server | undefined = customGlobal.io;
 
 export const config = {
   api: {
@@ -17,8 +20,10 @@ export function getIO() {
   return io;
 }
 
-export default async function handler(req: any, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // @ts-expect-error: nextjs custom socket
   if (!res.socket.server.io) {
+    // @ts-expect-error: nextjs custom socket
     io = new Server(res.socket.server, {
       path: '/api/socket',
       addTrailingSlash: false,
@@ -27,7 +32,8 @@ export default async function handler(req: any, res: NextApiResponse) {
         methods: ['GET', 'POST'],
       },
     });
-    (global as any).io = io;
+    customGlobal.io = io;
+    // @ts-expect-error: nextjs custom socket
     res.socket.server.io = io;
     // 기본 연결/해제 이벤트
     io.on('connection', (socket) => {
