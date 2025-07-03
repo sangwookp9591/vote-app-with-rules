@@ -84,3 +84,47 @@ export const createdAt = style({
   color: '#888',
   fontSize: 11,
 });
+
+export const positionPill = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8,
+  background: 'rgba(79,159,255,0.08)',
+  borderRadius: 16,
+  padding: '4px 12px',
+  fontWeight: 600,
+  fontSize: '0.97rem',
+  color: '#4f9fff',
+  marginBottom: 4,
+  marginTop: 2,
+  border: '1px solid #e0e7ef',
+  selectors: {
+    'html.dark &': {
+      background: 'rgba(79,159,255,0.18)',
+      border: '1px solid #23272f',
+      color: '#7ec3ff',
+    },
+  },
+});
+
+export const tierPill = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8,
+  background: 'rgba(255,79,159,0.08)',
+  borderRadius: 16,
+  padding: '4px 12px',
+  fontWeight: 600,
+  fontSize: '0.97rem',
+  color: '#ff4f9f',
+  marginBottom: 4,
+  marginTop: 2,
+  border: '1px solid #e0e7ef',
+  selectors: {
+    'html.dark &': {
+      background: 'rgba(255,79,159,0.18)',
+      border: '1px solid #23272f',
+      color: '#ffb3d4',
+    },
+  },
+});

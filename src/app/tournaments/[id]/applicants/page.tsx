@@ -20,6 +20,23 @@ interface Applicant {
   createdAt: string;
 }
 
+const LOL_TIERS = [
+  { value: 'IRON', label: 'IRON', icon: '/images/iron.webp' },
+  { value: 'BRONZE', label: 'BRONZE', icon: '/images/bronze.webp' },
+  { value: 'SILVER', label: 'SILVER', icon: '/images/silver.webp' },
+  { value: 'GOLD', label: 'GOLD', icon: '/images/gold.webp' },
+  { value: 'PLATINUM', label: 'PLATINUM', icon: '/images/platinum.webp' },
+  { value: 'EMERALD', label: 'EMERALD', icon: '/images/emerald.webp' },
+  { value: 'DIAMOND', label: 'DIAMOND', icon: '/images/diamond.webp' },
+  { value: 'MASTER', label: 'MASTER', icon: '/images/master.webp' },
+  { value: 'GRANDMASTER', label: 'GRANDMASTER', icon: '/images/grandmaster.webp' },
+  { value: 'CHALLENGER', label: 'CHALLENGER', icon: '/images/challenger.webp' },
+];
+
+function getTierInfo(tier?: string) {
+  return LOL_TIERS.find((t) => t.value === tier) || null;
+}
+
 export default function ApplicantsPage() {
   const params = useParams();
   const tournamentId = params?.id as string;
@@ -64,6 +81,14 @@ export default function ApplicantsPage() {
     }
     setFiltered(result);
   }, [search, position, tier, applicants]);
+
+  const changePositionToImg = (pos: string) => {
+    if (pos === 'ADC') return `/svg/bot.svg`;
+    else if (pos === 'SPT') return `/svg/spt.svg`;
+    else if (pos === 'MID') return `/svg/mid.svg`;
+    else if (pos === 'JDG') return `/svg/jdg.svg`;
+    else return `/svg/top.svg`;
+  };
 
   // 포지션/티어 옵션 추출 (중복 제거)
   const positionOptions = Array.from(
@@ -129,8 +154,24 @@ export default function ApplicantsPage() {
                 )}
               </div>
               <div className={styles.nickname}>{a.user.nickname}</div>
-              <div className={styles.position}>포지션: {a.gameData.position || '-'}</div>
-              <div className={styles.tier}>티어: {a.gameData.tier || '-'}</div>
+              <div className={styles.positionPill}>
+                <span className={styles.position}>{'포지션'}</span>
+                <img
+                  src={changePositionToImg(a.gameData.position || '-')}
+                  alt={a.gameData.position}
+                  style={{ width: 24, height: 24, objectFit: 'contain', marginRight: 2 }}
+                />
+              </div>
+              <div className={styles.tierPill}>
+                {getTierInfo(a.gameData.tier)?.icon && (
+                  <img
+                    src={getTierInfo(a.gameData.tier)?.icon}
+                    alt={a.gameData.tier}
+                    style={{ width: 24, height: 24, objectFit: 'contain', marginRight: 2 }}
+                  />
+                )}
+                <span className={styles.tier}>{a.gameData.tier || '-'}</span>
+              </div>
               <div className={styles.createdAt}>
                 {new Date(a.createdAt).toLocaleString('ko-KR')}
               </div>
