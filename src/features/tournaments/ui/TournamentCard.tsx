@@ -64,6 +64,13 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
         자세히 보기
       </Link>
       <Link
+        href={`/tournaments/${tournament.id}/applicants`}
+        className={viewButton}
+        style={{ marginTop: 8 }}
+      >
+        신청자 보기
+      </Link>
+      <Link
         href={`/tournaments/${tournament.id}/apply`}
         className={viewButton}
         style={{ marginTop: 8 }}
