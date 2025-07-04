@@ -90,16 +90,24 @@ export default function TeamDetailPage() {
     }
   };
 
-  // 초대(프론트 상태에서만, 실제 API 연동 X)
-  const handleInvite = (applicant: Applicant) => {
+  // 초대(실제 API 연동)
+  const handleInvite = async (applicant: Applicant) => {
     if (!team) return;
-    // 이미 팀원 목록에 있으면 무시
-    if (team.members.some((m) => m.id === applicant.id)) return;
-    setTeam({
-      ...team,
-      members: [...team.members, { ...applicant, status: 'PENDING' }],
-    });
-    setShowInvite(false);
+    try {
+      const res = await fetch(`/api/tournaments/${tournamentId}/teams/${teamId}/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: applicant.id }),
+      });
+      if (!res.ok) throw new Error('초대 실패');
+      setTeam({
+        ...team,
+        members: [...team.members, { ...applicant, status: 'PENDING' }],
+      });
+      setShowInvite(false);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : '알 수 없는 오류');
+    }
   };
 
   // 팀원 추방
