@@ -32,9 +32,32 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string; teamId: string; memberId: string }> },
 ) {
-  const { memberId } = await params;
+  const { teamId, memberId } = await params;
   try {
+    // 추방될 멤버 정보 조회
+    const member = await prisma.teamMember.findUnique({
+      where: { id: memberId },
+      include: { user: true },
+    });
+    // 팀 정보 및 팀장 정보 조회
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      include: { members: { include: { user: true } } },
+    });
+    const leader = team?.members.find((m) => m.isLeader)?.user;
+    // 실제 삭제
     await prisma.teamMember.delete({ where: { id: memberId } });
+    // 알림 생성
+    if (member) {
+      await prisma.notification.create({
+        data: {
+          type: 'TEAM_KICK',
+          title: '팀 추방 알림',
+          content: `팀장 ${leader?.nickname || ''}님이 ${team?.name || ''} 팀에서 회원님을 추방했습니다.`,
+          userId: member.userId,
+        },
+      });
+    }
     return NextResponse.json({ success: true });
   } catch (e) {
     return NextResponse.json({ error: '팀원 추방 실패', detail: String(e) }, { status: 500 });
