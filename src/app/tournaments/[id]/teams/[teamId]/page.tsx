@@ -73,8 +73,16 @@ export default function TeamDetailPage() {
       const res = await fetch(`/api/tournaments/${tournamentId}/applications`);
       if (!res.ok) throw new Error('신청자 목록을 불러올 수 없습니다.');
       const data = await res.json();
-      // user 정보만 추출
-      setApplicants(data.map((a: { user: Applicant }) => a.user));
+      // 내 팀원(팀장 포함) id 목록
+      const memberIds = [team?.leader?.id, ...(team?.members?.map((m) => m.id) || [])].filter(
+        Boolean,
+      );
+      // 내 팀원이 아닌 신청자만 추출
+      setApplicants(
+        data
+          .map((a: { user: Applicant }) => a.user)
+          .filter((user: Applicant) => !memberIds.includes(user.id)),
+      );
     } catch (e) {
       setInviteError(e instanceof Error ? e.message : '알 수 없는 오류');
     } finally {
