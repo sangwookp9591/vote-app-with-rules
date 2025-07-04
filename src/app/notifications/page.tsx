@@ -49,12 +49,34 @@ export default function NotificationsPage() {
     switch (type) {
       case 'TEAM_INVITATION':
         return '👥';
+      case 'TEAM_KICK':
+        return '❌';
       case 'TEAM_INVITATION_RESPONSE':
         return '✅';
       case 'TEAM_LEAVE_REQUEST':
         return '🚪';
+      case 'TOURNAMENT_START':
+        return '🏁';
+      case 'TOURNAMENT_END':
+        return '🏆';
+      case 'VOTE_START':
+        return '🗳️';
+      case 'VOTE_END':
+        return '📊';
       default:
         return '🔔';
+    }
+  }
+  function getNotificationColor(type: string) {
+    switch (type) {
+      case 'TEAM_INVITATION':
+        return '#e6f7ff';
+      case 'TEAM_KICK':
+        return '#fff1f0';
+      case 'TEAM_INVITATION_RESPONSE':
+        return '#f6ffed';
+      default:
+        return '#f8fbff';
     }
   }
   function timeAgo(dateString: string) {
@@ -92,11 +114,12 @@ export default function NotificationsPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 16,
-                background: n.isRead ? '#f8fbff' : '#e6f7ff',
-                border: '1px solid #e0e7ef',
+                background: n.isRead ? getNotificationColor(n.type) : '#bae0ff',
+                border: n.type === 'TEAM_KICK' ? '2px solid #ff4f4f' : '1px solid #e0e7ef',
                 borderRadius: 10,
                 padding: 16,
                 position: 'relative',
+                boxShadow: n.type === 'TEAM_KICK' ? '0 0 8px #ff4f4f33' : undefined,
               }}
             >
               <span style={{ fontSize: 28 }}>{getNotificationIcon(n.type)}</span>
@@ -107,6 +130,26 @@ export default function NotificationsPage() {
                 </div>
                 <div style={{ fontSize: 12, color: '#aaa' }}>{timeAgo(n.createdAt)}</div>
               </div>
+              {n.type === 'TEAM_INVITATION' && !n.isRead && (
+                <Link
+                  href="/my/teams"
+                  style={{
+                    background: '#4f9fff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '4px 10px',
+                    fontWeight: 600,
+                    fontSize: 13,
+                    marginRight: 6,
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                  }}
+                  onClick={() => handleRead(n.id)}
+                >
+                  초대 확인
+                </Link>
+              )}
               {!n.isRead && (
                 <button
                   onClick={() => handleRead(n.id)}
