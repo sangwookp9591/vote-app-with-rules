@@ -52,4 +52,4 @@ storybook-static
 
 # Gemini MCP/CLI local config
 .gemini/
-.gemini/*
+.gemini/settings.json

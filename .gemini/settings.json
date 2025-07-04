@@ -1,3 +1,8 @@
 {
-  "mcpSevers": {}
+  "mcp": {
+    "apiUrl": "http://localhost:3000/api",
+    "dbUrl": "postgres://postgres:postgres@my-postgres:5432/mydb",
+    "apiKey": "",
+    "env": "local"
+  }
 }
