@@ -272,6 +272,7 @@ enum NotificationType {
   TOURNAMENT_END
   VOTE_START
   VOTE_END
+  TEAM_KICK
 }
 
 enum GameType {
