@@ -110,9 +110,7 @@ export default function TeamsPage() {
                             style={{ borderRadius: '50%' }}
                           />
                         ) : (
-                          <span className={styles.leaderAvatar}>
-                            {member.nickname.charAt(0).toUpperCase()}
-                          </span>
+                          <span className={styles.leaderAvatar}>{member.nickname}</span>
                         )}
                         <span className={styles.leaderName}>{member.nickname}</span>
                       </div>

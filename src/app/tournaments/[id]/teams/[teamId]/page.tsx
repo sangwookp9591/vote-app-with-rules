@@ -159,7 +159,7 @@ export default function TeamDetailPage() {
                     style={{ borderRadius: '50%' }}
                   />
                 ) : (
-                  member.nickname.charAt(0).toUpperCase()
+                  member.nickname
                 )}
               </span>
               <span style={{ fontWeight: 600 }}>{member.nickname}</span>
