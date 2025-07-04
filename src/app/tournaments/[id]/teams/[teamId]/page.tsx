@@ -44,6 +44,7 @@ export default function TeamDetailPage() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteError, setInviteError] = useState('');
+  const [showManage, setShowManage] = useState(false);
 
   useEffect(() => {
     async function fetchTeam() {
@@ -105,6 +106,116 @@ export default function TeamDetailPage() {
         <span style={{ fontWeight: 600, color: '#4f9fff' }}>팀장</span>{' '}
         <span style={{ marginLeft: 8 }}>{team.leader?.nickname} 👑</span>
       </div>
+      {/* 팀 관리 탭/버튼: 팀장만 노출 */}
+      {isLeader && (
+        <div style={{ marginBottom: 20 }}>
+          <button
+            style={{
+              background: showManage ? '#222' : '#4f9fff',
+              color: 'white',
+              borderRadius: 6,
+              padding: '6px 18px',
+              fontWeight: 700,
+              border: 'none',
+              cursor: 'pointer',
+              marginRight: 8,
+            }}
+            onClick={() => setShowManage((v) => !v)}
+          >
+            팀 관리
+          </button>
+        </div>
+      )}
+      {/* 팀 관리 패널: 팀장만 접근 */}
+      {isLeader && showManage && (
+        <div
+          style={{ border: '1.5px solid #e0e7ef', borderRadius: 12, padding: 18, marginBottom: 24 }}
+        >
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>팀원 관리</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+            {team.members.length === 0 ? (
+              <span style={{ color: '#aaa', fontSize: 13 }}>아직 팀원이 없습니다.</span>
+            ) : (
+              team.members.map((member) => (
+                <div
+                  key={member.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: 8,
+                    border: '1px solid #e0e7ef',
+                    borderRadius: 8,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      background: '#e0e7ef',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: 15,
+                    }}
+                  >
+                    {member.profileImageUrl ? (
+                      <Image
+                        src={member.profileImageUrl}
+                        alt="프로필"
+                        width={40}
+                        height={40}
+                        style={{ borderRadius: '50%' }}
+                      />
+                    ) : (
+                      member.nickname
+                    )}
+                  </span>
+                  <span style={{ fontWeight: 600 }}>{member.nickname}</span>
+                  {/* 팀장 본인은 추방 불가 */}
+                  {member.id !== session?.user?.id && (
+                    <button
+                      style={{
+                        marginLeft: 'auto',
+                        background: '#ff4f9f',
+                        color: 'white',
+                        borderRadius: 6,
+                        padding: '4px 12px',
+                        fontWeight: 600,
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                      // TODO: 추방 API 연동
+                      onClick={() => alert(`${member.nickname} 추방 (API 연동 필요)`)}
+                    >
+                      추방
+                    </button>
+                  )}
+                  {member.id === session?.user?.id && (
+                    <span style={{ marginLeft: 'auto', color: '#aaa', fontSize: 13 }}>(본인)</span>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+          <button
+            style={{
+              background: '#4f9fff',
+              color: 'white',
+              borderRadius: 6,
+              padding: '6px 18px',
+              fontWeight: 700,
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onClick={openInvite}
+          >
+            팀원 초대
+          </button>
+        </div>
+      )}
       <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ fontWeight: 600, color: '#4f9fff' }}>팀원</span>
         {isLeader && (
