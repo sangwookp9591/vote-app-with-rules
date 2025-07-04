@@ -49,3 +49,7 @@ storybook-static/
 storybook-static
 
 /public/uploads
+
+# Gemini MCP/CLI local config
+.gemini/
+.gemini/*
