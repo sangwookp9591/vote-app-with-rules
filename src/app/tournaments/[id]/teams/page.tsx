@@ -38,7 +38,37 @@ export default function TeamsPage() {
         const res = await fetch(`/api/tournaments/${tournamentId}/teams`);
         if (!res.ok) throw new Error('팀 목록 조회 실패');
         const data = await res.json();
-        setTeams(data);
+        // API 타입 정의
+        type ApiTeamMember = {
+          isLeader: boolean;
+          user: { id: string; nickname: string; profileImageUrl?: string };
+        };
+        type ApiTeam = Omit<Team, 'leader' | 'members'> & { members: ApiTeamMember[] };
+        // 가공: leader와 members 분리
+        const teamsWithLeader = (data as ApiTeam[]).map((team) => {
+          const leaderMember = team.members.find((m) => m.isLeader);
+          const leader = leaderMember
+            ? {
+                id: leaderMember.user.id,
+                nickname: leaderMember.user.nickname,
+                ...(leaderMember.user.profileImageUrl
+                  ? { profileImageUrl: leaderMember.user.profileImageUrl }
+                  : {}),
+              }
+            : { id: '', nickname: '' };
+          return {
+            ...team,
+            leader,
+            members: team.members
+              .filter((m) => !m.isLeader)
+              .map((m) => ({
+                id: m.user.id,
+                nickname: m.user.nickname,
+                ...(m.user.profileImageUrl ? { profileImageUrl: m.user.profileImageUrl } : {}),
+              })),
+          };
+        });
+        setTeams(teamsWithLeader);
       } catch (e) {
         setError(e instanceof Error ? e.message : '알 수 없는 오류');
       } finally {
@@ -47,6 +77,8 @@ export default function TeamsPage() {
     }
     if (tournamentId) fetchTeams();
   }, [tournamentId]);
+
+  console.log('team : ', teams);
 
   return (
     <div className={styles.wrapper}>
@@ -79,9 +111,7 @@ export default function TeamsPage() {
                     style={{ borderRadius: '50%' }}
                   />
                 ) : (
-                  <span className={styles.leaderAvatar}>
-                    {team.leader?.nickname?.charAt(0).toUpperCase()}
-                  </span>
+                  <span className={styles.leaderAvatar}>{team.leader?.nickname}</span>
                 )}
                 <span className={styles.leaderName}>
                   {team.leader?.nickname}
