@@ -4,8 +4,11 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // 팀 상세 조회 (GET)
-export async function GET(req: NextRequest, context: { params: { id: string; teamId: string } }) {
-  const { teamId } = context.params;
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string; teamId: string }> },
+) {
+  const { teamId } = await params;
   try {
     const team = await prisma.team.findUnique({
       where: { id: teamId },

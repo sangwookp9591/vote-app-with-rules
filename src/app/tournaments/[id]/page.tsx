@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   tournamentDetailWrapper,
@@ -19,9 +19,6 @@ import {
   statLabel,
   statValue,
 } from './detail.css';
-import { useSession } from 'next-auth/react';
-import { tournamentsApi } from '@/features/tournaments/api/tournaments';
-import { useState } from 'react';
 
 interface Tournament {
   id: string;
@@ -37,11 +34,7 @@ interface Tournament {
 
 export default function TournamentDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const tournamentId = params?.id as string;
-  const { data: session } = useSession();
-  const [statusUpdating, setStatusUpdating] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   const {
     data: tournament,
@@ -118,24 +111,6 @@ export default function TournamentDetailPage() {
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
-
-  const handleApply = () => {
-    router.push(`/tournaments/${tournamentId}/apply`);
-  };
-
-  // 상태 변경 핸들러
-  const handleStatusChange = async () => {
-    if (!selectedStatus) return;
-    setStatusUpdating(true);
-    try {
-      await tournamentsApi.changeStatus(tournamentId, selectedStatus);
-      router.refresh();
-    } catch (e) {
-      alert('상태 변경 실패: ' + (e as Error).message);
-    } finally {
-      setStatusUpdating(false);
-    }
   };
 
   if (isLoading) {

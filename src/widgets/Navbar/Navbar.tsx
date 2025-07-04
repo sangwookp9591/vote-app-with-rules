@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { io, Socket } from 'socket.io-client';
+import Image from 'next/image';
+import io from 'socket.io-client';
 
 interface NavbarProps {
   onSidebarToggle?: () => void;
@@ -38,7 +39,7 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const socketRef = useRef<Socket | null>(null);
+  const socketRef = useRef<ReturnType<typeof io> | null>(null);
 
   // 알림 fetch (실제 구현)
   useEffect(() => {
@@ -51,17 +52,16 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
 
   // socket.io 연결 (최상위에서 1회만)
   useEffect(() => {
+    let socket: ReturnType<typeof io> | null = null;
     if (!user) return;
     if (socketRef.current) return;
-    const socket = io({ path: '/api/socket', transports: ['websocket'] });
+    socket = io({ path: '/api/socket', transports: ['websocket'] });
     socketRef.current = socket;
     socket.on('connect', () => {
       console.log('Socket connected:', socket.id);
-      // 실무 패턴: 로그인한 유저의 userId로 room join
       if (user && user.email) {
-        socket.emit('join', user.email); // user.id가 있으면 user.id 사용
+        socket.emit('join', user.email);
       }
-      // 테스트: 서버에 ping 보내기
       socket.emit('ping');
     });
     socket.on('disconnect', () => {
@@ -70,13 +70,14 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
     socket.on('pong', () => {
       console.log('서버로부터 pong 수신!');
     });
-    // 실시간 알림 수신 핸들러
     socket.on('notification', (notification: NotificationItem) => {
       setNotifications((prev) => [notification, ...prev]);
     });
     return () => {
-      socket.disconnect();
-      socketRef.current = null;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [user]);
 
@@ -212,9 +213,11 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {user?.profileImageUrl && (
-              <img
+              <Image
                 src={user.profileImageUrl}
                 alt="프로필"
+                width={32}
+                height={32}
                 style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
               />
             )}

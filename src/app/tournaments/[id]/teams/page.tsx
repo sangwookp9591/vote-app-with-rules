@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import * as styles from './teams.css';
 import { leaderCrown } from './teams.css';
 
@@ -70,10 +71,12 @@ export default function TeamsPage() {
               <div className={styles.leaderRow}>
                 <span className={styles.leaderLabel}>팀장</span>
                 {team.leader?.profileImageUrl ? (
-                  <img
+                  <Image
                     src={team.leader.profileImageUrl}
                     alt={team.leader.nickname}
-                    className={styles.leaderAvatar}
+                    width={40}
+                    height={40}
+                    style={{ borderRadius: '50%' }}
                   />
                 ) : (
                   <span className={styles.leaderAvatar}>
@@ -99,10 +102,12 @@ export default function TeamsPage() {
                         style={{ display: 'flex', alignItems: 'center', gap: 4 }}
                       >
                         {member.profileImageUrl ? (
-                          <img
+                          <Image
                             src={member.profileImageUrl}
                             alt={member.nickname}
-                            className={styles.leaderAvatar}
+                            width={40}
+                            height={40}
+                            style={{ borderRadius: '50%' }}
                           />
                         ) : (
                           <span className={styles.leaderAvatar}>

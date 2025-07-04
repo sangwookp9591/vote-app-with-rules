@@ -19,6 +19,7 @@ import {
 } from './signup.css';
 import React, { useRef, useState } from 'react';
 import SocialLoginButtons from './SocialLoginButtons';
+import Image from 'next/image';
 
 export default function SignupForm() {
   const [state, formAction] = useActionState<SignupFormState, FormData>(signupAction, {});
@@ -43,7 +44,13 @@ export default function SignupForm() {
       <div className={profileImageUploadWrapperStyle}>
         <label className={profileImageLabelStyle} htmlFor="profileImage">
           {preview ? (
-            <img src={preview} alt="미리보기" className={profileImagePreviewStyle} />
+            <Image
+              src={preview}
+              alt="미리보기"
+              className={profileImagePreviewStyle}
+              width={80}
+              height={80}
+            />
           ) : (
             <span style={{ color: '#aaa', fontSize: 14 }}></span>
           )}

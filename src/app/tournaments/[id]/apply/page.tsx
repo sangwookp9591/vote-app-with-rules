@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import * as styles from '../apply.css';
 import type { CSSProperties, FormEvent, ChangeEvent } from 'react';
+import Image from 'next/image';
 
 const LOL_TIERS = [
   { value: 'IRON', label: 'IRON', icon: '/public/images/iron.webp' },
@@ -251,10 +252,12 @@ export default function TournamentApplyPage() {
                   }}
                   onClick={() => handleChange('tier', t.value)}
                 >
-                  <img
+                  <Image
                     src={t.icon.replace('/public', '')}
                     alt={t.label}
-                    style={{ width: 32, height: 32, marginRight: 0 }}
+                    width={32}
+                    height={32}
+                    style={{ marginRight: 0 }}
                   />
                   <span style={{ fontWeight: 700, fontSize: '1.08rem' }}>{t.label}</span>
                 </button>
@@ -345,10 +348,12 @@ export default function TournamentApplyPage() {
                   }}
                   onClick={() => handleChange('position', p.value)}
                 >
-                  <img
+                  <Image
                     src={p.icon.replace('/public', '')}
                     alt={p.label}
-                    style={{ width: 32, height: 32, marginRight: 0 }}
+                    width={32}
+                    height={32}
+                    style={{ marginRight: 0 }}
                   />
                   <span style={{ fontWeight: 700, fontSize: '1.08rem' }}>{p.label}</span>
                 </button>

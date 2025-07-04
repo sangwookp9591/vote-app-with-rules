@@ -5,10 +5,11 @@ import { getToken } from 'next-auth/jwt';
 const prisma = new PrismaClient();
 
 // 토너먼트 상세 조회 (GET)
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const tournament = await prisma.tournament.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         applications: true,
       },
@@ -26,7 +27,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // 토너먼트 참가 신청 (POST)
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const body = await req.json();
     const { userId, gameData } = body;
@@ -35,14 +37,14 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
     // 이미 신청한 경우 중복 방지(옵션)
     const exists = await prisma.tournamentApplication.findFirst({
-      where: { tournamentId: params.id, userId },
+      where: { tournamentId: id, userId },
     });
     if (exists) {
       return NextResponse.json({ error: '이미 신청한 토너먼트입니다.' }, { status: 409 });
     }
     const application = await prisma.tournamentApplication.create({
       data: {
-        tournamentId: params.id,
+        tournamentId: id,
         userId,
         gameData,
       },
@@ -57,7 +59,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 }
 
 // 토너먼트 상태 변경 (PATCH)
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token?.role || token.role !== 'ADMIN') {
     return NextResponse.json({ error: '관리자 권한이 필요합니다.' }, { status: 403 });
@@ -68,7 +71,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
   try {
     const updated = await prisma.tournament.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
     });
     return NextResponse.json(updated);

@@ -24,6 +24,7 @@ import {
   loadingState,
   emptyState,
 } from './page.css';
+import Image from 'next/image';
 
 interface StreamerApplication {
   id: string;
@@ -141,10 +142,12 @@ export default function StreamerApplicationsPage() {
           <div className={userInfo}>
             <div className={userAvatar}>
               {application.user.profileImageUrl ? (
-                <img
+                <Image
                   src={application.user.profileImageUrl}
                   alt={application.user.nickname}
-                  style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                  width={40}
+                  height={40}
+                  style={{ borderRadius: '50%' }}
                 />
               ) : (
                 application.user.nickname.charAt(0).toUpperCase()

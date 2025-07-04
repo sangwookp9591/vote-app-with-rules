@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   }
   // 스트리머 정보 + 게임별 프로필
   const streamer = await prisma.streamer.findUnique({
-    where: { userId: token.id },
+    where: { userId: token.id as string },
     include: {
       lolProfile: true,
       valorantProfile: true,
@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'game, profile 필수' }, { status: 400 });
   }
   // 스트리머 row가 없으면 생성
-  let streamer = await prisma.streamer.findUnique({ where: { userId: token.id } });
+  let streamer = await prisma.streamer.findUnique({ where: { userId: token.id as string } });
   if (!streamer) {
-    streamer = await prisma.streamer.create({ data: { userId: token.id } });
+    streamer = await prisma.streamer.create({ data: { userId: token.id as string } });
   }
   // 게임별 프로필 upsert
   if (game === 'lol') {

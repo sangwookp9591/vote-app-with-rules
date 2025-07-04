@@ -41,6 +41,7 @@ import {
   gameTypeDescription,
 } from './create.css';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function CreateTournamentPage() {
   const { data: session } = useSession();
@@ -413,7 +414,7 @@ export default function CreateTournamentPage() {
                   className={`${gameTypeOption} ${formData.gameType === game.value ? 'selected' : ''}`}
                   onClick={() => handleGameTypeChange(game.value)}
                 >
-                  <img
+                  <Image
                     className={
                       formData.gameType === game.value
                         ? `${gameTypeIcon} ${game.animation}`
@@ -421,14 +422,14 @@ export default function CreateTournamentPage() {
                     }
                     src={game.icon}
                     alt=""
+                    width={56}
+                    height={56}
                     style={{
-                      width: 56,
-                      height: 56,
                       objectFit: 'contain',
                       display: 'block',
                       margin: '0 auto',
                     }}
-                  ></img>
+                  ></Image>
                   <div className={gameTypeLabel}>{game.label}</div>
                   <div className={gameTypeDescription}>{game.description}</div>
                   <div className={teamSize}>팀원 수: {game.teamSize}명</div>

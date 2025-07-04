@@ -4,10 +4,11 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // 토너먼트 참가 신청 목록 조회 (GET)
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const applications = await prisma.tournamentApplication.findMany({
-      where: { tournamentId: params.id },
+      where: { tournamentId: id },
       include: {
         user: {
           select: {
@@ -27,7 +28,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // 토너먼트 참가 신청 생성 (POST)
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const body = await req.json();
     const { userId, gameData } = body;
@@ -38,7 +40,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     const application = await prisma.tournamentApplication.create({
       data: {
-        tournamentId: params.id,
+        tournamentId: id,
         userId,
         gameData,
       },

@@ -1,4 +1,5 @@
 import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function SocialLoginButtons() {
   return (
@@ -20,10 +21,12 @@ export default function SocialLoginButtons() {
           justifyContent: 'center',
         }}
       >
-        <img
-          src="/svg/google_logo.svg"
-          alt="Google"
-          style={{ width: 20, height: 20, verticalAlign: 'middle', marginRight: 8 }}
+        <Image
+          src="/images/button/google_logo.svg"
+          alt="구글 로그인"
+          width={222}
+          height={49}
+          style={{ marginRight: 8 }}
         />
         구글로 시작하기
       </button>
@@ -44,10 +47,12 @@ export default function SocialLoginButtons() {
           justifyContent: 'center',
         }}
       >
-        <img
-          src="/svg/KakaoTalk_logo.svg"
-          alt="Kakao"
-          style={{ width: 20, height: 20, verticalAlign: 'middle', marginRight: 8 }}
+        <Image
+          src="/images/button/kakao_login_large_wide.png"
+          alt="카카오 로그인"
+          width={222}
+          height={49}
+          style={{ marginRight: 8 }}
         />
         카카오로 시작하기
       </button>

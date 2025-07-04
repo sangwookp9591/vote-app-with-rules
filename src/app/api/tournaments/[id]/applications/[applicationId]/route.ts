@@ -6,8 +6,9 @@ const prisma = new PrismaClient();
 // 참가 신청 승인/거절 (PATCH)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string; applicationId: string } },
+  { params }: { params: Promise<{ id: string; applicationId: string }> },
 ) {
+  const { applicationId } = await params;
   try {
     const body = await req.json();
     const { status } = body;
@@ -18,7 +19,7 @@ export async function PATCH(
       );
     }
     const updated = await prisma.tournamentApplication.update({
-      where: { id: params.applicationId },
+      where: { id: applicationId },
       data: { status },
     });
     return NextResponse.json(updated);

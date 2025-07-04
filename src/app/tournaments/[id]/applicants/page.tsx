@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import * as styles from './applicants.css';
+import Image from 'next/image';
 
 interface Applicant {
   id: string;
@@ -155,10 +156,12 @@ export default function ApplicantsPage() {
               >
                 <div className={styles.avatar}>
                   {a.user.profileImageUrl ? (
-                    <img
-                      src={a.user.profileImageUrl}
-                      alt={a.user.nickname}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    <Image
+                      src={a.user.profileImageUrl || '/images/default.png'}
+                      alt={a.user.nickname || '프로필'}
+                      width={40}
+                      height={40}
+                      style={{ borderRadius: '50%' }}
                     />
                   ) : (
                     a.user.nickname.charAt(0).toUpperCase()
@@ -171,19 +174,23 @@ export default function ApplicantsPage() {
               <div className={styles.tierPill}>
                 <span className={styles.tier}>{'TIER'}</span>
                 {getTierInfo(a.gameData.tier)?.icon && (
-                  <img
-                    src={getTierInfo(a.gameData.tier)?.icon}
-                    alt={a.gameData.tier}
-                    style={{ width: 24, height: 24, objectFit: 'contain', marginRight: 2 }}
+                  <Image
+                    src={getTierInfo(a.gameData.tier)?.icon || '/images/default.png'}
+                    alt={a.gameData.tier || ''}
+                    width={24}
+                    height={24}
+                    style={{ objectFit: 'contain', marginRight: 2 }}
                   />
                 )}
               </div>
               <div className={styles.positionPill}>
                 <span className={styles.position}>{'POS'}</span>
-                <img
+                <Image
                   src={changePositionToImg(a.gameData.position || '-')}
-                  alt={a.gameData.position}
-                  style={{ width: 24, height: 24, objectFit: 'contain', marginRight: 2 }}
+                  alt={a.gameData.position || ''}
+                  width={24}
+                  height={24}
+                  style={{ objectFit: 'contain', marginRight: 2 }}
                 />
               </div>
 

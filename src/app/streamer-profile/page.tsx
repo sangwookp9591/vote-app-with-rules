@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 
 const LOL_TIERS = [
   'IRON',
@@ -29,11 +28,8 @@ const VALORANT_TIERS = [
 const VALORANT_POSITIONS = ['DUELIST', 'SENTINEL', 'INITIATOR', 'CONTROLLER'];
 
 export default function StreamerProfilePage() {
-  const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [lolProfile, setLolProfile] = useState<any>(null);
-  const [valorantProfile, setValorantProfile] = useState<any>(null);
   const [form, setForm] = useState({
     lol: {
       nickname: '',
@@ -66,7 +62,6 @@ export default function StreamerProfilePage() {
         if (!res.ok) throw new Error('프로필 조회 실패');
         const data = await res.json();
         if (data.lolProfile) {
-          setLolProfile(data.lolProfile);
           setForm((f) => ({
             ...f,
             lol: {
@@ -77,7 +72,6 @@ export default function StreamerProfilePage() {
           }));
         }
         if (data.valorantProfile) {
-          setValorantProfile(data.valorantProfile);
           setForm((f) => ({
             ...f,
             valorant: {
@@ -87,8 +81,8 @@ export default function StreamerProfilePage() {
             },
           }));
         }
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : '알 수 없는 오류');
       } finally {
         setLoading(false);
       }
@@ -96,7 +90,7 @@ export default function StreamerProfilePage() {
     fetchProfile();
   }, []);
 
-  const handleChange = (game: 'lol' | 'valorant', field: string, value: any) => {
+  const handleChange = (game: 'lol' | 'valorant', field: string, value: unknown) => {
     setForm((f) => ({ ...f, [game]: { ...f[game], [field]: value } }));
   };
 
@@ -105,7 +99,7 @@ export default function StreamerProfilePage() {
     setSuccess('');
     setError('');
     try {
-      const payload: any = { ...form[game] };
+      const payload: Record<string, unknown> = { ...form[game] };
       if (game === 'lol') {
         payload.mainChampions = form.lol.mainChampions
           .split(',')
@@ -129,8 +123,8 @@ export default function StreamerProfilePage() {
       });
       if (!res.ok) throw new Error('저장 실패');
       setSuccess('저장되었습니다!');
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : '알 수 없는 오류');
     } finally {
       setSaving(false);
     }

@@ -2,6 +2,7 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface TeamMember {
   id: string;
@@ -150,10 +151,12 @@ export default function TeamDetailPage() {
                 }}
               >
                 {member.profileImageUrl ? (
-                  <img
+                  <Image
                     src={member.profileImageUrl}
-                    alt={member.nickname}
-                    style={{ width: 28, height: 28, borderRadius: '50%' }}
+                    alt="프로필"
+                    width={40}
+                    height={40}
+                    style={{ borderRadius: '50%' }}
                   />
                 ) : (
                   member.nickname.charAt(0).toUpperCase()
@@ -273,10 +276,12 @@ export default function TeamDetailPage() {
                           }}
                         >
                           {applicant.profileImageUrl ? (
-                            <img
+                            <Image
                               src={applicant.profileImageUrl}
-                              alt={applicant.nickname}
-                              style={{ width: 28, height: 28, borderRadius: '50%' }}
+                              alt="프로필"
+                              width={40}
+                              height={40}
+                              style={{ borderRadius: '50%' }}
                             />
                           ) : (
                             applicant.nickname.charAt(0).toUpperCase()

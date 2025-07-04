@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import * as styles from './createTeam.css';
+import Image from 'next/image';
 
 interface Tournament {
   id: string;
@@ -268,10 +269,12 @@ export default function CreateTeamPage() {
                       >
                         <div className={styles.memberAvatar}>
                           {user.profileImageUrl ? (
-                            <img
+                            <Image
                               src={user.profileImageUrl}
-                              alt={user.nickname}
-                              style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                              alt="프로필"
+                              width={40}
+                              height={40}
+                              style={{ borderRadius: '50%' }}
                             />
                           ) : (
                             user.nickname.charAt(0).toUpperCase()

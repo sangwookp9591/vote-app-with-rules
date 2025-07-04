@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 // 사용자 목록 조회 (GET)
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const users = await prisma.user.findMany({
       select: {

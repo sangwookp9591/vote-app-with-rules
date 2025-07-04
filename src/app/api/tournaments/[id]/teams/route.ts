@@ -4,8 +4,8 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // 팀 생성 (POST)
-export async function POST(req: NextRequest, context: { params: { id: string } }) {
-  const { params } = context;
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const body = await req.json();
     const { name, leaderId, members } = body;
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
 
     // 토너먼트 정보 조회
     const tournament = await prisma.tournament.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!tournament) {
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
     const team = await prisma.team.create({
       data: {
         name,
-        tournamentId: params.id,
+        tournamentId: id,
         members: {
           create: members.map((memberId: string, index: number) => ({
             userId: memberId,
@@ -96,11 +96,11 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
 }
 
 // 토너먼트의 팀 목록 조회 (GET)
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
-  const { params } = context;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const teams = await prisma.team.findMany({
-      where: { tournamentId: params.id },
+      where: { tournamentId: id },
       include: {
         members: {
           include: {

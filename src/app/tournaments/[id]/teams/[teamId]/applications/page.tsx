@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 
 interface Application {
   id: string;
@@ -133,10 +134,12 @@ export default function TeamApplicationsPage() {
                 }}
               >
                 {app.user.profileImageUrl ? (
-                  <img
+                  <Image
                     src={app.user.profileImageUrl}
-                    alt={app.user.nickname}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    alt="프로필"
+                    width={40}
+                    height={40}
+                    style={{ borderRadius: '50%' }}
                   />
                 ) : (
                   app.user.nickname.charAt(0).toUpperCase()

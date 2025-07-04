@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 // 팀원 초대 상태 변경 (수락/거절)
 export async function PATCH(
   req: NextRequest,
-  context: { params: { id: string; teamId: string; memberId: string } },
+  { params }: { params: Promise<{ id: string; teamId: string; memberId: string }> },
 ) {
-  const { memberId } = context.params;
+  const { memberId } = await params;
   try {
     const { inviteStatus } = await req.json();
     if (!['ACCEPTED', 'REJECTED'].includes(inviteStatus)) {
