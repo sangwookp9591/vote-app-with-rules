@@ -3,6 +3,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 interface TeamMember {
   id: string;
@@ -30,6 +31,7 @@ interface Applicant {
 
 export default function TeamDetailPage() {
   const params = useParams();
+  const { data: session } = useSession();
   const tournamentId = params?.id as string;
   const teamId = params?.teamId as string;
 
@@ -37,7 +39,7 @@ export default function TeamDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   // TODO: 실제 로그인 정보로 대체
-  const isLeader = true;
+  const isLeader = team && session?.user?.id && team.leader?.id === session.user.id;
   const [showInvite, setShowInvite] = useState(false);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [inviteLoading, setInviteLoading] = useState(false);
@@ -95,6 +97,7 @@ export default function TeamDetailPage() {
   if (error) return <div style={{ padding: 24, color: '#ff4f9f' }}>{error}</div>;
   if (!team) return <div style={{ padding: 24 }}>팀 정보를 찾을 수 없습니다.</div>;
 
+  console.log('team : ', team);
   return (
     <div style={{ maxWidth: 600, margin: '0 auto', padding: 24 }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{team.name}</h1>
