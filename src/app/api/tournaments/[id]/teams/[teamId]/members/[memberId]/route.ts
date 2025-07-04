@@ -26,3 +26,17 @@ export async function PATCH(
     return NextResponse.json({ error: '팀원 상태 변경 실패', detail: String(e) }, { status: 500 });
   }
 }
+
+// 팀원 추방 (DELETE)
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string; teamId: string; memberId: string }> },
+) {
+  const { memberId } = await params;
+  try {
+    await prisma.teamMember.delete({ where: { id: memberId } });
+    return NextResponse.json({ success: true });
+  } catch (e) {
+    return NextResponse.json({ error: '팀원 추방 실패', detail: String(e) }, { status: 500 });
+  }
+}

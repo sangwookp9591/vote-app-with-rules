@@ -102,6 +102,27 @@ export default function TeamDetailPage() {
     setShowInvite(false);
   };
 
+  // 팀원 추방
+  const handleKick = async (memberId: string) => {
+    if (!team) return;
+    if (!window.confirm('정말로 이 팀원을 추방하시겠습니까?')) return;
+    try {
+      const res = await fetch(
+        `/api/tournaments/${tournamentId}/teams/${teamId}/members/${memberId}`,
+        {
+          method: 'DELETE',
+        },
+      );
+      if (!res.ok) throw new Error('팀원 추방 실패');
+      setTeam({
+        ...team,
+        members: team.members.filter((m) => m.id !== memberId),
+      });
+    } catch (e) {
+      alert(e instanceof Error ? e.message : '알 수 없는 오류');
+    }
+  };
+
   if (loading) return <div style={{ padding: 24 }}>로딩 중...</div>;
   if (error) return <div style={{ padding: 24, color: '#ff4f9f' }}>{error}</div>;
   if (!team) return <div style={{ padding: 24 }}>팀 정보를 찾을 수 없습니다.</div>;
@@ -195,8 +216,7 @@ export default function TeamDetailPage() {
                         border: 'none',
                         cursor: 'pointer',
                       }}
-                      // TODO: 추방 API 연동
-                      onClick={() => alert(`${member.nickname} 추방 (API 연동 필요)`)}
+                      onClick={() => handleKick(member.id)}
                     >
                       추방
                     </button>
