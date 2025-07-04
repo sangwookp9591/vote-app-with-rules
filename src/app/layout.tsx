@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
-import localFont from 'next/font/local';
 import './globals.css';
 import AppShell from './AppShell';
+import { Nanum_Gothic } from 'next/font/google';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -13,12 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const nanumBarunGothic = localFont({
-  src: '../../public/fonts/NanumBarunGothic.ttf',
-  display: 'swap',
-  weight: '400',
-  variable: '--font-nanumbarun',
-});
+const nanumGothic = Nanum_Gothic({ subsets: ['latin'], weight: ['400', '700'] });
 
 export const metadata = {
   title: 'LoL SWL',
@@ -47,11 +42,15 @@ const themeInitScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" suppressHydrationWarning className={nanumBarunGothic.variable}>
+    <html
+      lang="ko"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} ${nanumGothic.className}`}
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${nanumBarunGothic.className}`}>
+      <body>
         <AppShell>{children}</AppShell>
       </body>
     </html>
