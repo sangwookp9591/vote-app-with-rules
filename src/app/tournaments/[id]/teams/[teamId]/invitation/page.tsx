@@ -104,37 +104,47 @@ export default function TeamInvitationPage() {
           ))}
         </ul>
       </div>
-      <div style={{ display: 'flex', gap: 16 }}>
-        <button
+      <div style={{ display: 'flex', gap: 24, marginTop: 32, justifyContent: 'center' }}>
+        <span
           onClick={handleAccept}
           style={{
+            display: 'inline-block',
+            padding: '12px 32px',
             background: '#4f9fff',
             color: 'white',
-            border: 'none',
-            borderRadius: 6,
-            padding: '10px 24px',
-            fontWeight: 600,
-            fontSize: 16,
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: 18,
             cursor: 'pointer',
+            boxShadow: '0 2px 8px #4f9fff22',
+            transition: 'background 0.2s',
+            userSelect: 'none',
           }}
+          onMouseOver={(e) => (e.currentTarget.style.background = '#357ae8')}
+          onMouseOut={(e) => (e.currentTarget.style.background = '#4f9fff')}
         >
-          수락
-        </button>
-        <button
+          수락하기
+        </span>
+        <span
           onClick={handleReject}
           style={{
+            display: 'inline-block',
+            padding: '12px 32px',
             background: '#eee',
             color: '#ff4f4f',
-            border: 'none',
-            borderRadius: 6,
-            padding: '10px 24px',
-            fontWeight: 600,
-            fontSize: 16,
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: 18,
             cursor: 'pointer',
+            boxShadow: '0 2px 8px #ff4f4f22',
+            transition: 'background 0.2s',
+            userSelect: 'none',
           }}
+          onMouseOver={(e) => (e.currentTarget.style.background = '#ffd6d6')}
+          onMouseOut={(e) => (e.currentTarget.style.background = '#eee')}
         >
-          거절
-        </button>
+          거절하기
+        </span>
       </div>
     </div>
   );
