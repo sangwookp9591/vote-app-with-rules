@@ -280,33 +280,29 @@ export default function ApplicantsPage() {
                 <div className={styles.createdAt}>
                   {new Date(a.createdAt).toLocaleString('ko-KR')}
                 </div>
-                {isLeader &&
-                  !isAcceptedInAnyTeam &&
-                  !isAcceptedMember &&
-                  !isPendingInvite &&
-                  a.user.id !== session?.user?.id && (
-                    <button
-                      style={{
-                        marginTop: 8,
-                        background: invited.includes(a.user.id) ? '#aaa' : '#4f9fff',
-                        color: 'white',
-                        borderRadius: 6,
-                        padding: '6px 18px',
-                        fontWeight: 700,
-                        border: 'none',
-                        cursor: invited.includes(a.user.id) ? 'not-allowed' : 'pointer',
-                        opacity: inviteLoading === a.user.id ? 0.6 : 1,
-                      }}
-                      disabled={inviteLoading === a.user.id || invited.includes(a.user.id)}
-                      onClick={() => handleInvite(a.user.id)}
-                    >
-                      {inviteLoading === a.user.id
-                        ? '초대 중...'
-                        : invited.includes(a.user.id)
-                          ? '초대 완료'
-                          : '초대'}
-                    </button>
-                  )}
+                {isLeader && a.user.id !== session?.user?.id && (
+                  <button
+                    style={{
+                      marginTop: 8,
+                      background: invited.includes(a.user.id) ? '#aaa' : '#4f9fff',
+                      color: 'white',
+                      borderRadius: 6,
+                      padding: '6px 18px',
+                      fontWeight: 700,
+                      border: 'none',
+                      cursor: invited.includes(a.user.id) ? 'not-allowed' : 'pointer',
+                      opacity: inviteLoading === a.user.id ? 0.6 : 1,
+                    }}
+                    disabled={inviteLoading === a.user.id || invited.includes(a.user.id)}
+                    onClick={() => handleInvite(a.user.id)}
+                  >
+                    {inviteLoading === a.user.id
+                      ? '초대 중...'
+                      : invited.includes(a.user.id)
+                        ? '초대 완료'
+                        : '초대'}
+                  </button>
+                )}
                 {isPendingInvite && <span style={{ color: '#4f9fff', marginTop: 8 }}>초대됨</span>}
                 {isAcceptedInAnyTeam && !isAcceptedMember && (
                   <span style={{ color: '#aaa', marginTop: 8 }}>이미 다른 팀원</span>
