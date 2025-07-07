@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 interface Team {
   id: string;
@@ -17,6 +18,8 @@ export default function TeamInvitationPage() {
   const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { data: session } = useSession();
+  const user = session?.user;
 
   useEffect(() => {
     if (!tournamentId || !teamId) return;
@@ -28,15 +31,44 @@ export default function TeamInvitationPage() {
       .finally(() => setLoading(false));
   }, [tournamentId, teamId]);
 
+  const myMember = team?.members.find((m) => m.user.id === user?.id);
+  const myMemberId = myMember?.id;
+
   const handleAccept = async () => {
-    // TODO: 실제 수락 API 연동
-    alert('수락 처리 (API 연동 필요)');
-    router.push('/my/teams');
+    if (!myMemberId) return alert('내 팀 멤버 정보를 찾을 수 없습니다.');
+    try {
+      const res = await fetch(
+        `/api/tournaments/${tournamentId}/teams/${teamId}/members/${myMemberId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ inviteStatus: 'ACCEPTED' }),
+        },
+      );
+      if (!res.ok) throw new Error('수락 실패');
+      alert('팀 초대를 수락했습니다!');
+      router.push('/my/teams');
+    } catch {
+      alert('수락 처리에 실패했습니다.');
+    }
   };
   const handleReject = async () => {
-    // TODO: 실제 거절 API 연동
-    alert('거절 처리 (API 연동 필요)');
-    router.push('/notifications');
+    if (!myMemberId) return alert('내 팀 멤버 정보를 찾을 수 없습니다.');
+    try {
+      const res = await fetch(
+        `/api/tournaments/${tournamentId}/teams/${teamId}/members/${myMemberId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ inviteStatus: 'REJECTED' }),
+        },
+      );
+      if (!res.ok) throw new Error('거절 실패');
+      alert('팀 초대를 거절했습니다.');
+      router.push('/notifications');
+    } catch {
+      alert('거절 처리에 실패했습니다.');
+    }
   };
 
   if (loading) return <div style={{ padding: 32 }}>로딩 중...</div>;
