@@ -239,6 +239,12 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
                     onMouseOut={(e) =>
                       (e.currentTarget.style.background = n.isRead ? '' : 'rgba(79,159,255,0.07)')
                     }
+                    onClick={() => {
+                      // TEAM_INVITATION이면 팀 정보 페이지(n.link)로 이동
+                      if (n.type === 'TEAM_INVITATION' && n.link) {
+                        window.location.href = n.link;
+                      }
+                    }}
                   >
                     <span style={{ fontSize: 22, marginTop: 2 }}>
                       {getNotificationIcon((n as NotificationItem).type)}
