@@ -10,6 +10,7 @@ interface NotificationItem {
   isRead: boolean;
   createdAt: string;
   type: string;
+  link?: string | null;
 }
 
 export default function NotificationsPage() {
@@ -132,7 +133,7 @@ export default function NotificationsPage() {
               </div>
               {n.type === 'TEAM_INVITATION' && !n.isRead && (
                 <Link
-                  href="/my/teams"
+                  href={n.link || '/my/teams'}
                   style={{
                     background: '#4f9fff',
                     color: 'white',
