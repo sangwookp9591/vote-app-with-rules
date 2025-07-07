@@ -40,7 +40,7 @@ interface Applicant {
     nickname: string;
     profileImageUrl?: string;
   };
-  [key: string]: any;
+  gameData?: Record<string, unknown>;
 }
 
 interface TeamMember {
@@ -281,6 +281,9 @@ export default function TournamentDetailPage() {
             팀 생성하기
           </Link>
         )}
+        <Link href={`/tournaments/${tournamentId}/teams/create`} className={applyButton}>
+          팀 생성하기
+        </Link>
         <Link href={`/tournaments/${tournamentId}/apply`} className={applyButton}>
           참가 신청
         </Link>
