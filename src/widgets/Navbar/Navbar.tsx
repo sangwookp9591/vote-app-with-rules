@@ -14,12 +14,13 @@ interface NavbarProps {
   sidebarOpen?: boolean;
 }
 
-type UserWithProfile = {
+interface UserWithProfile {
+  id?: string;
   email?: string;
   name?: string;
   nickname?: string;
   profileImageUrl?: string;
-};
+}
 
 interface NotificationItem {
   id: string;
@@ -31,9 +32,11 @@ interface NotificationItem {
   link?: string;
 }
 
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+
 export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
   const { data: session } = useSession();
-  const user = session?.user as UserWithProfile;
+  const user = session?.user as UserWithProfile | undefined;
 
   // 알림 상태 (실제 구현 시 fetch로 대체)
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -52,23 +55,31 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
 
   // socket.io 연결 (최상위에서 1회만)
   useEffect(() => {
-    let socket: ReturnType<typeof io> | null = null;
-    if (!user) return;
+    if (!user?.id) return;
     if (socketRef.current) return;
-    socket = io({ path: '/api/socket', transports: ['websocket'] });
+    const url = SOCKET_URL && SOCKET_URL.length > 0 ? SOCKET_URL : undefined;
+    const socket = url
+      ? io(url, { path: '/api/socket', transports: ['websocket'] })
+      : io({ path: '/api/socket', transports: ['websocket'] });
     socketRef.current = socket;
     socket.on('connect', () => {
-      console.log('Socket connected:', socket.id);
-      if (user && user.email) {
-        socket.emit('join', user.email);
+      if (user.id) {
+        socket.emit('join', user.id);
+        // join 직후 missed notification fetch
+        fetch('/api/notifications')
+          .then((res) => res.json())
+          .then((data) => setNotifications(data));
+        // join 후 10초간 polling (1초마다)
+        let pollCount = 0;
+        const pollInterval = setInterval(() => {
+          fetch('/api/notifications')
+            .then((res) => res.json())
+            .then((data) => setNotifications(data));
+          pollCount += 1;
+          if (pollCount >= 10) clearInterval(pollInterval);
+        }, 1000);
       }
       socket.emit('ping');
-    });
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected');
-    });
-    socket.on('pong', () => {
-      console.log('서버로부터 pong 수신!');
     });
     socket.on('notification', (notification: NotificationItem) => {
       setNotifications((prev) => [notification, ...prev]);
@@ -79,7 +90,7 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
         socketRef.current = null;
       }
     };
-  }, [user]);
+  }, [user?.id]);
 
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
