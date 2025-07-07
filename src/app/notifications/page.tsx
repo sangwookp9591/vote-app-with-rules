@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface NotificationItem {
   id: string;
@@ -18,6 +19,7 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     setLoading(true);
@@ -121,6 +123,18 @@ export default function NotificationsPage() {
                 padding: 16,
                 position: 'relative',
                 boxShadow: n.type === 'TEAM_KICK' ? '0 0 8px #ff4f4f33' : undefined,
+                cursor: n.link ? 'pointer' : undefined,
+              }}
+              onClick={async (e) => {
+                if (
+                  (e.target as HTMLElement).tagName === 'BUTTON' ||
+                  (e.target as HTMLElement).tagName === 'A'
+                )
+                  return;
+                if (n.link) {
+                  await handleRead(n.id);
+                  router.push(n.link);
+                }
               }}
             >
               <span style={{ fontSize: 28 }}>{getNotificationIcon(n.type)}</span>
