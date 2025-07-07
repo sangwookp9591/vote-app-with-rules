@@ -119,6 +119,7 @@ model Tournament {
 model Team {
   id          String    @id @default(cuid())
   name        String
+  description String?   // 팀 설명 필드 추가
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

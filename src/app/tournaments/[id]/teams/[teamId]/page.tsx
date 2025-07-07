@@ -151,16 +151,46 @@ export default function TeamDetailPage() {
               key={m.id}
               style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}
             >
-              {m.profileImageUrl && (
+              {m.user.profileImageUrl && (
                 <Image
-                  src={m.profileImageUrl}
+                  src={m.user.profileImageUrl}
                   alt="프로필"
                   width={32}
                   height={32}
                   style={{ borderRadius: '50%' }}
                 />
               )}
-              <span>{m.nickname}</span>
+              <span style={{ fontWeight: 600 }}>
+                {m.user.nickname}
+                {m.isLeader && <span style={{ marginLeft: 6 }}>👑</span>}
+              </span>
+              <span
+                style={{
+                  marginLeft: 8,
+                  padding: '2px 10px',
+                  borderRadius: 12,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  background:
+                    m.inviteStatus === 'ACCEPTED'
+                      ? '#e6f7ff'
+                      : m.inviteStatus === 'PENDING'
+                        ? '#fffbe6'
+                        : '#ffeaea',
+                  color:
+                    m.inviteStatus === 'ACCEPTED'
+                      ? '#1890ff'
+                      : m.inviteStatus === 'PENDING'
+                        ? '#faad14'
+                        : '#ff4d4f',
+                }}
+              >
+                {m.inviteStatus === 'ACCEPTED'
+                  ? '수락'
+                  : m.inviteStatus === 'PENDING'
+                    ? '대기'
+                    : '거절'}
+              </span>
             </li>
           ))}
         </ul>
