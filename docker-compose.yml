@@ -13,6 +13,8 @@ services:
       - db_data:/var/lib/postgresql/data
 
   app:
+    env_file:
+      - .env
     build: .
     ports:
       - '3000:3000'
@@ -22,6 +24,28 @@ services:
       - db
     volumes:
       - uploads_data:/app/uploads
+
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env.local
+    environment:
+      - NEXT_PUBLIC_SOCKET_URL=http://socket-server:4000
+    depends_on:
+      - socket-server
+
+  socket-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.socket
+    command: node server/socket-server.js
+    ports:
+      - '4000:4000'
+    restart: always
 
 volumes:
   db_data:

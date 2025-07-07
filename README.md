@@ -313,3 +313,39 @@ Docker 환경에서는 자동으로 `docker-compose.yml`의 환경변수가 사�
   - schema.prisma에 필드를 추가하고, prisma migrate로 DB에 반영
 
 ---
+
+# 실시간 알림(socket.io) 구조 (Next.js 15)
+
+## 구조 요약
+
+- **socket.io 서버**: 별도 Node 서버(`server/socket-server.js`)에서 실행 (예: 4000번 포트)
+- **Next.js**: 프론트엔드/SSR/REST API만 담당 (socket.io 서버 내장 불가)
+- **프론트엔드 연결**: 환경변수(`NEXT_PUBLIC_SOCKET_URL`)로 socket.io 서버 URL 명시
+- **실시간 알림 emit**: Next.js API에서 socket-server의 `/emit` REST endpoint로 POST
+
+## 환경변수 설정 (.env.local)
+
+```
+NEXT_PUBLIC_SOCKET_URL=http://localhost:4000
+```
+
+## 실행 방법
+
+1. **socket.io 서버 실행**
+   ```bash
+   node server/socket-server.js
+   # 또는 pm2/nodemon 등으로 실행
+   ```
+2. **Next.js 앱 실행**
+   ```bash
+   npm run dev
+   # 또는 yarn dev
+   ```
+3. **프론트엔드/백엔드 모두에서 실시간 알림 정상 동작**
+
+## 기타 참고
+
+- Next.js 15(app router)에서는 `/api/socket` 등으로 socket.io 서버를 붙일 수 없습니다.
+- 반드시 별도 Node 서버에서 socket.io를 운영해야 하며, 프론트/백엔드는 REST로만 통신합니다.
+
+---
