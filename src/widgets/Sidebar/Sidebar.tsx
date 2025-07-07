@@ -3,15 +3,7 @@
 import styles from './Sidebar.module.css';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-const menu = [
-  { label: '홈', href: '#' },
-  { label: '토너먼트', href: '/tournaments' },
-  { label: '인기 스트리머', href: '#' },
-  { label: '팀 관리', href: '#' },
-  { label: '스트리머 승인', href: '/admin/streamer-applications' },
-];
+import Link from 'next/link';
 
 export default function Sidebar({ open }: { open: boolean }) {
   const { data: session } = useSession();
@@ -19,7 +11,6 @@ export default function Sidebar({ open }: { open: boolean }) {
   const [leaderTeam, setLeaderTeam] = useState<{ tournamentId: string; teamId: string } | null>(
     null,
   );
-  const router = useRouter();
 
   useEffect(() => {
     async function fetchLeaderTeam() {
@@ -29,9 +20,9 @@ export default function Sidebar({ open }: { open: boolean }) {
       try {
         const res = await fetch('/api/my/teams');
         if (!res.ok) return;
-        const data = await res.json();
-        // [{ tournamentId, teamId, isLeader: true/false } ...]
-        const myLeaderTeam = data.find((t: any) => t.isLeader);
+        const data: { tournamentId: string; teamId: string; isLeader: boolean }[] =
+          await res.json();
+        const myLeaderTeam = data.find((t) => t.isLeader);
         if (myLeaderTeam) {
           setLeaderTeam({ tournamentId: myLeaderTeam.tournamentId, teamId: myLeaderTeam.teamId });
         } else {
@@ -51,11 +42,34 @@ export default function Sidebar({ open }: { open: boolean }) {
       <div>
         <div className={styles.logo}>LoL SWL</div>
         <nav className={styles.menu}>
-          {menu.map((item) => (
-            <a key={item.label} href={item.href} className={styles.menuItem}>
-              {item.label}
-            </a>
-          ))}
+          <a href="#" className={styles.menuItem}>
+            홈
+          </a>
+          <Link href="/tournaments" className={styles.menuItem}>
+            토너먼트
+          </Link>
+          <a href="#" className={styles.menuItem}>
+            인기 스트리머
+          </a>
+          {leaderTeam ? (
+            <Link
+              className={styles.menuItem}
+              href={`/tournaments/${leaderTeam.tournamentId}/teams/${leaderTeam.teamId}`}
+              style={{ color: '#4f9fff', fontWeight: 700 }}
+            >
+              팀 관리
+            </Link>
+          ) : (
+            <span
+              className={styles.menuItem}
+              style={{ color: '#aaa', cursor: 'not-allowed', fontWeight: 400 }}
+            >
+              팀 관리
+            </span>
+          )}
+          <Link href="/admin/streamer-applications" className={styles.menuItem}>
+            스트리머 승인
+          </Link>
         </nav>
       </div>
       <div className={styles.bottom}>
