@@ -48,7 +48,7 @@ export default function TeamInvitationPage() {
       );
       if (!res.ok) throw new Error('수락 실패');
       alert('팀 초대를 수락했습니다!');
-      router.push('/my/teams');
+      setTimeout(() => router.push('/my/teams'), 100);
     } catch {
       alert('수락 처리에 실패했습니다.');
     }
@@ -66,7 +66,7 @@ export default function TeamInvitationPage() {
       );
       if (!res.ok) throw new Error('거절 실패');
       alert('팀 초대를 거절했습니다.');
-      router.push('/notifications');
+      setTimeout(() => router.push('/notifications'), 100);
     } catch {
       alert('거절 처리에 실패했습니다.');
     }
@@ -134,7 +134,8 @@ export default function TeamInvitationPage() {
         </ul>
       </div>
       <div style={{ display: 'flex', gap: 24, marginTop: 32, justifyContent: 'center' }}>
-        <span
+        <button
+          type="button"
           onClick={handleAccept}
           style={{
             display: 'inline-block',
@@ -146,6 +147,7 @@ export default function TeamInvitationPage() {
             fontSize: 18,
             cursor: 'pointer',
             boxShadow: '0 2px 8px #4f9fff22',
+            border: 'none',
             transition: 'background 0.2s',
             userSelect: 'none',
           }}
@@ -153,8 +155,9 @@ export default function TeamInvitationPage() {
           onMouseOut={(e) => (e.currentTarget.style.background = '#4f9fff')}
         >
           수락하기
-        </span>
-        <span
+        </button>
+        <button
+          type="button"
           onClick={handleReject}
           style={{
             display: 'inline-block',
@@ -166,6 +169,7 @@ export default function TeamInvitationPage() {
             fontSize: 18,
             cursor: 'pointer',
             boxShadow: '0 2px 8px #ff4f4f22',
+            border: 'none',
             transition: 'background 0.2s',
             userSelect: 'none',
           }}
@@ -173,7 +177,7 @@ export default function TeamInvitationPage() {
           onMouseOut={(e) => (e.currentTarget.style.background = '#eee')}
         >
           거절하기
-        </span>
+        </button>
       </div>
     </div>
   );
