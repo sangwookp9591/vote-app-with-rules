@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { setSocketServer } from '@/shared/api/socketServer';
 
 export const config = {
   api: {
@@ -26,6 +27,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       },
     });
     anyRes.socket.server.io = io;
+    setSocketServer(io);
     io.on('connection', (socket) => {
       console.log('Socket connected:', socket.id);
       socket.on('join', (userId: string) => {
