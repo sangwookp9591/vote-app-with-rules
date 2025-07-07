@@ -1,6 +1,5 @@
 'use client';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
@@ -38,7 +37,6 @@ export default function TeamDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const user = session?.user;
-  const [showManage, setShowManage] = useState(false);
   const [members, setMembers] = useState<TeamMember[]>(team?.members || []);
 
   useEffect(() => {
@@ -100,83 +98,218 @@ export default function TeamDetailPage() {
   const isLeader = team && team.members.find((m) => m.isLeader && m.user.id === user?.id);
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 16 }}>팀 상세</h1>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 20, fontWeight: 600 }}>{team.name}</div>
-        <div style={{ color: '#888', marginTop: 4 }}>{team.description || '설명 없음'}</div>
+    <div style={{ maxWidth: 700, margin: '0 auto', padding: 32 }}>
+      {/* 팀 정보 카드 */}
+      <div
+        style={{
+          background: 'linear-gradient(90deg, #e6f0ff 0%, #f8fbff 100%)',
+          borderRadius: 18,
+          padding: 32,
+          marginBottom: 32,
+          boxShadow: '0 2px 16px #e6f0ff55',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 32,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div
+          style={{
+            width: 80,
+            height: 80,
+            borderRadius: '50%',
+            background: '#4f9fff22',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 36,
+            fontWeight: 800,
+            color: '#4f9fff',
+          }}
+        >
+          {team.name[0]}
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#222' }}>{team.name}</div>
+          <div style={{ color: '#888', marginTop: 6, fontSize: 15 }}>
+            {team.description || '설명 없음'}
+          </div>
+          <div style={{ marginTop: 8, fontSize: 13, color: '#4f9fff', fontWeight: 600 }}>
+            팀장: {team.leader?.nickname} <span style={{ fontSize: 18 }}>👑</span>
+          </div>
+        </div>
       </div>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>팀 멤버</div>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+
+      {/* 멤버 목록 카드 */}
+      <div
+        style={{
+          background: '#fff',
+          borderRadius: 16,
+          padding: 24,
+          marginBottom: 32,
+          boxShadow: '0 2px 12px #e0e7ef33',
+        }}
+      >
+        <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 18 }}>팀 멤버</div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 18,
+          }}
+        >
           {members.map((m) => (
-            <li
+            <div
               key={m.id}
-              style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                background: '#f8fbff',
+                borderRadius: 12,
+                padding: '12px 16px',
+                boxShadow: m.isLeader ? '0 0 0 2px #4f9fff55' : undefined,
+                border: m.isLeader ? '2px solid #4f9fff' : '1px solid #e0e7ef',
+              }}
             >
-              {m.user.profileImageUrl && (
+              {m.user.profileImageUrl ? (
                 <Image
                   src={m.user.profileImageUrl}
                   alt="프로필"
-                  width={32}
-                  height={32}
-                  style={{ borderRadius: '50%' }}
+                  width={40}
+                  height={40}
+                  style={{ borderRadius: '50%', border: m.isLeader ? '2px solid #4f9fff' : 'none' }}
                 />
+              ) : (
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    background: '#e0e7ef',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                    fontSize: 18,
+                    color: '#4f9fff',
+                    border: m.isLeader ? '2px solid #4f9fff' : 'none',
+                  }}
+                >
+                  {m.user.nickname[0]}
+                </div>
               )}
-              <span style={{ fontWeight: 600 }}>
-                {m.user.nickname}
-                {m.isLeader && <span style={{ marginLeft: 6 }}>👑</span>}
-              </span>
-              <span
-                style={{
-                  marginLeft: 8,
-                  padding: '2px 10px',
-                  borderRadius: 12,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  background:
-                    m.inviteStatus === 'ACCEPTED'
-                      ? '#e6f7ff'
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 15, color: '#222' }}>
+                  {m.user.nickname} {m.isLeader && <span style={{ fontSize: 18 }}>👑</span>}
+                </div>
+                <div style={{ marginTop: 2 }}>
+                  <span
+                    style={{
+                      padding: '2px 10px',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      background:
+                        m.inviteStatus === 'ACCEPTED'
+                          ? '#e6f7ff'
+                          : m.inviteStatus === 'PENDING'
+                            ? '#fffbe6'
+                            : '#ffeaea',
+                      color:
+                        m.inviteStatus === 'ACCEPTED'
+                          ? '#1890ff'
+                          : m.inviteStatus === 'PENDING'
+                            ? '#faad14'
+                            : '#ff4d4f',
+                    }}
+                  >
+                    {m.inviteStatus === 'ACCEPTED'
+                      ? '수락'
                       : m.inviteStatus === 'PENDING'
-                        ? '#fffbe6'
-                        : '#ffeaea',
-                  color:
-                    m.inviteStatus === 'ACCEPTED'
-                      ? '#1890ff'
-                      : m.inviteStatus === 'PENDING'
-                        ? '#faad14'
-                        : '#ff4d4f',
-                }}
+                        ? '대기'
+                        : '거절'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 팀 관리 패널 (팀장만) */}
+      {isLeader && (
+        <div
+          style={{
+            background: '#f6faff',
+            border: '2px solid #e0e7ef',
+            borderRadius: 16,
+            padding: 24,
+            marginBottom: 32,
+            boxShadow: '0 2px 12px #e0e7ef33',
+          }}
+        >
+          <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 18, color: '#4f9fff' }}>
+            팀원 관리 패널
+          </div>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {members.map((m) => (
+              <li
+                key={m.id}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}
               >
-                {m.inviteStatus === 'ACCEPTED'
-                  ? '수락'
-                  : m.inviteStatus === 'PENDING'
-                    ? '대기'
-                    : '거절'}
-              </span>
-              {isLeader && !m.isLeader && (
-                <>
-                  {m.inviteStatus === 'PENDING' && (
-                    <>
+                <span style={{ fontWeight: 600 }}>
+                  {m.user.nickname}
+                  {m.isLeader && ' 👑'}
+                </span>
+                <span style={{ marginLeft: 8 }}>
+                  {m.inviteStatus === 'ACCEPTED'
+                    ? '수락'
+                    : m.inviteStatus === 'PENDING'
+                      ? '대기'
+                      : '거절'}
+                </span>
+                {!m.isLeader && (
+                  <>
+                    {m.inviteStatus === 'PENDING' && (
+                      <>
+                        <button
+                          onClick={() => handleStatusChange(m.id, 'ACCEPTED')}
+                          style={{
+                            marginLeft: 8,
+                            background: '#4f9fff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 6,
+                            padding: '4px 12px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          승인
+                        </button>
+                        <button
+                          onClick={() => handleStatusChange(m.id, 'REJECTED')}
+                          style={{
+                            marginLeft: 4,
+                            background: '#eee',
+                            color: '#ff4f4f',
+                            border: 'none',
+                            borderRadius: 6,
+                            padding: '4px 12px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          거절
+                        </button>
+                      </>
+                    )}
+                    {m.inviteStatus === 'ACCEPTED' && (
                       <button
-                        onClick={() => handleStatusChange(m.id, 'ACCEPTED')}
+                        onClick={() => handleKick(m.id)}
                         style={{
                           marginLeft: 8,
-                          background: '#4f9fff',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: 6,
-                          padding: '4px 12px',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        승인
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(m.id, 'REJECTED')}
-                        style={{
-                          marginLeft: 4,
                           background: '#eee',
                           color: '#ff4f4f',
                           border: 'none',
@@ -186,146 +319,16 @@ export default function TeamDetailPage() {
                           cursor: 'pointer',
                         }}
                       >
-                        거절
+                        추방
                       </button>
-                    </>
-                  )}
-                  {m.inviteStatus === 'ACCEPTED' && (
-                    <button
-                      onClick={() => handleKick(m.id)}
-                      style={{
-                        marginLeft: 8,
-                        background: '#eee',
-                        color: '#ff4f4f',
-                        border: 'none',
-                        borderRadius: 6,
-                        padding: '4px 12px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      추방
-                    </button>
-                  )}
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-      {isLeader && (
-        <div style={{ marginTop: 32 }}>
-          <button
-            onClick={() => setShowManage((v) => !v)}
-            style={{
-              background: showManage ? '#222' : '#4f9fff',
-              color: 'white',
-              borderRadius: 6,
-              padding: '10px 24px',
-              fontWeight: 700,
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            {showManage ? '팀 관리 닫기' : '팀 관리'}
-          </button>
-          {showManage && (
-            <div
-              style={{
-                border: '1.5px solid #e0e7ef',
-                borderRadius: 12,
-                padding: 18,
-                marginTop: 16,
-              }}
-            >
-              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>팀원 관리</h2>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                {members.map((m) => (
-                  <li
-                    key={m.id}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}
-                  >
-                    <span style={{ fontWeight: 600 }}>
-                      {m.user.nickname}
-                      {m.isLeader && ' 👑'}
-                    </span>
-                    <span style={{ marginLeft: 8 }}>
-                      {m.inviteStatus === 'ACCEPTED'
-                        ? '수락'
-                        : m.inviteStatus === 'PENDING'
-                          ? '대기'
-                          : '거절'}
-                    </span>
-                    {!m.isLeader && (
-                      <>
-                        {m.inviteStatus === 'PENDING' && (
-                          <>
-                            <button
-                              onClick={() => handleStatusChange(m.id, 'ACCEPTED')}
-                              style={{
-                                marginLeft: 8,
-                                background: '#4f9fff',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: 6,
-                                padding: '4px 12px',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                              }}
-                            >
-                              승인
-                            </button>
-                            <button
-                              onClick={() => handleStatusChange(m.id, 'REJECTED')}
-                              style={{
-                                marginLeft: 4,
-                                background: '#eee',
-                                color: '#ff4f4f',
-                                border: 'none',
-                                borderRadius: 6,
-                                padding: '4px 12px',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                              }}
-                            >
-                              거절
-                            </button>
-                          </>
-                        )}
-                        {m.inviteStatus === 'ACCEPTED' && (
-                          <button
-                            onClick={() => handleKick(m.id)}
-                            style={{
-                              marginLeft: 8,
-                              background: '#eee',
-                              color: '#ff4f4f',
-                              border: 'none',
-                              borderRadius: 6,
-                              padding: '4px 12px',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                            }}
-                          >
-                            추방
-                          </button>
-                        )}
-                      </>
                     )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
-      <div style={{ marginTop: 32 }}>
-        <Link
-          href={`/tournaments/${tournamentId}/teams`}
-          style={{ color: '#4f9fff', textDecoration: 'underline' }}
-        >
-          팀 목록으로 돌아가기
-        </Link>
-      </div>
     </div>
   );
 }
