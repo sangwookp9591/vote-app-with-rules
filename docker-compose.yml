@@ -11,6 +11,8 @@ services:
       - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - vote-net
 
   app:
     env_file:
@@ -20,23 +22,28 @@ services:
       - '3000:3000'
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/mydb
+      NEXT_PUBLIC_SOCKET_URL: http://socket-server:4000
     depends_on:
       - db
     volumes:
       - uploads_data:/app/uploads
+    networks:
+      - vote-net
 
   nextjs:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - '3001:3000'
     env_file:
       - .env.local
     environment:
       - NEXT_PUBLIC_SOCKET_URL=http://socket-server:4000
     depends_on:
       - socket-server
+    networks:
+      - vote-net
 
   socket-server:
     build:
@@ -46,7 +53,13 @@ services:
     ports:
       - '4000:4000'
     restart: always
+    networks:
+      - vote-net
 
 volumes:
   db_data:
   uploads_data:
+
+networks:
+  vote-net:
+    driver: bridge
