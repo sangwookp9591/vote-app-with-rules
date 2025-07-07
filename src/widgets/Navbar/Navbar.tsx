@@ -37,6 +37,7 @@ const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
   const { data: session } = useSession();
   const user = session?.user as UserWithProfile | undefined;
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   // 알림 상태 (실제 구현 시 fetch로 대체)
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -106,12 +107,6 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-  const handleNotificationClick = (id: string, link?: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
-    setDropdownOpen(false);
-    if (link) window.location.href = link;
-  };
-
   function getNotificationIcon(type: string) {
     switch (type) {
       case 'TEAM_INVITATION':
@@ -134,6 +129,47 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
     if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
     return date.toLocaleDateString('ko-KR');
   }
+
+  // TEAM_INVITATION 수락/거절 핸들러
+  const handleInvitation = async (n: NotificationItem, action: 'ACCEPTED' | 'REJECTED') => {
+    if (!user?.id || !n.link) return;
+    setProcessingId(n.id);
+    try {
+      // 링크에서 tournamentId, teamId 추출
+      const match = n.link.match(/tournaments\/(.+?)\/teams\/(.+?)\//);
+      if (!match) throw new Error('잘못된 초대 링크');
+      const tournamentId = match[1];
+      const teamId = match[2];
+      // 내 멤버 id 조회
+      const res = await fetch(`/api/tournaments/${tournamentId}/teams/${teamId}`);
+      if (!res.ok) throw new Error('팀 정보를 불러올 수 없습니다.');
+      const data = await res.json();
+      const myMember = (data.members as { id: string; user: { id: string } }[]).find(
+        (m) => m.user.id === user.id,
+      );
+      if (!myMember) throw new Error('내 팀 멤버 정보를 찾을 수 없습니다.');
+      // 상태 변경
+      const patch = await fetch(
+        `/api/tournaments/${tournamentId}/teams/${teamId}/members/${myMember.id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ inviteStatus: action }),
+        },
+      );
+      if (!patch.ok) throw new Error('처리 실패');
+      // 알림 읽음 처리 및 UI 갱신
+      setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+      setProcessingId(null);
+      alert(action === 'ACCEPTED' ? '초대를 수락했습니다!' : '초대를 거절했습니다.');
+      if (action === 'ACCEPTED') {
+        window.location.href = '/my/teams';
+      }
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : '처리 중 오류');
+      setProcessingId(null);
+    }
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -188,7 +224,6 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
                   <div
                     key={n.id}
                     className={clsx(styles.notificationItem, !n.isRead && 'unread')}
-                    onClick={() => handleNotificationClick(n.id, n.link)}
                     style={{
                       background: n.isRead ? undefined : 'rgba(79,159,255,0.07)',
                       display: 'flex',
@@ -214,6 +249,49 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
                         {n.content}
                       </div>
                       <div style={{ fontSize: 12, color: '#aaa' }}>{timeAgo(n.createdAt)}</div>
+                      {/* TEAM_INVITATION이면 수락/거절 버튼 */}
+                      {n.type === 'TEAM_INVITATION' && !n.isRead && (
+                        <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                          <button
+                            style={{
+                              background: '#4f9fff',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: 6,
+                              padding: '4px 12px',
+                              fontWeight: 600,
+                              cursor: processingId === n.id ? 'not-allowed' : 'pointer',
+                              opacity: processingId === n.id ? 0.6 : 1,
+                            }}
+                            disabled={processingId === n.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleInvitation(n, 'ACCEPTED');
+                            }}
+                          >
+                            {processingId === n.id ? '처리 중...' : '수락'}
+                          </button>
+                          <button
+                            style={{
+                              background: '#eee',
+                              color: '#ff4f4f',
+                              border: 'none',
+                              borderRadius: 6,
+                              padding: '4px 12px',
+                              fontWeight: 600,
+                              cursor: processingId === n.id ? 'not-allowed' : 'pointer',
+                              opacity: processingId === n.id ? 0.6 : 1,
+                            }}
+                            disabled={processingId === n.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleInvitation(n, 'REJECTED');
+                            }}
+                          >
+                            {processingId === n.id ? '처리 중...' : '거절'}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))
