@@ -16,7 +16,18 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
       take: 30,
     });
-    return NextResponse.json(notifications);
+    // link 필드 포함해서 반환
+    return NextResponse.json(
+      notifications.map((n) => ({
+        id: n.id,
+        title: n.title,
+        content: n.content,
+        isRead: n.isRead,
+        createdAt: n.createdAt,
+        type: n.type,
+        link: n.link ?? null,
+      })),
+    );
   } catch (e) {
     return NextResponse.json({ error: '알림 목록 조회 실패', detail: String(e) }, { status: 500 });
   }
