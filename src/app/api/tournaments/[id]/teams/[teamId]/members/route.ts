@@ -47,6 +47,7 @@ export async function POST(
         title: '팀 초대 알림',
         content: `팀장 ${leader?.nickname || ''}님이 ${team?.name || ''} 팀에 초대했습니다. 수락/거절을 선택해 주세요.`,
         userId,
+        link: `/tournaments/${team?.tournamentId}/teams/${teamId}/invitation`,
       },
     });
     // 실시간 알림 emit
@@ -55,6 +56,7 @@ export async function POST(
       title: '팀 초대 알림',
       content: `팀장 ${leader?.nickname || ''}님이 ${team?.name || ''} 팀에 초대했습니다. 수락/거절을 선택해 주세요.`,
       userId,
+      link: `/tournaments/${team?.tournamentId}/teams/${teamId}/invitation`,
     };
     // 디버깅: 환경변수와 fetch 요청 로그
     console.log('SOCKET_URL:', SOCKET_URL);
