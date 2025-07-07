@@ -111,10 +111,10 @@ export default function ApplicantsPage() {
   }, [session?.user?.id, tournamentId]);
 
   const changePositionToImg = (pos: string) => {
-    if (pos === 'ADC') return `/svg/bot.svg`;
+    if (pos === 'ADC') return `/images/bot.webp`;
     else if (pos === 'SPT') return `/svg/spt.svg`;
     else if (pos === 'MID') return `/svg/mid.svg`;
-    else if (pos === 'JDG') return `/svg/jdg.svg`;
+    else if (pos === 'JUNGLE') return `/svg/jgl.svg`;
     else return `/svg/top.svg`;
   };
 
