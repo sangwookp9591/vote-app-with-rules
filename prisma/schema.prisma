@@ -201,6 +201,8 @@ model Notification {
   teamInvitationId String?    @unique
   teamInvitation   TeamInvitation? @relation(fields: [teamInvitationId], references: [id])
 
+  link        String?   // 알림 클릭 시 이동할 링크
+
   @@map("notifications")
 }
 
