@@ -7,9 +7,13 @@ import { useSession } from 'next-auth/react';
 
 interface TeamMember {
   id: string;
-  nickname: string;
-  profileImageUrl?: string;
-  status: string;
+  user: {
+    id: string;
+    nickname: string;
+    profileImageUrl?: string;
+  };
+  isLeader: boolean;
+  inviteStatus: 'ACCEPTED' | 'PENDING' | 'REJECTED';
 }
 
 interface TeamDetail {
@@ -24,12 +28,6 @@ interface TeamDetail {
   description?: string;
 }
 
-interface Applicant {
-  id: string;
-  nickname: string;
-  profileImageUrl?: string;
-}
-
 export default function TeamDetailPage() {
   const params = useParams();
   const { data: session } = useSession();
@@ -39,13 +37,9 @@ export default function TeamDetailPage() {
   const [team, setTeam] = useState<TeamDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // TODO: 실제 로그인 정보로 대체
-  const isLeader = team && session?.user?.id && team.leader?.id === session.user.id;
-  const [showInvite, setShowInvite] = useState(false);
-  const [applicants, setApplicants] = useState<Applicant[]>([]);
-  const [inviteLoading, setInviteLoading] = useState(false);
-  const [inviteError, setInviteError] = useState('');
+  const user = session?.user;
   const [showManage, setShowManage] = useState(false);
+  const [members, setMembers] = useState<TeamMember[]>(team?.members || []);
 
   useEffect(() => {
     async function fetchTeam() {
@@ -65,56 +59,26 @@ export default function TeamDetailPage() {
     if (tournamentId && teamId) fetchTeam();
   }, [tournamentId, teamId]);
 
-  // 초대 모달 열기 시 신청자 목록 fetch
-  const openInvite = async () => {
-    setShowInvite(true);
-    setInviteLoading(true);
-    setInviteError('');
+  // 멤버 상태 변경(승인/거절)
+  const handleStatusChange = async (memberId: string, inviteStatus: 'ACCEPTED' | 'REJECTED') => {
     try {
-      const res = await fetch(`/api/tournaments/${tournamentId}/applications`);
-      if (!res.ok) throw new Error('신청자 목록을 불러올 수 없습니다.');
-      const data = await res.json();
-      // 내 팀원(팀장 포함) id 목록
-      const memberIds = [team?.leader?.id, ...(team?.members?.map((m) => m.id) || [])].filter(
-        Boolean,
+      const res = await fetch(
+        `/api/tournaments/${tournamentId}/teams/${teamId}/members/${memberId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ inviteStatus }),
+        },
       );
-      // 내 팀원이 아닌 신청자만 추출
-      setApplicants(
-        data
-          .map((a: { user: Applicant }) => a.user)
-          .filter((user: Applicant) => !memberIds.includes(user.id)),
-      );
-    } catch (e) {
-      setInviteError(e instanceof Error ? e.message : '알 수 없는 오류');
-    } finally {
-      setInviteLoading(false);
+      if (!res.ok) throw new Error('상태 변경 실패');
+      setMembers((prev) => prev.map((m) => (m.id === memberId ? { ...m, inviteStatus } : m)));
+    } catch {
+      alert('상태 변경에 실패했습니다.');
     }
   };
-
-  // 초대(실제 API 연동)
-  const handleInvite = async (applicant: Applicant) => {
-    if (!team) return;
-    try {
-      const res = await fetch(`/api/tournaments/${tournamentId}/teams/${teamId}/members`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: applicant.id }),
-      });
-      if (!res.ok) throw new Error('초대 실패');
-      setTeam({
-        ...team,
-        members: [...team.members, { ...applicant, status: 'PENDING' }],
-      });
-      setShowInvite(false);
-    } catch (e) {
-      alert(e instanceof Error ? e.message : '알 수 없는 오류');
-    }
-  };
-
-  // 팀원 추방
+  // 멤버 추방
   const handleKick = async (memberId: string) => {
-    if (!team) return;
-    if (!window.confirm('정말로 이 팀원을 추방하시겠습니까?')) return;
+    if (!confirm('정말로 이 멤버를 추방하시겠습니까?')) return;
     try {
       const res = await fetch(
         `/api/tournaments/${tournamentId}/teams/${teamId}/members/${memberId}`,
@@ -122,19 +86,18 @@ export default function TeamDetailPage() {
           method: 'DELETE',
         },
       );
-      if (!res.ok) throw new Error('팀원 추방 실패');
-      setTeam({
-        ...team,
-        members: team.members.filter((m) => m.id !== memberId),
-      });
-    } catch (e) {
-      alert(e instanceof Error ? e.message : '알 수 없는 오류');
+      if (!res.ok) throw new Error('추방 실패');
+      setMembers((prev) => prev.filter((m) => m.id !== memberId));
+    } catch {
+      alert('추방에 실패했습니다.');
     }
   };
 
   if (loading) return <div style={{ padding: 32 }}>로딩 중...</div>;
   if (error) return <div style={{ padding: 32, color: '#ff4f4f' }}>{error}</div>;
   if (!team) return <div style={{ padding: 32 }}>팀 정보를 찾을 수 없습니다.</div>;
+
+  const isLeader = team && team.members.find((m) => m.isLeader && m.user.id === user?.id);
 
   return (
     <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>
@@ -146,7 +109,7 @@ export default function TeamDetailPage() {
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontWeight: 600, marginBottom: 8 }}>팀 멤버</div>
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {team.members.map((m) => (
+          {members.map((m) => (
             <li
               key={m.id}
               style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}
@@ -191,29 +154,170 @@ export default function TeamDetailPage() {
                     ? '대기'
                     : '거절'}
               </span>
+              {isLeader && !m.isLeader && (
+                <>
+                  {m.inviteStatus === 'PENDING' && (
+                    <>
+                      <button
+                        onClick={() => handleStatusChange(m.id, 'ACCEPTED')}
+                        style={{
+                          marginLeft: 8,
+                          background: '#4f9fff',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: 6,
+                          padding: '4px 12px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        승인
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange(m.id, 'REJECTED')}
+                        style={{
+                          marginLeft: 4,
+                          background: '#eee',
+                          color: '#ff4f4f',
+                          border: 'none',
+                          borderRadius: 6,
+                          padding: '4px 12px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        거절
+                      </button>
+                    </>
+                  )}
+                  {m.inviteStatus === 'ACCEPTED' && (
+                    <button
+                      onClick={() => handleKick(m.id)}
+                      style={{
+                        marginLeft: 8,
+                        background: '#eee',
+                        color: '#ff4f4f',
+                        border: 'none',
+                        borderRadius: 6,
+                        padding: '4px 12px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      추방
+                    </button>
+                  )}
+                </>
+              )}
             </li>
           ))}
         </ul>
       </div>
-      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontWeight: 600, color: '#4f9fff' }}>팀원</span>
-        {isLeader && (
+      {isLeader && (
+        <div style={{ marginTop: 32 }}>
           <button
+            onClick={() => setShowManage((v) => !v)}
             style={{
-              background: '#4f9fff',
+              background: showManage ? '#222' : '#4f9fff',
               color: 'white',
               borderRadius: 6,
-              padding: '4px 12px',
-              fontWeight: 600,
+              padding: '10px 24px',
+              fontWeight: 700,
               border: 'none',
               cursor: 'pointer',
             }}
-            onClick={openInvite}
           >
-            팀원 초대
+            {showManage ? '팀 관리 닫기' : '팀 관리'}
           </button>
-        )}
-      </div>
+          {showManage && (
+            <div
+              style={{
+                border: '1.5px solid #e0e7ef',
+                borderRadius: 12,
+                padding: 18,
+                marginTop: 16,
+              }}
+            >
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>팀원 관리</h2>
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {members.map((m) => (
+                  <li
+                    key={m.id}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}
+                  >
+                    <span style={{ fontWeight: 600 }}>
+                      {m.user.nickname}
+                      {m.isLeader && ' 👑'}
+                    </span>
+                    <span style={{ marginLeft: 8 }}>
+                      {m.inviteStatus === 'ACCEPTED'
+                        ? '수락'
+                        : m.inviteStatus === 'PENDING'
+                          ? '대기'
+                          : '거절'}
+                    </span>
+                    {!m.isLeader && (
+                      <>
+                        {m.inviteStatus === 'PENDING' && (
+                          <>
+                            <button
+                              onClick={() => handleStatusChange(m.id, 'ACCEPTED')}
+                              style={{
+                                marginLeft: 8,
+                                background: '#4f9fff',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: 6,
+                                padding: '4px 12px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              승인
+                            </button>
+                            <button
+                              onClick={() => handleStatusChange(m.id, 'REJECTED')}
+                              style={{
+                                marginLeft: 4,
+                                background: '#eee',
+                                color: '#ff4f4f',
+                                border: 'none',
+                                borderRadius: 6,
+                                padding: '4px 12px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              거절
+                            </button>
+                          </>
+                        )}
+                        {m.inviteStatus === 'ACCEPTED' && (
+                          <button
+                            onClick={() => handleKick(m.id)}
+                            style={{
+                              marginLeft: 8,
+                              background: '#eee',
+                              color: '#ff4f4f',
+                              border: 'none',
+                              borderRadius: 6,
+                              padding: '4px 12px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            추방
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
       <div style={{ marginTop: 32 }}>
         <Link
           href={`/tournaments/${tournamentId}/teams`}
@@ -222,133 +326,6 @@ export default function TeamDetailPage() {
           팀 목록으로 돌아가기
         </Link>
       </div>
-      {/* 초대 모달 */}
-      {showInvite && (
-        <div
-          style={{
-            position: 'fixed',
-            left: 0,
-            top: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.25)',
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          onClick={() => setShowInvite(false)}
-        >
-          <div
-            style={{
-              background: 'white',
-              borderRadius: 12,
-              minWidth: 320,
-              maxWidth: 400,
-              padding: 24,
-              boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>팀원 초대</h2>
-            {inviteLoading ? (
-              <div>로딩 중...</div>
-            ) : inviteError ? (
-              <div style={{ color: '#ff4f9f' }}>{inviteError}</div>
-            ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10,
-                  maxHeight: 300,
-                  overflowY: 'auto',
-                }}
-              >
-                {applicants.length === 0 ? (
-                  <span style={{ color: '#aaa', fontSize: 13 }}>신청자가 없습니다.</span>
-                ) : (
-                  applicants.map((applicant) => {
-                    const alreadyMember = team?.members.some((m) => m.id === applicant.id);
-                    return (
-                      <div
-                        key={applicant.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 10,
-                          padding: 6,
-                          border: '1px solid #e0e7ef',
-                          borderRadius: 8,
-                        }}
-                      >
-                        <span
-                          style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: '50%',
-                            background: '#e0e7ef',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 700,
-                            fontSize: 15,
-                          }}
-                        >
-                          {applicant.profileImageUrl ? (
-                            <Image
-                              src={applicant.profileImageUrl}
-                              alt="프로필"
-                              width={40}
-                              height={40}
-                              style={{ borderRadius: '50%' }}
-                            />
-                          ) : (
-                            applicant.nickname.charAt(0).toUpperCase()
-                          )}
-                        </span>
-                        <span style={{ fontWeight: 600 }}>{applicant.nickname}</span>
-                        <button
-                          style={{
-                            marginLeft: 'auto',
-                            background: alreadyMember ? '#eee' : '#4f9fff',
-                            color: alreadyMember ? '#aaa' : 'white',
-                            borderRadius: 6,
-                            padding: '4px 12px',
-                            fontWeight: 600,
-                            border: 'none',
-                            cursor: alreadyMember ? 'not-allowed' : 'pointer',
-                          }}
-                          disabled={alreadyMember}
-                          onClick={() => handleInvite(applicant)}
-                        >
-                          {alreadyMember ? '이미 팀원' : '초대'}
-                        </button>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            )}
-            <button
-              style={{
-                marginTop: 18,
-                width: '100%',
-                background: '#eee',
-                color: '#333',
-                borderRadius: 6,
-                padding: '6px 0',
-                fontWeight: 600,
-                border: 'none',
-                cursor: 'pointer',
-              }}
-              onClick={() => setShowInvite(false)}
-            >
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
