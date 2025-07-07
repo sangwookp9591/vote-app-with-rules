@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import * as styles from './applicants.css';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import type { Team, TeamMember } from '@/entities/team';
 
 interface Applicant {
   id: string;
@@ -42,6 +44,7 @@ function getTierInfo(tier?: string) {
 export default function ApplicantsPage() {
   const params = useParams();
   const tournamentId = params?.id as string;
+  const { data: session } = useSession();
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [filtered, setFiltered] = useState<Applicant[]>([]);
   const [search, setSearch] = useState('');
@@ -49,6 +52,9 @@ export default function ApplicantsPage() {
   const [tier, setTier] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [myTeam, setMyTeam] = useState<Team | null>(null);
+  const [inviteLoading, setInviteLoading] = useState<string | null>(null);
+  const [invited, setInvited] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchApplicants() {
@@ -84,6 +90,26 @@ export default function ApplicantsPage() {
     setFiltered(result);
   }, [search, position, tier, applicants]);
 
+  useEffect(() => {
+    async function fetchMyTeam() {
+      if (!session?.user?.id || !tournamentId) return;
+      try {
+        const res = await fetch(`/api/tournaments/${tournamentId}/teams`);
+        if (!res.ok) throw new Error('팀 목록 조회 실패');
+        const data: Team[] = await res.json();
+        const myTeam = data.find(
+          (team) =>
+            team.leader?.id === session.user.id ||
+            team.members.some((m) => m.id === session.user.id),
+        );
+        setMyTeam(myTeam || null);
+      } catch {
+        setMyTeam(null);
+      }
+    }
+    fetchMyTeam();
+  }, [session?.user?.id, tournamentId]);
+
   const changePositionToImg = (pos: string) => {
     if (pos === 'ADC') return `/svg/bot.svg`;
     else if (pos === 'SPT') return `/svg/spt.svg`;
@@ -92,11 +118,31 @@ export default function ApplicantsPage() {
     else return `/svg/top.svg`;
   };
 
-  // 포지션/티어 옵션 추출 (중복 제거)
   const positionOptions = Array.from(
     new Set(applicants.map((a) => a.gameData.position).filter(Boolean)),
   );
   const tierOptions = Array.from(new Set(applicants.map((a) => a.gameData.tier).filter(Boolean)));
+
+  const handleInvite = async (userId: string) => {
+    if (!myTeam) return;
+    setInviteLoading(userId);
+    try {
+      const res = await fetch(`/api/tournaments/${tournamentId}/teams/${myTeam.id}/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || '초대 실패');
+      }
+      setInvited((prev) => [...prev, userId]);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : '초대 실패');
+    } finally {
+      setInviteLoading(null);
+    }
+  };
 
   return (
     <div style={{ maxWidth: 700, margin: '0 auto', padding: 24 }}>
@@ -142,63 +188,95 @@ export default function ApplicantsPage() {
         <div>신청자가 없습니다.</div>
       ) : (
         <div className={styles.applicantsGrid}>
-          {filtered.map((a) => (
-            <div key={a.id} className={styles.applicantCard}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '100%',
-                  marginBottom: 6,
-                  gap: 10,
-                }}
-              >
-                <div className={styles.avatar}>
-                  {a.user.profileImageUrl ? (
+          {filtered.map((a) => {
+            const leaderId = myTeam ? myTeam.members.find((m) => m.isLeader)?.user.id : undefined;
+            const isLeader = leaderId === session?.user?.id;
+            const isAlreadyMember =
+              myTeam &&
+              (leaderId === a.user.id ||
+                myTeam.members.some((m: TeamMember) => m.user.id === a.user.id));
+            return (
+              <div key={a.id} className={styles.applicantCard}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    marginBottom: 6,
+                    gap: 10,
+                  }}
+                >
+                  <div className={styles.avatar}>
+                    {a.user.profileImageUrl ? (
+                      <Image
+                        src={a.user.profileImageUrl || '/images/default.png'}
+                        alt={a.user.nickname || '프로필'}
+                        width={40}
+                        height={40}
+                        style={{ borderRadius: '50%' }}
+                      />
+                    ) : (
+                      a.user.nickname.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div className={styles.nickname}>{a.user.nickname}</div>
+                </div>
+                <div className={styles.nickname}>{a.gameData.nickname}</div>
+                <div className={styles.tierPill}>
+                  <span className={styles.tier}>{'TIER'}</span>
+                  {getTierInfo(a.gameData.tier)?.icon && (
                     <Image
-                      src={a.user.profileImageUrl || '/images/default.png'}
-                      alt={a.user.nickname || '프로필'}
-                      width={40}
-                      height={40}
-                      style={{ borderRadius: '50%' }}
+                      src={getTierInfo(a.gameData.tier)?.icon || '/images/default.png'}
+                      alt={a.gameData.tier || ''}
+                      width={24}
+                      height={24}
+                      style={{ objectFit: 'contain', marginRight: 2 }}
                     />
-                  ) : (
-                    a.user.nickname.charAt(0).toUpperCase()
                   )}
                 </div>
-                <div className={styles.nickname}>{a.user.nickname}</div>
-              </div>
-
-              <div className={styles.nickname}>{a.gameData.nickname}</div>
-              <div className={styles.tierPill}>
-                <span className={styles.tier}>{'TIER'}</span>
-                {getTierInfo(a.gameData.tier)?.icon && (
+                <div className={styles.positionPill}>
+                  <span className={styles.position}>{'POS'}</span>
                   <Image
-                    src={getTierInfo(a.gameData.tier)?.icon || '/images/default.png'}
-                    alt={a.gameData.tier || ''}
+                    src={changePositionToImg(a.gameData.position || '-')}
+                    alt={a.gameData.position || ''}
                     width={24}
                     height={24}
                     style={{ objectFit: 'contain', marginRight: 2 }}
                   />
+                </div>
+                <div className={styles.createdAt}>
+                  {new Date(a.createdAt).toLocaleString('ko-KR')}
+                </div>
+                {isLeader && !isAlreadyMember && a.user.id !== session?.user?.id && (
+                  <button
+                    style={{
+                      marginTop: 8,
+                      background: invited.includes(a.user.id) ? '#aaa' : '#4f9fff',
+                      color: 'white',
+                      borderRadius: 6,
+                      padding: '6px 18px',
+                      fontWeight: 700,
+                      border: 'none',
+                      cursor: invited.includes(a.user.id) ? 'not-allowed' : 'pointer',
+                      opacity: inviteLoading === a.user.id ? 0.6 : 1,
+                    }}
+                    disabled={inviteLoading === a.user.id || invited.includes(a.user.id)}
+                    onClick={() => handleInvite(a.user.id)}
+                  >
+                    {inviteLoading === a.user.id
+                      ? '초대 중...'
+                      : invited.includes(a.user.id)
+                        ? '초대 완료'
+                        : '초대'}
+                  </button>
+                )}
+                {isAlreadyMember && (
+                  <span style={{ color: '#4f9fff', marginTop: 8 }}>이미 팀원</span>
                 )}
               </div>
-              <div className={styles.positionPill}>
-                <span className={styles.position}>{'POS'}</span>
-                <Image
-                  src={changePositionToImg(a.gameData.position || '-')}
-                  alt={a.gameData.position || ''}
-                  width={24}
-                  height={24}
-                  style={{ objectFit: 'contain', marginRight: 2 }}
-                />
-              </div>
-
-              <div className={styles.createdAt}>
-                {new Date(a.createdAt).toLocaleString('ko-KR')}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
