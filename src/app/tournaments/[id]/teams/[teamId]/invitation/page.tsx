@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 interface Team {
   id: string;
@@ -79,8 +80,26 @@ export default function TeamInvitationPage() {
     <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 16 }}>팀 초대 상세</h1>
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 20, fontWeight: 600 }}>{team.name}</div>
-        <div style={{ color: '#888', marginTop: 4 }}>{team.description || '설명 없음'}</div>
+        <Link
+          href={`/tournaments/${tournamentId}/teams/${teamId}`}
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <div
+            style={{
+              fontSize: 20,
+              fontWeight: 600,
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+          >
+            {team.name}
+          </div>
+          <div
+            style={{ color: '#888', marginTop: 4, cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            {team.description || '설명 없음'}
+          </div>
+        </Link>
       </div>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontWeight: 600, marginBottom: 8 }}>팀 멤버</div>
@@ -91,15 +110,25 @@ export default function TeamInvitationPage() {
               style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}
             >
               {m.user.profileImageUrl && (
-                <Image
-                  src={m.user.profileImageUrl}
-                  alt="프로필"
-                  width={32}
-                  height={32}
-                  style={{ borderRadius: '50%' }}
-                />
+                <Link
+                  href={`/tournaments/${tournamentId}/teams/${teamId}`}
+                  style={{ display: 'inline-block' }}
+                >
+                  <Image
+                    src={m.user.profileImageUrl}
+                    alt="프로필"
+                    width={32}
+                    height={32}
+                    style={{ borderRadius: '50%', cursor: 'pointer' }}
+                  />
+                </Link>
               )}
-              <span>{m.user.nickname}</span>
+              <Link
+                href={`/tournaments/${tournamentId}/teams/${teamId}`}
+                style={{ color: '#4f9fff', textDecoration: 'underline', cursor: 'pointer' }}
+              >
+                {m.user.nickname}
+              </Link>
             </li>
           ))}
         </ul>
