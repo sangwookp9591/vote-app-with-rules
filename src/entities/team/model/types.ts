@@ -19,6 +19,7 @@ export interface TeamMember {
     nickname: string;
     profileImageUrl?: string;
   };
+  inviteStatus: 'PENDING' | 'ACCEPTED' | 'REJECTED';
   // LoL 관련 정보
   lolNickname: string;
   lolTier: LolTier;

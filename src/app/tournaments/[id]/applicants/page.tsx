@@ -55,6 +55,7 @@ export default function ApplicantsPage() {
   const [myTeam, setMyTeam] = useState<Team | null>(null);
   const [inviteLoading, setInviteLoading] = useState<string | null>(null);
   const [invited, setInvited] = useState<string[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
 
   useEffect(() => {
     async function fetchApplicants() {
@@ -121,6 +122,21 @@ export default function ApplicantsPage() {
       console.log('leaderId', leaderId, 'isLeader', isLeader);
     }
   }, [myTeam, session]);
+
+  useEffect(() => {
+    async function fetchTeams() {
+      if (!tournamentId) return;
+      try {
+        const res = await fetch(`/api/tournaments/${tournamentId}/teams`);
+        if (!res.ok) throw new Error('팀 목록 조회 실패');
+        const data: Team[] = await res.json();
+        setTeams(data);
+      } catch {
+        setTeams([]);
+      }
+    }
+    fetchTeams();
+  }, [tournamentId]);
 
   const changePositionToImg = (pos: string) => {
     if (pos === 'ADC') return `/images/bot.webp`;
@@ -203,10 +219,14 @@ export default function ApplicantsPage() {
           {filtered.map((a) => {
             const leaderId = myTeam ? myTeam.members.find((m) => m.isLeader)?.user.id : undefined;
             const isLeader = leaderId === session?.user?.id;
-            const isAlreadyMember =
-              myTeam &&
-              (leaderId === a.user.id ||
-                myTeam.members.some((m: TeamMember) => m.user.id === a.user.id));
+            const myMember = myTeam?.members.find((m: TeamMember) => m.user.id === a.user.id);
+            const isAcceptedMember = myMember && myMember.inviteStatus === 'ACCEPTED';
+            const isPendingInvite = myMember && myMember.inviteStatus === 'PENDING';
+            const isAcceptedInAnyTeam = teams.some((team) =>
+              team.members.some(
+                (m: TeamMember) => m.user.id === a.user.id && m.inviteStatus === 'ACCEPTED',
+              ),
+            );
             return (
               <div key={a.id} className={styles.applicantCard}>
                 <div
@@ -260,30 +280,38 @@ export default function ApplicantsPage() {
                 <div className={styles.createdAt}>
                   {new Date(a.createdAt).toLocaleString('ko-KR')}
                 </div>
-                {isLeader && !isAlreadyMember && a.user.id !== session?.user?.id && (
-                  <button
-                    style={{
-                      marginTop: 8,
-                      background: invited.includes(a.user.id) ? '#aaa' : '#4f9fff',
-                      color: 'white',
-                      borderRadius: 6,
-                      padding: '6px 18px',
-                      fontWeight: 700,
-                      border: 'none',
-                      cursor: invited.includes(a.user.id) ? 'not-allowed' : 'pointer',
-                      opacity: inviteLoading === a.user.id ? 0.6 : 1,
-                    }}
-                    disabled={inviteLoading === a.user.id || invited.includes(a.user.id)}
-                    onClick={() => handleInvite(a.user.id)}
-                  >
-                    {inviteLoading === a.user.id
-                      ? '초대 중...'
-                      : invited.includes(a.user.id)
-                        ? '초대 완료'
-                        : '초대'}
-                  </button>
+                {isLeader &&
+                  !isAcceptedInAnyTeam &&
+                  !isAcceptedMember &&
+                  !isPendingInvite &&
+                  a.user.id !== session?.user?.id && (
+                    <button
+                      style={{
+                        marginTop: 8,
+                        background: invited.includes(a.user.id) ? '#aaa' : '#4f9fff',
+                        color: 'white',
+                        borderRadius: 6,
+                        padding: '6px 18px',
+                        fontWeight: 700,
+                        border: 'none',
+                        cursor: invited.includes(a.user.id) ? 'not-allowed' : 'pointer',
+                        opacity: inviteLoading === a.user.id ? 0.6 : 1,
+                      }}
+                      disabled={inviteLoading === a.user.id || invited.includes(a.user.id)}
+                      onClick={() => handleInvite(a.user.id)}
+                    >
+                      {inviteLoading === a.user.id
+                        ? '초대 중...'
+                        : invited.includes(a.user.id)
+                          ? '초대 완료'
+                          : '초대'}
+                    </button>
+                  )}
+                {isPendingInvite && <span style={{ color: '#4f9fff', marginTop: 8 }}>초대됨</span>}
+                {isAcceptedInAnyTeam && !isAcceptedMember && (
+                  <span style={{ color: '#aaa', marginTop: 8 }}>이미 다른 팀원</span>
                 )}
-                {isAlreadyMember && (
+                {isAcceptedMember && (
                   <span style={{ color: '#4f9fff', marginTop: 8 }}>이미 팀원</span>
                 )}
               </div>
