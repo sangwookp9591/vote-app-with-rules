@@ -99,7 +99,7 @@ export default function ApplicantsPage() {
         const data: Team[] = await res.json();
         const myTeam = data.find(
           (team) =>
-            team.leader?.id === session.user.id ||
+            team?.members?.filter((v) => v.isLeader)[0].userId === session.user.id ||
             team.members.some((m) => m.id === session.user.id),
         );
         setMyTeam(myTeam || null);
@@ -109,6 +109,18 @@ export default function ApplicantsPage() {
     }
     fetchMyTeam();
   }, [session?.user?.id, tournamentId]);
+
+  useEffect(() => {
+    console.log('myTeam', myTeam);
+    console.log('session.user', session?.user);
+    if (myTeam) {
+      const leader = myTeam.members.find((m) => m.isLeader);
+      console.log('leader', leader);
+      const leaderId = leader?.user.id;
+      const isLeader = leaderId === session?.user?.id;
+      console.log('leaderId', leaderId, 'isLeader', isLeader);
+    }
+  }, [myTeam, session]);
 
   const changePositionToImg = (pos: string) => {
     if (pos === 'ADC') return `/images/bot.webp`;
