@@ -19,6 +19,7 @@ import {
   statLabel,
   statValue,
 } from './detail.css';
+import { useSession } from 'next-auth/react';
 
 interface Tournament {
   id: string;
@@ -32,9 +33,35 @@ interface Tournament {
   createdAt: string;
 }
 
+interface Applicant {
+  id: string;
+  user: {
+    id: string;
+    nickname: string;
+    profileImageUrl?: string;
+  };
+  [key: string]: any;
+}
+
+interface TeamMember {
+  isLeader: boolean;
+  user: {
+    id: string;
+    nickname: string;
+    profileImageUrl?: string;
+  };
+}
+
+interface Team {
+  id: string;
+  name: string;
+  members: TeamMember[];
+}
+
 export default function TournamentDetailPage() {
   const params = useParams();
   const tournamentId = params?.id as string;
+  const { data: session } = useSession();
 
   const {
     data: tournament,
@@ -49,6 +76,42 @@ export default function TournamentDetailPage() {
     },
     enabled: !!tournamentId,
   });
+
+  // 신청자 목록 fetch
+  const { data: applicants } = useQuery<Applicant[]>({
+    queryKey: ['tournamentApplicants', tournamentId],
+    queryFn: async () => {
+      const res = await fetch(`/api/tournaments/${tournamentId}/applications`);
+      if (!res.ok) throw new Error('신청자 목록 조회 실패');
+      return res.json();
+    },
+    enabled: !!tournamentId,
+  });
+
+  // 팀 목록 fetch
+  const { data: teams } = useQuery<Team[]>({
+    queryKey: ['tournamentTeams', tournamentId],
+    queryFn: async () => {
+      const res = await fetch(`/api/tournaments/${tournamentId}/teams`);
+      if (!res.ok) throw new Error('팀 목록 조회 실패');
+      return res.json();
+    },
+    enabled: !!tournamentId,
+  });
+
+  // 내가 신청자인지
+  const isApplicant = session?.user?.id && applicants?.some((a) => a.user.id === session.user.id);
+  // 내 팀 정보
+  const myTeam = teams?.find(
+    (team) =>
+      team.members.find((m: TeamMember) => m.isLeader)?.user.id === session?.user?.id ||
+      team.members.some((m: TeamMember) => m.user.id === session?.user?.id),
+  );
+  // 내가 팀장인지
+  const isLeader =
+    myTeam && myTeam.members.find((m: TeamMember) => m.isLeader)?.user.id === session?.user?.id;
+  // 토너먼트 상태
+  const isTournamentActive = tournament?.status === 'UPCOMING' || tournament?.status === 'ONGOING';
 
   if (!tournamentId) {
     return (
@@ -212,28 +275,15 @@ export default function TournamentDetailPage() {
         <Link href={`/tournaments/${tournamentId}/teams`} className={applyButton}>
           팀 목록
         </Link>
-        {tournament.status === 'UPCOMING' && (
-          <>
-            <Link href={`/tournaments/${tournamentId}/teams/create`} className={applyButton}>
-              팀 생성하기
-            </Link>
-            <Link href={`/tournaments/${tournamentId}/apply`} className={applyButton}>
-              참가 신청
-            </Link>
-          </>
-        )}
-        {/*
-        {tournament.status === 'ONGOING' && (
-          <Link href={``} className={applyButton}>
-            참가자 목록 보기
+        {/* 팀 생성하기: 내가 신청자이며, 토너먼트가 진행중/예정이고, 내가 팀장이 아닐 때만 노출 */}
+        {isApplicant && isTournamentActive && !isLeader && (
+          <Link href={`/tournaments/${tournamentId}/teams/create`} className={applyButton}>
+            팀 생성하기
           </Link>
         )}
-        {tournament.status === 'COMPLETED' && (
-          <Link href={``} className={applyButton}>
-            결과 보기
-          </Link>
-        )}
-        */}
+        <Link href={`/tournaments/${tournamentId}/apply`} className={applyButton}>
+          참가 신청
+        </Link>
       </div>
     </div>
   );
