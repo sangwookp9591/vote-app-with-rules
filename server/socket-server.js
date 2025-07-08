@@ -1,48 +1,59 @@
-import { Server } from 'socket.io';
-import http from 'http';
-import express from 'express';
+// ws 설치 필요: npm install ws
+const WebSocket = require('ws');
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  path: '/api/socket',
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-});
+const PORT = 5001;
+const wss = new WebSocket.Server({ port: PORT });
 
-io.on('connection', (socket) => {
-  console.log('Socket connected:', socket.id);
-  socket.on('join', (userId) => {
-    if (userId) {
-      socket.join(userId);
-      console.log(`Socket ${socket.id} joined room ${userId}`);
+// 방별로 클라이언트 관리
+const rooms = {};
+
+wss.on('connection', function connection(ws) {
+  // 클라이언트가 보낸 첫 메시지로 닉네임/방 지정
+  ws.on('message', function incoming(raw) {
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      ws.send(JSON.stringify({ type: 'error', message: 'Invalid JSON' }));
+      return;
+    }
+
+    // 최초 입장: { type: 'join', roomId, user }
+    if (data.type === 'join') {
+      ws.user = data.user || '익명';
+      ws.roomId = data.roomId || 'default';
+      if (!rooms[ws.roomId]) rooms[ws.roomId] = new Set();
+      rooms[ws.roomId].add(ws);
+      ws.send(
+        JSON.stringify({ type: 'system', message: `${ws.user}님 입장`, timestamp: Date.now() }),
+      );
+      return;
+    }
+
+    // 채팅: { type: 'chat', message }
+    if (data.type === 'chat' && ws.roomId) {
+      const msg = {
+        type: 'chat',
+        user: ws.user || '익명',
+        message: data.message,
+        timestamp: Date.now(),
+        roomId: ws.roomId,
+      };
+      // 같은 방에만 브로드캐스트
+      rooms[ws.roomId]?.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify(msg));
+        }
+      });
+      return;
     }
   });
-  socket.on('disconnect', () => {
-    console.log('Socket disconnected:', socket.id);
+
+  ws.on('close', () => {
+    if (ws.roomId && rooms[ws.roomId]) {
+      rooms[ws.roomId].delete(ws);
+    }
   });
-  socket.on('ping', () => {
-    socket.emit('pong');
-  });
 });
 
-server.listen(4000, () => {
-  console.log('Socket.IO 서버가 4000번 포트에서 실행 중입니다.');
-});
-
-app.use(express.json());
-app.post('/emit', (req, res) => {
-  const { userId, notification } = req.body;
-  if (userId && notification) {
-    io.to(userId).emit('notification', notification);
-    res.json({ success: true });
-  } else {
-    res.status(400).json({ error: 'userId, notification required' });
-  }
-});
-
-app.listen(4000, () => {
-  console.log('REST endpoint for emit is running on port 4000');
-});
+console.log(`WebSocket 채팅 서버가 ${PORT}번 포트에서 실행 중!`);
