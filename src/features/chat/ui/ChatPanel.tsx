@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import socket from '@/shared/api/socketClient';
 import { sendChatMessage, joinChatRoom } from '../api/chatSocket';
+import * as styles from './ChatPanel.css';
 
 type ChatMessage = {
   type: string;
@@ -15,9 +16,18 @@ interface ChatPanelProps {
   user?: string;
 }
 
+function getUserColor(nickname?: string) {
+  if (!nickname) return '#888';
+  const colors = ['#2d8cff', '#ff5c5c', '#00b894', '#fdcb6e', '#a29bfe', '#e17055', '#00bfae'];
+  let hash = 0;
+  for (let i = 0; i < nickname.length; i++) hash += nickname.charCodeAt(i);
+  return colors[hash % colors.length];
+}
+
 export default function ChatPanel({ roomId, user }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (roomId && user) {
@@ -39,6 +49,10 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
     };
   }, [roomId, user]);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const handleSend = () => {
     if (input && user) {
       sendChatMessage(input);
@@ -47,39 +61,46 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
   };
 
   return (
-    <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: 16, maxWidth: 400 }}>
-      <div style={{ minHeight: 120, marginBottom: 8, maxHeight: 200, overflowY: 'auto' }}>
+    <div className={styles.chatPanel}>
+      <div className={styles.messagesArea}>
         {messages.map((msg, i) => (
-          <div key={i} style={{ marginBottom: 4 }}>
+          <div key={i} className={styles.messageRow}>
             {msg.type === 'system' ? (
-              <span style={{ color: '#888' }}>{msg.message}</span>
+              <span className={styles.systemMessage}>{msg.message}</span>
             ) : (
               <>
-                <b>{msg.user}</b>: {msg.message}
-                <span style={{ color: '#aaa', fontSize: 10, marginLeft: 8 }}>
-                  {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}
+                <span className={styles.badge}>K</span>
+                <span className={styles.nickname} style={{ color: getUserColor(msg.user) }}>
+                  {msg.user}
                 </span>
+                <span className={styles.message}>{msg.message}</span>
+                {/* <span style={{ color: '#aaa', fontSize: 11, marginLeft: 6 }}>
+                  {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}
+                </span> */}
               </>
             )}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        style={{ width: '70%', marginRight: 8 }}
-        placeholder={user ? '메시지를 입력하세요' : '로그인 후 채팅 가능'}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSend();
-          }
-        }}
-        disabled={!user}
-      />
-      <button onClick={handleSend} disabled={!user}>
-        전송
-      </button>
+      <div className={styles.inputRow}>
+        <input
+          className={styles.input}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={user ? '메시지를 입력하세요' : '로그인 후 채팅 가능'}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
+          disabled={!user}
+        />
+        <button className={styles.sendButton} onClick={handleSend} disabled={!user}>
+          전송
+        </button>
+      </div>
       {!user && (
         <div style={{ color: '#888', fontSize: 12, marginTop: 4 }}>
           로그인해야 채팅을 보낼 수 있습니다.
