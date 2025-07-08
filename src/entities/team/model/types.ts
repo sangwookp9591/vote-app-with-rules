@@ -55,3 +55,15 @@ export interface CreateTeamData {
   leaderId: string;
   members: string[];
 }
+
+export interface TeamDetail {
+  id: string;
+  name: string;
+  leader: {
+    id: string;
+    nickname: string;
+    profileImageUrl?: string;
+  } | null;
+  members: TeamMember[];
+  description?: string;
+}
