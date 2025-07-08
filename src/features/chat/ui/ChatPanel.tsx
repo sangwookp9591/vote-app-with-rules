@@ -27,6 +27,7 @@ function getUserColor(nickname?: string) {
 export default function ChatPanel({ roomId, user }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
+  const [isComposing, setIsComposing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,8 +90,10 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={user ? '메시지를 입력하세요' : '로그인 후 채팅 가능'}
+          onCompositionStart={() => setIsComposing(true)}
+          onCompositionEnd={() => setIsComposing(false)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !isComposing) {
               e.preventDefault();
               handleSend();
             }
