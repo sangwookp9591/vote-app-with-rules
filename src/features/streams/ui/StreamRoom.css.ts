@@ -1,7 +1,7 @@
 import { style } from '@vanilla-extract/css';
 
 export const container = style({
-  maxWidth: 900,
+  maxWidth: '95vw',
   margin: '0 auto',
   padding: 24,
 });
@@ -30,7 +30,7 @@ export const chatArea = style({
   borderRadius: 12,
   boxShadow: '0 2px 8px #e0e7ef33',
   padding: 0,
-  height: 420,
+  height: '60vh',
   display: 'flex',
   flexDirection: 'column',
   '@media': {
