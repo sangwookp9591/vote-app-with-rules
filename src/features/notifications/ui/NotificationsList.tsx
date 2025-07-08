@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
+// import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 interface NotificationItem {
@@ -15,7 +14,7 @@ interface NotificationItem {
 }
 
 export default function NotificationsList() {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
