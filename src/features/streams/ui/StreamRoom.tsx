@@ -7,6 +7,7 @@ import type { Stream } from '@/entities/stream/model/types';
 import ChatWidget from '@/widgets/ChatWidget/ChatWidget';
 import * as styles from './StreamRoom.css';
 import Image from 'next/image';
+import socket from '@/shared/api/socketClient';
 
 // 테스트용 LiveKit 서버 URL/토큰 (실서비스에서는 백엔드에서 발급 필요)
 const LIVEKIT_URL = 'wss://demo.livekit.io';
@@ -21,6 +22,7 @@ export default function StreamRoom() {
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [viewerCount, setViewerCount] = useState(0);
 
   useEffect(() => {
     if (!streamId) return;
@@ -29,6 +31,20 @@ export default function StreamRoom() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [streamId]);
+
+  useEffect(() => {
+    if (!stream) return;
+    const handler = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'viewerCount' && data.roomId === stream.id) {
+          setViewerCount(data.count);
+        }
+      } catch {}
+    };
+    socket.addEventListener('message', handler);
+    return () => socket.removeEventListener('message', handler);
+  }, [stream?.id]);
 
   const handleStart = async () => {
     if (!stream) return;
@@ -106,7 +122,7 @@ export default function StreamRoom() {
         <b>상태:</b> {stream?.isLive ? <span style={{ color: 'green' }}>LIVE</span> : '오프라인'}
       </div>
       <div className={styles.viewersRow}>
-        <b>시청자 수:</b> {stream?.viewers}
+        <b>시청자 수:</b> {viewerCount}
       </div>
       {/* 방송 시작/종료 버튼 (실무에선 스트리머 본인만 노출) */}
       <div className={styles.buttonRow}>
