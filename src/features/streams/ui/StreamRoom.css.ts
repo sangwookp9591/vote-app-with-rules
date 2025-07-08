@@ -1,9 +1,44 @@
 import { style } from '@vanilla-extract/css';
 
 export const container = style({
-  maxWidth: 700,
+  maxWidth: 900,
   margin: '0 auto',
   padding: 24,
+});
+
+export const flexRow = style({
+  display: 'flex',
+  gap: 24,
+  alignItems: 'flex-start',
+  '@media': {
+    'screen and (max-width: 900px)': {
+      flexDirection: 'column',
+      gap: 16,
+    },
+  },
+});
+
+export const playerAreaCol = style({
+  flex: 2,
+  minWidth: 0,
+});
+
+export const chatArea = style({
+  flex: 1,
+  minWidth: 0,
+  background: '#f8fbff',
+  borderRadius: 12,
+  boxShadow: '0 2px 8px #e0e7ef33',
+  padding: 0,
+  height: 420,
+  display: 'flex',
+  flexDirection: 'column',
+  '@media': {
+    'screen and (max-width: 900px)': {
+      height: 320,
+      marginTop: 8,
+    },
+  },
 });
 
 export const titleRow = style({

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchStream, updateStream } from '../api/streams';
 import type { Stream } from '@/entities/stream/model/types';
-import { LiveKitRoom } from '@livekit/components-react';
+import ChatWidget from '@/widgets/ChatWidget/ChatWidget';
 import * as styles from './StreamRoom.css';
 import Image from 'next/image';
 
@@ -131,27 +131,7 @@ export default function StreamRoom() {
         )}
         {actionError && <div className={styles.actionError}>{actionError}</div>}
       </div>
-      {/* WebRTC 플레이어 영역 (LiveKit 연동) */}
-      <div
-        className={
-          stream.isLive ? `${styles.playerArea} ${styles.playerAreaLive}` : styles.playerArea
-        }
-      >
-        {stream.isLive ? (
-          <LiveKitRoom
-            serverUrl={LIVEKIT_URL}
-            token={TEST_TOKEN}
-            connect={true}
-            video={true}
-            audio={true}
-            style={{ width: '100%', height: '100%' }}
-          >
-            {/* LiveKit 기본 UI (참여자, 비디오, 채팅 등) */}
-          </LiveKitRoom>
-        ) : (
-          '방송이 시작되지 않았습니다.'
-        )}
-      </div>
+      <ChatWidget stream={stream} livekitUrl={LIVEKIT_URL} livekitToken={TEST_TOKEN} />
     </div>
   );
 }
