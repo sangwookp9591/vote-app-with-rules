@@ -112,14 +112,6 @@ export default function ApplicantsList() {
   }, [session?.user?.id, tournamentId]);
 
   useEffect(() => {
-    if (myTeam) {
-      const leader = myTeam.members.find((m) => m.isLeader);
-      const leaderId = leader?.user.id;
-      const isLeader = leaderId === session?.user?.id;
-    }
-  }, [myTeam, session]);
-
-  useEffect(() => {
     async function fetchTeams() {
       if (!tournamentId) return;
       try {
@@ -169,7 +161,7 @@ export default function ApplicantsList() {
   };
 
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto', padding: 24 }}>
+    <div style={{ maxWidth: '70vw', margin: '0 auto', padding: 24 }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 24 }}>신청자 목록</h1>
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
         <input
