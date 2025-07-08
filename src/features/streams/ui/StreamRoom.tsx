@@ -28,6 +28,9 @@ export default function StreamRoom() {
       .finally(() => setLoading(false));
   }, [streamId]);
 
+  useEffect(() => {
+    console.log('stream  : ', stream);
+  }, [stream]);
   const handleStart = async () => {
     if (!stream) return;
     setActionLoading(true);
@@ -102,20 +105,20 @@ export default function StreamRoom() {
       </h2>
       <div style={{ color: '#888', marginBottom: 8 }}>{stream.description}</div>
       <div style={{ marginBottom: 12 }}>
-        <b>스트리머:</b> {stream.streamer.nickname}
-        {stream.streamer.profileImageUrl && (
+        <b>스트리머:</b> {stream?.streamer?.nickname}
+        {stream?.streamer?.profileImageUrl && (
           <img
-            src={stream.streamer.profileImageUrl}
+            src={stream?.streamer?.profileImageUrl}
             alt="프로필"
             style={{ width: 32, height: 32, borderRadius: '50%', marginLeft: 8 }}
           />
         )}
       </div>
       <div style={{ marginBottom: 12 }}>
-        <b>상태:</b> {stream.isLive ? <span style={{ color: 'green' }}>LIVE</span> : '오프라인'}
+        <b>상태:</b> {stream?.isLive ? <span style={{ color: 'green' }}>LIVE</span> : '오프라인'}
       </div>
       <div style={{ marginBottom: 12 }}>
-        <b>시청자 수:</b> {stream.viewers}
+        <b>시청자 수:</b> {stream?.viewers}
       </div>
       {/* 방송 시작/종료 버튼 (실무에선 스트리머 본인만 노출) */}
       <div style={{ marginBottom: 24 }}>
