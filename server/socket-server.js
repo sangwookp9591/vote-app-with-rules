@@ -7,6 +7,16 @@ const wss = new WebSocket.Server({ port: PORT });
 // 방별로 클라이언트 관리
 const rooms = {};
 
+function broadcastViewerCount(roomId) {
+  const count = rooms[roomId]?.size || 0;
+  const msg = JSON.stringify({ type: 'viewerCount', roomId, count });
+  rooms[roomId]?.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(msg);
+    }
+  });
+}
+
 wss.on('connection', function connection(ws) {
   // 클라이언트가 보낸 첫 메시지로 닉네임/방 지정
   ws.on('message', function incoming(raw) {
@@ -24,6 +34,7 @@ wss.on('connection', function connection(ws) {
       ws.roomId = data.roomId || 'default';
       if (!rooms[ws.roomId]) rooms[ws.roomId] = new Set();
       rooms[ws.roomId].add(ws);
+      broadcastViewerCount(ws.roomId); // 입장 시 시청자 수 브로드캐스트
       ws.send(
         JSON.stringify({ type: 'system', message: `${ws.user}님 입장`, timestamp: Date.now() }),
       );
@@ -52,6 +63,7 @@ wss.on('connection', function connection(ws) {
   ws.on('close', () => {
     if (ws.roomId && rooms[ws.roomId]) {
       rooms[ws.roomId].delete(ws);
+      broadcastViewerCount(ws.roomId); // 퇴장 시 시청자 수 브로드캐스트
     }
   });
 });

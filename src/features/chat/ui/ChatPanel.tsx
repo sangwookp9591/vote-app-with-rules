@@ -28,6 +28,7 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isComposing, setIsComposing] = useState(false);
+  const [viewerCount, setViewerCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,6 +41,9 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
         const data = JSON.parse(event.data);
         if (data.type === 'chat' || data.type === 'system') {
           setMessages((prev) => [...prev, data]);
+        }
+        if (data.type === 'viewerCount' && data.roomId === roomId) {
+          setViewerCount(data.count);
         }
       } catch {}
     };
@@ -63,6 +67,7 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
 
   return (
     <div className={styles.chatPanel}>
+      <div style={{ fontSize: 13, color: '#888', marginBottom: 6 }}>👀 시청자 {viewerCount}명</div>
       <div className={styles.messagesArea}>
         {messages.map((msg, i) => (
           <div key={i} className={styles.messageRow}>
