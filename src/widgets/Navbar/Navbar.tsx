@@ -148,13 +148,14 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
         (m) => m.user.id === user.id,
       );
       if (!myMember) throw new Error('내 팀 멤버 정보를 찾을 수 없습니다.');
+
       // 상태 변경
       const patch = await fetch(
         `/api/tournaments/${tournamentId}/teams/${teamId}/members/${myMember.id}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ inviteStatus: action }),
+          body: JSON.stringify({ inviteStatus: action, notificationId: n?.id }),
         },
       );
       if (!patch.ok) throw new Error('처리 실패');
@@ -221,85 +222,91 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
                 </div>
               ) : (
                 notifications.map((n: NotificationItem, i) => (
-                  <div
-                    key={n.id}
-                    className={clsx(styles.notificationItem, !n.isRead && 'unread')}
-                    style={{
-                      background: n.isRead ? undefined : 'rgba(79,159,255,0.07)',
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 10,
-                      cursor: 'pointer',
-                      borderBottom:
-                        i !== notifications.length - 1 ? '1px solid #f0f0f0' : undefined,
-                      padding: '12px 10px',
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.background = '#f0f6ff')}
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.background = n.isRead ? '' : 'rgba(79,159,255,0.07)')
-                    }
-                    onClick={() => {
-                      // TEAM_INVITATION이면 팀 정보 페이지(n.link)로 이동
-                      if (n.type === 'TEAM_INVITATION' && n.link) {
-                        window.location.href = n.link;
-                      }
-                    }}
-                  >
-                    <span style={{ fontSize: 22, marginTop: 2 }}>
-                      {getNotificationIcon((n as NotificationItem).type)}
-                    </span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14 }}>{n.title}</div>
-                      <div style={{ fontSize: 13, color: '#555', margin: '2px 0 4px 0' }}>
-                        {n.content}
-                      </div>
-                      <div style={{ fontSize: 12, color: '#aaa' }}>{timeAgo(n.createdAt)}</div>
-                      {/* TEAM_INVITATION이면 수락/거절 버튼 */}
-                      {n.type === 'TEAM_INVITATION' && !n.isRead && (
-                        <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-                          <button
-                            style={{
-                              background: '#4f9fff',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: 6,
-                              padding: '4px 12px',
-                              fontWeight: 600,
-                              cursor: processingId === n.id ? 'not-allowed' : 'pointer',
-                              opacity: processingId === n.id ? 0.6 : 1,
-                            }}
-                            disabled={processingId === n.id}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleInvitation(n, 'ACCEPTED');
-                            }}
-                          >
-                            {processingId === n.id ? '처리 중...' : '수락'}
-                          </button>
-                          <button
-                            style={{
-                              background: '#eee',
-                              color: '#ff4f4f',
-                              border: 'none',
-                              borderRadius: 6,
-                              padding: '4px 12px',
-                              fontWeight: 600,
-                              cursor: processingId === n.id ? 'not-allowed' : 'pointer',
-                              opacity: processingId === n.id ? 0.6 : 1,
-                            }}
-                            disabled={processingId === n.id}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleInvitation(n, 'REJECTED');
-                            }}
-                          >
-                            {processingId === n.id ? '처리 중...' : '거절'}
-                          </button>
+                  <>
+                    {!n.isRead && (
+                      <div
+                        key={n.id}
+                        className={clsx(styles.notificationItem, !n.isRead && 'unread')}
+                        style={{
+                          background: n.isRead ? undefined : 'rgba(79,159,255,0.07)',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 10,
+                          cursor: 'pointer',
+                          borderBottom:
+                            i !== notifications.length - 1 ? '1px solid #f0f0f0' : undefined,
+                          padding: '12px 10px',
+                          transition: 'background 0.15s',
+                        }}
+                        onMouseOver={(e) => (e.currentTarget.style.background = '#f0f6ff')}
+                        onMouseOut={(e) =>
+                          (e.currentTarget.style.background = n.isRead
+                            ? ''
+                            : 'rgba(79,159,255,0.07)')
+                        }
+                        onClick={() => {
+                          // TEAM_INVITATION이면 팀 정보 페이지(n.link)로 이동
+                          if (n.type === 'TEAM_INVITATION' && n.link) {
+                            window.location.href = n.link;
+                          }
+                        }}
+                      >
+                        <span style={{ fontSize: 22, marginTop: 2 }}>
+                          {getNotificationIcon((n as NotificationItem).type)}
+                        </span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: 14 }}>{n.title}</div>
+                          <div style={{ fontSize: 13, color: '#555', margin: '2px 0 4px 0' }}>
+                            {n.content}
+                          </div>
+                          <div style={{ fontSize: 12, color: '#aaa' }}>{timeAgo(n.createdAt)}</div>
+                          {/* TEAM_INVITATION이면 수락/거절 버튼 */}
+                          {n.type === 'TEAM_INVITATION' && !n.isRead && (
+                            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                              <button
+                                style={{
+                                  background: '#4f9fff',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: 6,
+                                  padding: '4px 12px',
+                                  fontWeight: 600,
+                                  cursor: processingId === n.id ? 'not-allowed' : 'pointer',
+                                  opacity: processingId === n.id ? 0.6 : 1,
+                                }}
+                                disabled={processingId === n.id}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleInvitation(n, 'ACCEPTED');
+                                }}
+                              >
+                                {processingId === n.id ? '처리 중...' : '수락'}
+                              </button>
+                              <button
+                                style={{
+                                  background: '#eee',
+                                  color: '#ff4f4f',
+                                  border: 'none',
+                                  borderRadius: 6,
+                                  padding: '4px 12px',
+                                  fontWeight: 600,
+                                  cursor: processingId === n.id ? 'not-allowed' : 'pointer',
+                                  opacity: processingId === n.id ? 0.6 : 1,
+                                }}
+                                disabled={processingId === n.id}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleInvitation(n, 'REJECTED');
+                                }}
+                              >
+                                {processingId === n.id ? '처리 중...' : '거절'}
+                              </button>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
+                      </div>
+                    )}
+                  </>
                 ))
               )}
             </div>

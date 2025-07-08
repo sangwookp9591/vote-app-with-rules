@@ -10,7 +10,10 @@ export async function PATCH(
 ) {
   const { memberId } = await params;
   try {
-    const { inviteStatus } = await req.json();
+    const { inviteStatus, notificationId } = await req.json();
+    if (!notificationId) {
+      return NextResponse.json({ error: 'notificationId가 필요합니다.' }, { status: 400 });
+    }
     if (!['ACCEPTED', 'REJECTED'].includes(inviteStatus)) {
       return NextResponse.json(
         { error: 'inviteStatus는 ACCEPTED 또는 REJECTED여야 합니다.' },
@@ -21,7 +24,19 @@ export async function PATCH(
       where: { id: memberId },
       data: { inviteStatus },
     });
-    return NextResponse.json({ id: updated.id, inviteStatus: updated.inviteStatus });
+
+    const updatedN = await prisma.notification.update({
+      where: { id: notificationId },
+      data: {
+        isRead: true,
+      },
+    });
+
+    return NextResponse.json({
+      id: updated.id,
+      inviteStatus: updated.inviteStatus,
+      isRead: updatedN.isRead,
+    });
   } catch (e) {
     return NextResponse.json({ error: '팀원 상태 변경 실패', detail: String(e) }, { status: 500 });
   }
