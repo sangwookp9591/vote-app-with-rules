@@ -36,6 +36,13 @@ export const thumbnail = style({
   justifyContent: 'center',
 });
 
+export const thumbnailImg = style({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  borderRadius: 0,
+});
+
 export const liveBadge = style({
   position: 'absolute',
   top: 12,
@@ -77,6 +84,7 @@ export const profileImg = style({
   width: 28,
   height: 28,
   borderRadius: '50%',
+  objectFit: 'cover',
 });
 
 export const nickname = style({

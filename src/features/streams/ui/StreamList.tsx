@@ -6,10 +6,9 @@ import { fetchStreams } from '../api/streams';
 import type { Stream } from '@/entities/stream/model/types';
 import * as styles from './StreamList.css';
 import StreamCreateForm from './StreamCreateForm';
-import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function StreamList() {
-  const { data: session } = useSession();
   const [streams, setStreams] = useState<Stream[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -55,7 +54,7 @@ export default function StreamList() {
       </div>
       {showCreate && (
         <div style={{ margin: '0 0 24px 0', padding: '0 24px' }}>
-          <StreamCreateForm streamerId={session?.user?.id || ''} />
+          <StreamCreateForm streamerId="demo-streamer" />
         </div>
       )}
       <div className={styles.grid}>
@@ -68,10 +67,13 @@ export default function StreamList() {
               <div className={styles.thumbnail}>
                 {/* LIVE 뱃지 */}
                 {stream.isLive && <span className={styles.liveBadge}>LIVE</span>}
-                <img
+                <Image
                   src="/images/stream-thumb-default.jpg"
                   alt="썸네일"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 0 }}
+                  fill
+                  className={styles.thumbnailImg}
+                  sizes="(max-width: 600px) 100vw, 400px"
+                  priority
                 />
               </div>
               {/* 방송 제목 */}
@@ -79,9 +81,11 @@ export default function StreamList() {
               {/* 스트리머/시청자수 */}
               <div className={styles.infoRow}>
                 <div className={styles.profile}>
-                  <img
+                  <Image
                     src={stream.streamer.profileImageUrl || '/images/default-profile.png'}
                     alt="프로필"
+                    width={28}
+                    height={28}
                     className={styles.profileImg}
                   />
                   <span className={styles.nickname}>{stream.streamer.nickname}</span>
