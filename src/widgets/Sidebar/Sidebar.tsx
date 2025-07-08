@@ -45,7 +45,7 @@ export default function Sidebar({ open }: { open: boolean }) {
           <a href="#" className={styles.menuItem}>
             홈
           </a>
-          <Link href="#" className={styles.menuItem}>
+          <Link href="/streams" className={styles.menuItem}>
             스트리밍
           </Link>
           <Link href="/tournaments" className={styles.menuItem}>
