@@ -29,6 +29,7 @@ model User {
   teams             TeamMember[]    // 속한 팀 정보
   applications      TournamentApplication[]
   hostedTournaments  Tournament[]    @relation("UserHostedTournaments")
+  streams            Stream[]
 
   @@map("users")
 }
@@ -219,6 +220,21 @@ model TournamentApplication {
   user         User      @relation(fields: [userId], references: [id])
 
   @@map("tournament_applications")
+}
+
+model Stream {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  streamer     User     @relation(fields: [streamerId], references: [id])
+  streamerId   String
+  isLive       Boolean  @default(false)
+  startedAt    DateTime @default(now())
+  endedAt      DateTime?
+  viewers      Int      @default(0)
+  streamKey    String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 enum UserRole {
