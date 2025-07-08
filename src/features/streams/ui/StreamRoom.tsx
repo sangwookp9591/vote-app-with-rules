@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchStream, updateStream } from '../api/streams';
 import type { Stream } from '@/entities/stream/model/types';
+import { LiveKitRoom } from '@livekit/components-react';
+
+// 테스트용 LiveKit 서버 URL/토큰 (실서비스에서는 백엔드에서 발급 필요)
+const LIVEKIT_URL = 'wss://demo.livekit.io';
+const TEST_TOKEN =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29tIjoidGVzdC1yb29tIiwidXNlcklkIjoidGVzdC11c2VyIiwicm9sZXMiOlsidXNlciJdLCJleHAiOjQ3OTg2NDAwMDB9.2Qn6QwQw6QwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw';
 
 export default function StreamRoom() {
   const params = useParams();
@@ -150,7 +156,7 @@ export default function StreamRoom() {
         )}
         {actionError && <div style={{ color: 'red', marginTop: 8 }}>{actionError}</div>}
       </div>
-      {/* WebRTC 플레이어 영역 (더미) */}
+      {/* WebRTC 플레이어 영역 (LiveKit 연동) */}
       <div
         style={{
           width: '100%',
@@ -165,9 +171,23 @@ export default function StreamRoom() {
           fontWeight: 700,
           marginBottom: 32,
           boxShadow: '0 2px 12px #e0e7ef33',
+          overflow: 'hidden',
         }}
       >
-        {stream.isLive ? 'WebRTC 방송 플레이어 (연동 예정)' : '방송이 시작되지 않았습니다.'}
+        {stream.isLive ? (
+          <LiveKitRoom
+            serverUrl={LIVEKIT_URL}
+            token={TEST_TOKEN}
+            connect={true}
+            video={true}
+            audio={true}
+            style={{ width: '100%', height: '100%' }}
+          >
+            {/* LiveKit 기본 UI (참여자, 비디오, 채팅 등) */}
+          </LiveKitRoom>
+        ) : (
+          '방송이 시작되지 않았습니다.'
+        )}
       </div>
     </div>
   );
