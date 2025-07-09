@@ -11,7 +11,28 @@ const wss = new WebSocketServer({ port: PORT });
 const rooms = {};
 
 const redis = createClient({ url: process.env.NEXT_PUBLIC_REDIS_URL });
-redis.connect();
+
+// Redis 연결 재시도 로직 (최대 5회, 1초 간격)
+async function connectRedisWithRetry(retryCount = 5, delayMs = 1000) {
+  for (let i = 0; i < retryCount; i++) {
+    try {
+      await redis.connect();
+      console.log('Redis 연결 성공!');
+      return;
+    } catch (err) {
+      console.error(`Redis 연결 실패 (${i + 1}/${retryCount})`, err);
+      if (i < retryCount - 1) {
+        // 1초 대기 후 재시도
+        await new Promise((res) => setTimeout(res, delayMs));
+      } else {
+        throw err; // 마지막 시도도 실패하면 에러 throw
+      }
+    }
+  }
+}
+
+// 서버 시작 시 Redis 연결 시도
+connectRedisWithRetry();
 
 function broadcastViewerCount(roomId) {
   const count = rooms[roomId]?.size || 0;
