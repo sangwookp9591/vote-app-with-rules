@@ -7,8 +7,10 @@ import type { Stream } from '@/entities/stream/model/types';
 import * as styles from './StreamList.css';
 import StreamCreateForm from './StreamCreateForm';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 export default function StreamList() {
+  const { data: session } = useSession();
   const [streams, setStreams] = useState<Stream[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -54,7 +56,7 @@ export default function StreamList() {
       </div>
       {showCreate && (
         <div style={{ margin: '0 0 24px 0', padding: '0 24px' }}>
-          <StreamCreateForm streamerId="demo-streamer" />
+          <StreamCreateForm streamerId={session?.user?.id || ''} />
         </div>
       )}
       <div className={styles.grid}>
