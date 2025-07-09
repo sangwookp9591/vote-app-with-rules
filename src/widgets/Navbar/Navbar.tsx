@@ -105,7 +105,7 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [dropdownOpen]);
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const unreadCount = notifications?.filter((n) => !n.isRead).length;
 
   function getNotificationIcon(type: string) {
     switch (type) {

@@ -42,3 +42,10 @@ export async function updateStream(
   if (!res.ok) throw new Error('방송방 상태 갱신 실패');
   return res.json();
 }
+
+// 방송방별 실시간 시청자 수 조회 (최초 1회만 fetch)
+export async function fetchViewerCounts(): Promise<Record<string, number>> {
+  const res = await fetch('/api/streams/viewers');
+  if (!res.ok) throw new Error('시청자 수 조회 실패');
+  return res.json();
+}

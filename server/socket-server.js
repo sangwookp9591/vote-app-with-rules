@@ -1,13 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 // import 스타일로 변경
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
+import { createClient } from 'redis';
 
 // 환경변수에서 포트 번호를 읽고, 없으면 5000번 사용
-const PORT = process.env.NEXT_PUBLIC_CHAT_SERVER_PORT || 5000;
-const wss = new WebSocket.Server({ port: PORT });
+const PORT = process.env.NEXT_PUBLIC_CHAT_SERVER_PORT || 5001;
+const wss = new WebSocketServer({ port: PORT });
 
 // 방별로 클라이언트 관리
 const rooms = {};
+
+const redis = createClient({ url: process.env.NEXT_PUBLIC_REDIS_URL });
+redis.connect();
 
 function broadcastViewerCount(roomId) {
   const count = rooms[roomId]?.size || 0;
@@ -17,6 +21,17 @@ function broadcastViewerCount(roomId) {
       client.send(msg);
     }
   });
+  // Redis에 시청자 수 저장 (분산 환경 대응)
+  redis.set(`viewerCount:${roomId}`, count.toString());
+}
+
+// 방별 시청자 수를 반환하는 함수 (REST API에서 import해서 사용)
+export function getViewerCounts() {
+  const result = {};
+  for (const roomId in rooms) {
+    result[roomId] = rooms[roomId]?.size || 0;
+  }
+  return result;
 }
 
 wss.on('connection', function connection(ws) {

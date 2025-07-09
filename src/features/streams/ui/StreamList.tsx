@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { fetchStreams } from '../api/streams';
+import { fetchStreams, fetchViewerCounts } from '../api/streams';
 import type { Stream } from '@/entities/stream/model/types';
 import * as styles from './StreamList.css';
 import StreamCreateForm from './StreamCreateForm';
@@ -15,12 +15,18 @@ export default function StreamList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCreate, setShowCreate] = useState(false);
+  const [viewerCounts, setViewerCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     fetchStreams()
       .then(setStreams)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
+
+    // 시청자 수는 최초 1회만 fetch
+    fetchViewerCounts()
+      .then(setViewerCounts)
+      .catch(() => {});
   }, []);
 
   if (loading) return <div>로딩 중...</div>;
@@ -96,7 +102,8 @@ export default function StreamList() {
                   <span role="img" aria-label="시청자">
                     👁️
                   </span>
-                  {stream.viewers}
+                  {/* 실시간 시청자 수가 있으면 표시, 없으면 DB값 */}
+                  {viewerCounts[stream.id] ?? stream.viewers}
                 </div>
               </div>
             </Link>
