@@ -1,3 +1,13 @@
+// 서버 런타임에서 uncaughtException, unhandledRejection을 잡아 로그로 남김 (실무적 장애 추적)
+if (typeof process !== 'undefined' && process?.on) {
+  process.on('uncaughtException', (err) => {
+    console.error('uncaughtException(치명적 에러):', err, err.stack);
+  });
+  process.on('unhandledRejection', (reason) => {
+    console.error('unhandledRejection(비동기 에러):', reason);
+  });
+}
+
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import AppShell from './AppShell';
