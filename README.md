@@ -349,3 +349,107 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost:4000
 - 반드시 별도 Node 서버에서 socket.io를 운영해야 하며, 프론트/백엔드는 REST로만 통신합니다.
 
 ---
+
+## 7. 전체 서버 실행법 및 개별 서버 실행법 (로컬 & Docker)
+
+### 7-1. 로컬(Local) 환경에서 실행하기
+
+#### 1) Redis 서버 실행
+
+- Homebrew(macOS):
+  ```sh
+  brew install redis
+  brew services start redis
+  ```
+- 또는 직접 실행:
+  ```sh
+  redis-server
+  ```
+
+#### 2) 챗서버(WebSocket 채팅 서버) 실행
+
+- 환경변수(.env)에 아래 내용이 있어야 합니다:
+  ```
+  NEXT_PUBLIC_REDIS_URL=redis://localhost:6379
+  NEXT_PUBLIC_CHAT_SERVER_PORT=5001
+  ```
+- 실행:
+  ```sh
+  node server/socket-server.js
+  # 또는 환경변수 직접 지정
+  NEXT_PUBLIC_REDIS_URL=redis://localhost:6379 node server/socket-server.js
+  ```
+
+#### 3) 알람 서버 실행
+
+- Next.js API Route 기반이라면:
+  ```sh
+  npm run dev
+  # 또는
+  npx next dev
+  ```
+- 별도 Node.js 서버라면:
+  ```sh
+  npx ts-node src/pages/api/socket.ts
+  # 또는 빌드 후 node dist/pages/api/socket.js
+  ```
+
+#### 4) Next.js 앱 서버 실행
+
+```sh
+npm run dev
+# 또는
+npx next dev
+```
+
+#### 5) 환경변수 예시(.env)
+
+```
+NEXT_PUBLIC_REDIS_URL=redis://localhost:6379
+NEXT_PUBLIC_SOCKET_URL=http://localhost:4000
+NEXT_PUBLIC_CHAT_SERVER_PORT=5001
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/mydb
+```
+
+---
+
+### 7-2. Docker 환경에서 실행하기
+
+#### 1) 전체 서버(Next.js, 챗서버, 알람서버, Redis) 한 번에 실행
+
+```sh
+docker-compose up --build
+```
+
+- Next.js 앱: http://localhost:3000
+- 챗서버(WebSocket): http://localhost:4000 (포트는 docker-compose.yml 참고)
+- Redis: localhost:6379 (컨테이너 내부에서는 redis:6379)
+
+#### 2) 개별 컨테이너만 실행/중지
+
+```sh
+docker-compose up -d <서비스명>
+docker-compose stop <서비스명>
+```
+
+예시:
+
+```sh
+docker-compose up -d redis
+docker-compose up -d socket-server
+docker-compose stop redis
+```
+
+#### 3) 컨테이너 환경변수
+
+- docker-compose.yml의 environment 항목 참고
+- Redis 주소는 반드시 `redis://redis:6379`로 설정
+
+---
+
+### 실무 팁
+
+- 로컬에서 여러 서버를 띄울 때는 포트 충돌에 주의하세요.
+- 각 서버를 별도의 터미널에서 실행하면 관리가 쉽습니다.
+- Docker 환경에서는 서비스명(`redis`, `socket-server` 등)으로 네트워크 접근이 가능합니다.
+- 환경변수 변경 시 컨테이너를 반드시 재시작하세요.
