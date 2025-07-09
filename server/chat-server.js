@@ -1,7 +1,9 @@
-// ws 설치 필요: npm install ws
-const WebSocket = require('ws');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+// import 스타일로 변경
+import WebSocket from 'ws';
 
-const PORT = 5001;
+// 환경변수에서 포트 번호를 읽고, 없으면 5000번 사용
+const PORT = process.env.NEXT_PUBLIC_CHAT_SERVER_PORT || 5000;
 const wss = new WebSocket.Server({ port: PORT });
 
 // 방별로 클라이언트 관리
