@@ -2,68 +2,80 @@ version: '3.8'
 services:
   db:
     image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mydb
     ports:
       - '5432:5432'
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - vote-net
-
-  app:
-    env_file:
-      - .env
-    build: .
-    ports:
-      - '3000:3000'
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/mydb
-      NEXT_PUBLIC_SOCKET_URL: http://socket-server:4000
-    depends_on:
-      - db
-    volumes:
-      - uploads_data:/app/uploads
-    networks:
-      - vote-net
-
-  nextjs:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - '3001:3000'
-    env_file:
-      - .env.local
-    environment:
-      - NEXT_PUBLIC_SOCKET_URL=http://socket-server:4000
-    depends_on:
-      - socket-server
-    networks:
-      - vote-net
-
-  socket-server:
-    build:
-      context: .
-      dockerfile: Dockerfile.socket
-    command: node server/socket-server.js
-    ports:
-      - '4000:4000'
-    restart: always
-    environment:
-      - NEXT_PUBLIC_REDIS_URL=redis://redis:6379
-      - NEXT_PUBLIC_CHAT_SERVER_PORT=5001
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=mydb
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - vote-net
 
   redis:
     image: redis:7
-    container_name: vote-app-redis
     ports:
       - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - vote-net
+
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    # 환경변수는 .env 파일에서 일괄 관리합니다
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      chat-server:
+        condition: service_started
+      notification-server:
+        condition: service_started
+    restart: always
+    networks:
+      - vote-net
+
+  chat-server:
+    build:
+      context: ./server/chat-server
+      dockerfile: Dockerfile
+    ports:
+      - '5001:5001'
+    # 환경변수는 .env 파일에서 일괄 관리합니다
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: always
+    networks:
+      - vote-net
+
+  notification-server:
+    build:
+      context: ./server/notification-server
+      dockerfile: Dockerfile
+    ports:
+      - '4000:4000'
+    # 환경변수는 .env 파일에서 일괄 관리합니다
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
     restart: always
     networks:
       - vote-net
