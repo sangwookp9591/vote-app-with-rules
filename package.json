@@ -19,6 +19,7 @@
     "@tanstack/react-query": "^5.81.5",
     "@types/next-auth": "^3.13.0",
     "@types/socket.io-client": "^1.4.36",
+    "@vanilla-extract/recipes": "^0.5.7",
     "bcrypt": "^6.0.0",
     "clsx": "^2.1.1",
     "livekit-client": "^2.15.2",
