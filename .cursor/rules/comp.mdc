@@ -1,0 +1,66 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# Feature-Sliced Design(FSD) 및 코드 작성 규칙
+
+이 프로젝트는 FSD(Feature-Sliced Design) 아키텍처를 따릅니다.
+
+- entities/: 핵심 도메인 데이터(타입, 모델, API, store)
+- features/: 각 기능별 비즈니스 로직 및 UI
+- widgets/: 주요 UI 블록(여러 feature/entity 조합)
+- app/ (또는 pages/): 라우트 엔트리 및 페이지 조합
+- shared/: 전역 재사용 리소스(UI, utils, hooks, theme 등)
+
+## 컴포넌트/스타일/타입 작성 규칙
+
+- 컴포넌트 이름은 PascalCase로 작성한다.
+- props는 interface로 정의한다.
+- 스타일은 vanilla-extract를 사용한다.
+- 기본적으로 typescript 사용
+
+## tanstack query
+
+- tanstack query 사용
+
+## 서버/클라이언트 컴포넌트 구분
+
+- 기본은 서버 컴포넌트
+- 클라이언트 컴포넌트는 파일 상단에 'use client' 선언
+- 클라이언트 훅(예: useState, useEffect, useSession 등) 사용 시 반드시 'use client' 필요
+
+## 이미지 최적화
+
+- <img> 대신 반드시 next/image의 <Image /> 사용
+- 외부 이미지 도메인은 next.config.js의 images.domains에 등록
+
+## 라우트 핸들러(REST API) 시그니처
+
+- GET, POST, PATCH 등 함수의 두 번째 인자는 반드시 { params }로 구조분해
+- 타입은 { params: { [key: string]: string } } 또는 { params: Record<string, string> }
+- 예시:
+  ```ts
+  import { NextRequest, NextResponse } from 'next/server';
+  export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+    // ...
+    return NextResponse.json({ ok: true });
+  }
+  ```
+
+## 에러/로딩 처리
+
+- 각 라우트 폴더에 error.tsx, loading.tsx로 에러/로딩 UI 분리
+
+## 동적 라우트
+
+- [id], [...slug] 등 동적 폴더명 사용
+
+## CardComponent 생성시
+
+- Skeleton component 같이 생성
+
+## eslint
+
+-- docker build 및 build시 발생하는 eslint관련 이슈나 에러는 미리 해결해야함
