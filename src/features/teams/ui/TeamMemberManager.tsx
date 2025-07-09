@@ -1,5 +1,6 @@
 import { FaCrown, FaUserMinus, FaCheck, FaTimes } from 'react-icons/fa';
 import { TeamMember } from '@/entities/team/model/types';
+import Image from 'next/image';
 
 interface TeamMemberManagerProps {
   members: TeamMember[];
@@ -44,12 +45,12 @@ export default function TeamMemberManager({
               transition: 'box-shadow 0.2s',
             }}
           >
-            <img
+            <Image
               src={m.user.profileImageUrl || '/images/default-profile.png'}
               alt={m.user.nickname}
+              width={64}
+              height={64}
               style={{
-                width: 64,
-                height: 64,
                 borderRadius: '50%',
                 objectFit: 'cover',
                 marginBottom: 12,

@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../shared/prisma/client';
 
 // 방송방 상세 조회
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const stream = await prisma.stream.findUnique({
     where: { id },
     include: { streamer: { select: { id: true, nickname: true, profileImageUrl: true } } },
@@ -13,8 +13,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // 방송 시작/종료, 시청자 수 갱신
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const body = await req.json();
   // isLive, endedAt, viewers 등 갱신
   const { isLive, endedAt, viewers } = body;

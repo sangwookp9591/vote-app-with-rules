@@ -44,7 +44,7 @@ export default function StreamRoom() {
     };
     socket.addEventListener('message', handler);
     return () => socket.removeEventListener('message', handler);
-  }, [stream?.id]);
+  }, [stream]);
 
   const handleStart = async () => {
     if (!stream) return;

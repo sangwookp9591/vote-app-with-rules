@@ -3,7 +3,6 @@
 import {
   applicationWrapper,
   pageTitle,
-  applicationCard,
   applicationForm,
   formGroup,
   formLabel,
@@ -19,7 +18,6 @@ import {
   errorMessage,
   successMessage,
 } from '@/app/streamer-application/page.css';
-import { useSession } from 'next-auth/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -35,26 +33,24 @@ interface StreamerApplication {
 }
 
 export default function StreamerApplicationForm() {
-  const { data: session } = useSession();
   const [selfIntro, setSelfIntro] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   // 신청 상태 조회
-  const { data: application, refetch } = useQuery<StreamerApplication | null>(
-    ['myStreamerApplication'],
-    async () => {
+  const { data: application, refetch } = useQuery<StreamerApplication | null>({
+    queryKey: ['myStreamerApplication'],
+    queryFn: async (): Promise<StreamerApplication | null> => {
       const res = await fetch('/api/streamer-applications/me');
       if (!res.ok) return null;
       return res.json();
     },
-    { enabled: !!session?.user?.id },
-  );
+  });
 
   // 신청 제출
-  const mutation = useMutation(
-    async () => {
+  const mutation = useMutation<void, Error, void>({
+    mutationFn: async () => {
       setError('');
       setSuccess('');
       setLoading(true);
@@ -69,10 +65,8 @@ export default function StreamerApplicationForm() {
       setSelfIntro('');
       refetch();
     },
-    {
-      onError: (e: any) => setError(e.message || '신청 실패'),
-    },
-  );
+    onError: (e: Error) => setError(e.message || '신청 실패'),
+  });
 
   return (
     <div className={applicationWrapper}>
