@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import socket from '@/shared/api/socketClient';
 import { sendChatMessage, joinChatRoom } from '../api/chatSocket';
 import * as styles from './ChatPanel.css';
+import { VirtualList } from '@/shared/ui/list/VirtualList';
 
 type ChatMessage = {
   type: string;
@@ -24,6 +25,8 @@ function getUserColor(nickname?: string) {
   return colors[hash % colors.length];
 }
 
+const MAX_MESSAGES = 100;
+
 export default function ChatPanel({ roomId, user }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -40,7 +43,10 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
       try {
         const data = JSON.parse(event.data);
         if (data.type === 'chat' || data.type === 'system') {
-          setMessages((prev) => [...prev, data]);
+          setMessages((prev) => {
+            const next = [...prev, data];
+            return next.length > MAX_MESSAGES ? next.slice(next.length - MAX_MESSAGES) : next;
+          });
         }
         if (data.type === 'viewerCount' && data.roomId === roomId) {
           setViewerCount(data.count);
@@ -69,6 +75,29 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
     <div className={styles.chatPanel}>
       <div style={{ fontSize: 13, color: '#888', marginBottom: 6 }}>👀 시청자 {viewerCount}명</div>
       <div className={styles.messagesArea}>
+        <VirtualList
+          items={messages}
+          itemHeight={32}
+          height={32 * 20}
+          renderItem={(msg, i) => (
+            <div key={i} className={styles.messageRow}>
+              {msg.type === 'system' ? (
+                <span className={styles.systemMessage}>{msg.message}</span>
+              ) : (
+                <>
+                  <span className={styles.badge}>K</span>
+                  <span className={styles.nickname} style={{ color: getUserColor(msg.user) }}>
+                    {msg.user}
+                  </span>
+                  <span className={styles.message}>{msg.message}</span>
+                  {/* <span style={{ color: '#aaa', fontSize: 11, marginLeft: 6 }}>
+                  {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}
+                </span> */}
+                </>
+              )}
+            </div>
+          )}
+        />
         {messages.map((msg, i) => (
           <div key={i} className={styles.messageRow}>
             {msg.type === 'system' ? (
