@@ -37,7 +37,17 @@ connectRedisWithRetry();
 function broadcastViewerCount(roomId) {
   const count = rooms[roomId]?.size || 0;
   const msg = JSON.stringify({ type: 'viewerCount', roomId, count });
+
+  //해당 방의 모든 클라이언트에게 msg전송 (방 카운트 업데이트정보)
   rooms[roomId]?.forEach((client) => {
+    /**
+     * 값 (숫자)	상수명	의미
+      0	CONNECTING	연결 시도 중
+      1	OPEN	연결 완료, 데이터 송수신 가능
+      2	CLOSING	연결 종료 중
+      3	CLOSED	연결 종료됨
+
+     */
     if (client.readyState === WebSocket.OPEN) {
       client.send(msg);
     }
@@ -55,6 +65,7 @@ export function getViewerCounts() {
   return result;
 }
 
+//"새 클라이언트가 서버에 접속할 때마다 handler를 실행"
 wss.on('connection', function connection(ws) {
   // 클라이언트가 보낸 첫 메시지로 닉네임/방 지정
   ws.on('message', function incoming(raw) {
@@ -68,10 +79,18 @@ wss.on('connection', function connection(ws) {
 
     // 최초 입장: { type: 'join', roomId, user }
     if (data.type === 'join') {
+      //webscoket에 data의 프로퍼티 추가
       ws.user = data.user || '익명';
       ws.roomId = data.roomId || 'default';
       if (!rooms[ws.roomId]) rooms[ws.roomId] = new Set();
       rooms[ws.roomId].add(ws);
+      //client user 중복 방지를 위해 set사용
+      /**
+       *     rooms = {
+      "roomA": Set( ws1, ws2, ... ),
+      "roomB": Set( ws3, ws4, ... ),
+    }
+       */
       broadcastViewerCount(ws.roomId); // 입장 시 시청자 수 브로드캐스트
       ws.send(
         JSON.stringify({ type: 'system', message: `${ws.user}님 입장`, timestamp: Date.now() }),
