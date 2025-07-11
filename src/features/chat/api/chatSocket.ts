@@ -11,23 +11,23 @@ export function sendChatMessage(message: string) {
 }
 
 // 메시지 받기(구독) - 전체 메시지 구조 전달
-export function subscribeChatMessage(
-  onMessage: (msg: {
-    type: string;
-    user?: string;
-    message: string;
-    timestamp?: number;
-    roomId?: string;
-  }) => void,
-) {
-  socket.addEventListener('message', (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      if (data.type === 'chat' || data.type === 'system') {
-        onMessage(data);
-      }
-    } catch {
-      // JSON이 아니면 무시
-    }
-  });
-}
+// export function subscribeChatMessage(
+//   onMessage: (msg: {
+//     type: string;
+//     user?: string;
+//     message: string;
+//     timestamp?: number;
+//     roomId?: string;
+//   }) => void,
+// ) {
+//   socket.addEventListener('message', (event) => {
+//     try {
+//       const data = JSON.parse(event.data);
+//       if (data.type === 'chat' || data.type === 'system') {
+//         onMessage(data);
+//       }
+//     } catch {
+//       // JSON이 아니면 무시
+//     }
+//   });
+// }
