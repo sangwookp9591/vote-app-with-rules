@@ -76,7 +76,7 @@ export default function StreamList() {
                 {/* LIVE 뱃지 */}
                 {stream.isLive && <span className={styles.liveBadge}>LIVE</span>}
                 <Image
-                  src="/images/stream-thumb-default.jpg"
+                  src="/images/lol.png" // 기본 이미지로 변경 (stream-thumb-default.jpg 대신)
                   alt="썸네일"
                   fill
                   className={styles.thumbnailImg}
