@@ -35,7 +35,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "ws": "^8.18.3",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "react-virtual-list": "git+https://github.com/sangwookp9591/react-virtual-list.git"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.0.1",
