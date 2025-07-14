@@ -85,6 +85,14 @@ services:
     networks:
       - vote-net
 
+  rtmp:
+    image: alfg/nginx-rtmp
+    ports:
+      - '1935:1935' # RTMP 송출용
+      - '8080:80' # HLS 시청용
+    volumes:
+      - ./nginx.rtmp.conf:/etc/nginx/nginx.conf
+
 volumes:
   db_data:
   uploads_data:
