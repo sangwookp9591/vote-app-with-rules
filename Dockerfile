@@ -1,6 +1,10 @@
 # 1. Install dependencies only when needed
 FROM node:20-alpine AS deps
 WORKDIR /app
+
+# Git 의존성을 위해 git 설치
+RUN apk add --no-cache git
+
 COPY package.json package-lock.json* ./
 RUN npm ci
 
