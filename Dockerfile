@@ -13,6 +13,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# prisma 폴더도 복사 (마이그레이션 및 Prisma Client 생성을 위해 필요)
+COPY ./prisma ./prisma
 RUN npm run build && npx prisma generate
 
 # 3. Production image, copy all the files and run next
@@ -25,6 +27,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+# prisma 폴더도 복사 (운영 환경에서 Prisma Client가 schema 참조 가능하도록)
+COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 3000
 
