@@ -1,6 +1,0 @@
-rtc:
-  udp_port: 7882
-  tcp_port: 7880
-  use_external_ip: true
-
-key_file: /etc/livekit_keys.yaml
