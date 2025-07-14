@@ -85,13 +85,28 @@ services:
     networks:
       - vote-net
 
-  rtmp:
-    image: alfg/nginx-rtmp
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --config /etc/livekit.yaml
     ports:
-      - '1935:1935' # RTMP 송출용
-      - '8080:80' # HLS 시청용
+      - '7880:7880'
+      - '7881:7881'
     volumes:
-      - ./nginx.rtmp.conf:/etc/nginx/nginx.conf
+      - ./livekit.yaml:/etc/livekit.yaml
+      - ./livekit_keys.yaml:/etc/livekit_keys.yaml
+    networks:
+      - vote-net
+
+  srs:
+    image: ossrs/srs:5
+    ports:
+      - '1935:1935'
+      - '1985:1985'
+      - '8080:8080'
+      - '8000:8000'
+    volumes:
+      - ./srs_hls:/usr/local/srs/objs/nginx/html/hls
+      - ./srs.conf:/usr/local/srs/conf/srs.conf
 
 volumes:
   db_data:
