@@ -98,24 +98,7 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
             </div>
           )}
         />
-        {messages.map((msg, i) => (
-          <div key={i} className={styles.messageRow}>
-            {msg.type === 'system' ? (
-              <span className={styles.systemMessage}>{msg.message}</span>
-            ) : (
-              <>
-                <span className={styles.badge}>K</span>
-                <span className={styles.nickname} style={{ color: getUserColor(msg.user) }}>
-                  {msg.user}
-                </span>
-                <span className={styles.message}>{msg.message}</span>
-                {/* <span style={{ color: '#aaa', fontSize: 11, marginLeft: 6 }}>
-                  {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}
-                </span> */}
-              </>
-            )}
-          </div>
-        ))}
+
         <div ref={messagesEndRef} />
       </div>
       <div className={styles.inputRow}>
