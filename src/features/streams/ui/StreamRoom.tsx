@@ -12,10 +12,7 @@ import { useSession } from 'next-auth/react';
 // hls.js 타입 에러 방지: 타입 선언 파일이 없으므로 아래 @ts-expect-error 사용
 import Hls from 'hls.js';
 
-// 테스트용 LiveKit 서버 URL/토큰 (실서비스에서는 백엔드에서 발급 필요)
-const LIVEKIT_URL = 'wss://demo.livekit.io';
-const TEST_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29tIjoidGVzdC1yb29tIiwidXNlcklkIjoidGVzdC11c2VyIiwicm9sZXMiOlsidXNlciJdLCJleHAiOjQ3OTg2NDAwMDB9.2Qn6QwQw6QwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw';
+// (LiveKit, WebRTC, SRS WebRTC Publish 관련 코드/주석/함수/변수/버튼 완전 제거)
 
 export default function StreamRoom() {
   const params = useParams();
@@ -80,16 +77,6 @@ export default function StreamRoom() {
     }
   };
 
-  // SRS WebRTC Publish 페이지로 이동 (방송 시작)
-  const handleSrsWebrtcStart = () => {
-    if (!stream) return;
-    // SRS WebRTC Publish 페이지로 streamKey를 쿼리로 전달
-    window.open(
-      `http://localhost:8080/players/rtc_publisher.html?stream=${stream.streamKey}`,
-      '_blank',
-    );
-  };
-
   // HLS 플레이어용 ref
   const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
@@ -98,11 +85,11 @@ export default function StreamRoom() {
     if (user?.id === stream.streamerId) return; // 스트리머는 HLS 플레이어 안 보임
     if (Hls.isSupported()) {
       const hls = new Hls();
-      hls.loadSource(`http://localhost:8080/hls/${stream.streamKey}.m3u8`);
+      hls.loadSource(`http://localhost:8080/live/${stream.streamKey}.m3u8`);
       hls.attachMedia(videoRef.current);
       return () => hls.destroy();
     } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-      videoRef.current.src = `http://localhost:8080/hls/${stream.streamKey}.m3u8`;
+      videoRef.current.src = `http://localhost:8080/live/${stream.streamKey}.m3u8`;
     }
   }, [stream, user?.id]);
 
@@ -163,92 +150,110 @@ export default function StreamRoom() {
             >
               {actionLoading ? '종료 중...' : '방송 종료'}
             </button>
-          ) : (
-            <button
-              onClick={handleSrsWebrtcStart}
-              disabled={actionLoading}
-              className={styles.actionButton}
-              data-variant="start"
-            >
-              {actionLoading ? '시작 중...' : '브라우저로 방송 시작'}
-            </button>
-          )}
+          ) : null}
           {actionError && <div className={styles.actionError}>{actionError}</div>}
         </div>
       )}
-      {/* 스트리머는 방송 시작 안내, 시청자는 HLS 플레이어 */}
-      {isStreamer ? (
-        <div style={{ background: '#f5f7fa', padding: 16, borderRadius: 8, margin: '16px 0' }}>
-          <h4>브라우저에서 바로 방송을 시작할 수 있습니다</h4>
-          <div style={{ fontSize: 14, marginBottom: 8 }}>
-            <b>방송 송출 방법:</b>
-            <ol>
-              <li>
-                <button
-                  onClick={handleSrsWebrtcStart}
-                  style={{
-                    background: '#4f9fff',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '6px 16px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    marginBottom: 8,
-                  }}
-                >
-                  SRS WebRTC 방송 시작 페이지 열기
-                </button>
-              </li>
-              <li>
-                <b>Stream Name:</b> <code>{stream.streamKey}</code> (자동 입력됨)
-              </li>
-              <li>
-                <b>Start Publish</b> 버튼 클릭 → 웹캠/마이크 허용 → 방송 시작!
-              </li>
-            </ol>
-            <b>시청 주소(HLS):</b> <code>http://localhost:8080/hls/{stream.streamKey}.m3u8</code>
+      {/* OBS Studio 송출 안내 및 자동화 UX 개선 */}
+      <div style={{ background: '#eaf6ff', padding: 16, borderRadius: 8, margin: '16px 0' }}>
+        <h4>OBS Studio로 방송 송출을 권장합니다</h4>
+        <div style={{ marginBottom: 8 }}>
+          <b>RTMP 서버:</b> <code>rtmp://localhost:1935/live</code>
+          <button
+            type="button"
+            style={{ marginLeft: 8 }}
+            onClick={() => navigator.clipboard.writeText('rtmp://localhost:1935/live')}
+          >
+            복사
+          </button>
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <b>스트림키:</b> <code>{stream?.streamKey}</code>
+          <button
+            type="button"
+            style={{ marginLeft: 8 }}
+            onClick={() => navigator.clipboard.writeText(stream?.streamKey || '')}
+          >
+            복사
+          </button>
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <a href="https://obsproject.com/ko/download" target="_blank" rel="noopener noreferrer">
+            OBS Studio 다운로드
+          </a>
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <button
+            type="button"
+            onClick={() => {
+              // OBS 설정 파일(.json) 자동 생성 및 다운로드
+              const obsProfile = {
+                settings: {
+                  service: 'Custom',
+                  server: 'rtmp://localhost:1935/live',
+                  key: stream?.streamKey || '',
+                },
+              };
+              const blob = new Blob([JSON.stringify(obsProfile, null, 2)], {
+                type: 'application/json',
+              });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `obs-profile-${stream?.streamKey || 'stream'}.json`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }}
+          >
+            OBS 설정 파일 다운로드
+          </button>
+        </div>
+        <div style={{ fontSize: 13, color: '#555' }}>
+          <b>설정법:</b> OBS 실행 → 설정 → 방송 → 위 정보 입력 → 방송 시작!
+          <br />
+          <span style={{ color: '#888' }}>
+            {'OBS 설정 파일을 다운로드해 프로필 가져오기로 불러오면 더 빠르게 설정할 수 있습니다'}
+          </span>
+        </div>
+        <div
+          style={{ background: '#eee', padding: 10, borderRadius: 6, fontSize: 13, marginTop: 12 }}
+        >
+          <b>ffmpeg 송출 예시:</b>
+          <br />
+          <div style={{ wordBreak: 'break-all', display: 'block' }}>
+            {
+              'ffmpeg -re -f avfoundation -framerate 30 -i "0:0" -c:v libx264 -preset veryfast -b:v 2500k -c:a aac -b:a 128k -f flv rtmp://localhost:1935/live/stream?.streamKey'
+            }
           </div>
-          <div style={{ fontSize: 13, color: '#888', marginBottom: 12 }}>
-            방송을 시작하면 시청자는 위 HLS 주소로 방송을 볼 수 있습니다.
-          </div>
-          {/* 스트리머가 방송 중이면 자신의 송출 미리보기를 방송방 내에 표시 */}
-          {stream.isLive && (
-            <div style={{ margin: '16px 0', textAlign: 'center' }}>
-              <div style={{ fontWeight: 700, marginBottom: 8 }}>
-                내 송출 미리보기 (이 화면이 방송됩니다)
-              </div>
-              <video
-                ref={localPreviewRef}
-                autoPlay
-                muted
-                playsInline
-                style={{
-                  width: '100%',
-                  maxWidth: 480,
-                  borderRadius: 12,
-                  border: '2px solid #4f9fff',
-                }}
-              />
+          <span style={{ color: '#888' }}>
+            {
+              'Mac 내장 카메라/마이크 송출 예시, 실제 장치 번호는 ffmpeg -f avfoundation -list_devices true -i 로 확인'
+            }
+          </span>
+        </div>
+      </div>
+      {/* 방송이 진행 중일 때 스트리머/시청자 모두에게 HLS 플레이어 노출 */}
+      {stream.isLive && (
+        <div style={{ margin: '16px 0' }}>
+          {/* 스트리머에게만 안내 문구 노출 */}
+          {isStreamer && (
+            <div style={{ color: '#888', fontSize: 13, marginBottom: 8 }}>
+              이 화면은 실제 방송 송출 미리보기(HLS 기준, 약간의 지연 있음)입니다.
             </div>
           )}
-        </div>
-      ) : stream.isLive ? (
-        <div style={{ margin: '16px 0' }}>
-          {/* 시청자는 HLS 플레이어만 노출 */}
           <video
             ref={videoRef}
             controls
             autoPlay
             style={{ width: '100%', maxWidth: 800 }}
-            src={`http://localhost:8080/hls/${stream.streamKey}.m3u8`} // HLS 주소를 /hls/로 통일
+            src={`http://localhost:8080/live/${stream.streamKey}.m3u8`}
           />
         </div>
-      ) : (
-        <div style={{ margin: '16px 0', color: '#888' }}>아직 방송이 시작되지 않았습니다.</div>
       )}
       {/* 채팅 등 부가 기능은 그대로 유지 */}
-      <ChatWidget stream={stream} livekitUrl={LIVEKIT_URL} livekitToken={TEST_TOKEN} />
+      <ChatWidget stream={stream} user={user?.nickname || ''} />
     </div>
   );
 }

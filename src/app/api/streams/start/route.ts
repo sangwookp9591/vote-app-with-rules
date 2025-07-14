@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     rtmpUrl: `rtmp://localhost:1935/live`,
     streamKey: stream.streamKey,
-    hlsUrl: `http://localhost:8080/hls/${stream.streamKey}.m3u8`, // HLS 주소를 /hls/로 통일
+    hlsUrl: `http://localhost:8080/live/${stream.streamKey}.m3u8`, // HLS 주소를 /live/로 통일
     stream,
   });
 }

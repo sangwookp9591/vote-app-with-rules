@@ -76,21 +76,18 @@ export default function StreamCreateForm({ streamerId }: { streamerId: string })
       {error && <div style={{ color: 'red', fontSize: 14 }}>{error}</div>}
       {info && (
         <div style={{ background: '#f5f7fa', padding: 16, borderRadius: 8, marginTop: 16 }}>
-          <h4>OBS 또는 ffmpeg로 방송 송출이 가능합니다</h4>
+          <h4>OBS Studio로 방송 송출을 권장합니다</h4>
           <div style={{ fontSize: 14, marginBottom: 8 }}>
             <b>RTMP 서버:</b> {info.rtmpUrl}
             <br />
             <b>스트림키:</b> {info.streamKey}
             <br />
-            <b>시청 주소(HLS):</b> {info.hlsUrl.replace('/live/', '/hls/')}{' '}
-            {/* HLS 주소를 /hls/로 통일 */}
+            <b>시청 주소(HLS):</b> {info.hlsUrl}
           </div>
           <div style={{ color: '#888', fontSize: 13, marginBottom: 8 }}>
             방송을 시작하면 시청자는 위 HLS 주소로 방송을 볼 수 있습니다.
             <br />
             <b>2초 후 방송방으로 자동 이동합니다.</b>
-            <br />
-            {/* RTMP/ffmpeg 송출 예시는 참고용이며, 실제 방송은 SRS WebRTC Publish(브라우저)로 진행하세요. */}
           </div>
           <div
             style={{
@@ -104,13 +101,16 @@ export default function StreamCreateForm({ streamerId }: { streamerId: string })
             <b>ffmpeg 송출 예시:</b>
             <br />
             <code style={{ wordBreak: 'break-all', display: 'block' }}>
-              ffmpeg -re -f lavfi -i testsrc=size=1280x720:rate=30 -f lavfi -i sine=frequency=1000
-              -c:v libx264 -preset veryfast -b:v 2500k -c:a aac -b:a 128k -f flv {info.rtmpUrl}/
-              {info.streamKey}
+              {
+                'ffmpeg -re -f avfoundation -framerate 30 -i "0:0" -c:v libx264 -preset veryfast -b:v 2500k -c:a aac -b:a 128k -f flv info.rtmpUrl/info.streamKey'
+              }
             </code>
             <span style={{ color: '#888' }}>
-              (컬러바+삐 소리 테스트 영상 송출, 실제 방송은 입력 장치에 맞게 명령어를 바꿔주세요)
+              {'OBS 설정 파일을 다운로드해 프로필 가져오기로 불러오면 더 빠르게 설정할 수 있습니다'}
             </span>
+          </div>
+          <div style={{ color: '#555', fontSize: 13 }}>
+            <b>설정법:</b> OBS 실행 → 설정 → 방송 → 위 정보 입력 → 방송 시작!
           </div>
         </div>
       )}
