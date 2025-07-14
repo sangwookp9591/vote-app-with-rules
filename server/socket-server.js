@@ -55,6 +55,7 @@ export function getViewerCounts() {
   return result;
 }
 
+//WebSocket으로 client가 접속하면 콜백 실행
 wss.on('connection', function connection(ws) {
   // 클라이언트가 보낸 첫 메시지로 닉네임/방 지정
   ws.on('message', function incoming(raw) {
