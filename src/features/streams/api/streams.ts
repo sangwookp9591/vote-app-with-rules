@@ -1,5 +1,12 @@
 import type { Stream } from '@/entities/stream/model/types';
 
+export interface StartStreamResponse {
+  rtmpUrl: string;
+  streamKey: string;
+  hlsUrl: string;
+  stream: Stream;
+}
+
 // 방송방 목록 조회
 export async function fetchStreams(): Promise<Stream[]> {
   const res = await fetch('/api/streams');
@@ -7,18 +14,18 @@ export async function fetchStreams(): Promise<Stream[]> {
   return res.json();
 }
 
-// 방송방 생성
+// 방송 시작
 export async function createStream(data: {
   title: string;
   description?: string;
   streamerId: string;
-}): Promise<Stream> {
-  const res = await fetch('/api/streams', {
+}): Promise<StartStreamResponse> {
+  const res = await fetch('/api/streams/start', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error('방송방 생성 실패');
+  if (!res.ok) throw new Error('방송 시작 실패');
   return res.json();
 }
 
