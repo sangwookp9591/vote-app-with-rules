@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 // import 스타일로 변경
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws'; // WebSocket도 import 추가
 import { createClient } from 'redis';
 
 // 환경변수에서 포트 번호를 읽고, 없으면 5000번 사용
@@ -48,6 +48,7 @@ function broadcastViewerCount(roomId) {
       3	CLOSED	연결 종료됨
 
      */
+    // Node.js 환경에서는 WebSocket.OPEN 사용 (ws 라이브러리)
     if (client.readyState === WebSocket.OPEN) {
       client.send(msg);
     }
@@ -109,6 +110,7 @@ wss.on('connection', function connection(ws) {
       };
       // 같은 방에만 브로드캐스트
       rooms[ws.roomId]?.forEach((client) => {
+        // Node.js 환경에서는 WebSocket.OPEN 사용 (ws 라이브러리)
         if (client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify(msg));
         }
