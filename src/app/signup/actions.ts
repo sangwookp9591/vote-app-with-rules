@@ -64,7 +64,7 @@ export async function signupAction(
         password: hashedPassword,
         nickname,
         profileImageUrl,
-        role: email === 'admin@admin.com' ? 'ADMIN' : undefined,
+        role: email.includes('@admin.com') ? 'ADMIN' : undefined,
       },
     });
 
