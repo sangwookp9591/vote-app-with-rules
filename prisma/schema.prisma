@@ -31,6 +31,12 @@ model User {
   hostedTournaments  Tournament[]    @relation("UserHostedTournaments")
   streams            Stream[]
 
+  // 인기 스트리머 랭킹용 관계
+  followers         Follower[]      @relation("StreamerFollowers") // 나를 팔로우하는 사람들
+  following         Follower[]      @relation("UserFollows")      // 내가 팔로우하는 사람들
+  streamerVotes     StreamerVote[]  @relation("StreamerVotes")    // 내가 받은 투표
+  votedStreamers    StreamerVote[]  @relation("UserVotes")        // 내가 투표한 스트리머
+
   @@map("users")
 }
 
@@ -235,6 +241,33 @@ model Stream {
   streamKey    String   @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  // 인기 스트리머 랭킹용 필드
+  maxViewers   Int?     // 방송 중 최고 동시 시청자 수
+  totalViewers Int?     // 방송 중 누적 시청자 수
+}
+
+// 팔로우(구독) 테이블
+model Follower {
+  id         String   @id @default(uuid())
+  userId     String   // 팔로우하는 유저(팔로워)
+  streamerId String   // 팔로우 당하는 스트리머
+  createdAt  DateTime @default(now())
+  // 관계
+  user       User     @relation("UserFollows", fields: [userId], references: [id])
+  streamer   User     @relation("StreamerFollowers", fields: [streamerId], references: [id])
+  @@unique([userId, streamerId])
+}
+
+// 스트리머 인기 투표 테이블
+model StreamerVote {
+  id         String   @id @default(uuid())
+  userId     String   // 투표한 유저
+  streamerId String   // 투표받은 스트리머
+  createdAt  DateTime @default(now())
+  // 관계
+  user       User     @relation("UserVotes", fields: [userId], references: [id])
+  streamer   User     @relation("StreamerVotes", fields: [streamerId], references: [id])
+  @@unique([userId, streamerId])
 }
 
 enum UserRole {
