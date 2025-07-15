@@ -19,7 +19,7 @@ export default function ChatWidget({
   useEffect(() => {
     if (!stream?.isLive || !stream?.streamKey) return;
     if (!videoRef.current) return;
-    if (user?.id === stream.streamerId) return; // 스트리머는 HLS 플레이어 안 보임
+    // 스트리머도 방송 미리보기를 볼 수 있도록 조건 제거
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(`http://localhost:8080/live/${stream.streamKey}.m3u8`);
