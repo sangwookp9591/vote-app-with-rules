@@ -31,21 +31,31 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (endedAt) data.endedAt = endedAt;
   if (typeof viewers === 'number') data.viewers = viewers;
 
-  // 방송 종료 시 maxViewers, totalViewers 기록
+  // 방송 종료 시 maxViewers, totalViewers, 일별 누적 시청자 기록
   if (isLive === false) {
     try {
       const redis = await getRedis();
-      // Redis에서 maxViewers, totalViewers 값 읽기
-      // maxViewers:{streamId}는 String, totalViewers:{streamId}는 Set의 크기
+      // maxViewers, totalViewers 기록 (기존)
       const [maxViewers, totalViewers] = await Promise.all([
         redis.get(`maxViewers:${id}`),
-        redis.sCard(`totalViewers:${id}`), // set에 유니크 시청자 ID 저장했다고 가정
+        redis.sCard(`totalViewers:${id}`),
       ]);
       if (maxViewers) data.maxViewers = parseInt(maxViewers, 10);
       if (typeof totalViewers === 'number') data.totalViewers = totalViewers;
+
+      // 일별 누적 시청자 집계
+      const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+      const dailyKey = `dailyViewers:${id}:${today}`;
+      const dailyCount = await redis.sCard(dailyKey);
+      // DB에 upsert (있으면 update, 없으면 create)
+      await prisma.streamDailyViewers.upsert({
+        where: { streamId_date: { streamId: id, date: new Date(today) } },
+        update: { count: dailyCount },
+        create: { streamId: id, date: new Date(today), count: dailyCount },
+      });
     } catch (err) {
-      // Redis 에러는 무시하고 진행
-      console.error('maxViewers/totalViewers 기록 실패:', err);
+      // Redis/DB 에러는 무시하고 진행
+      console.error('maxViewers/totalViewers/일별 누적 시청자 기록 실패:', err);
     }
   }
 
