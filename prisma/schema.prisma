@@ -244,6 +244,18 @@ model Stream {
   // 인기 스트리머 랭킹용 필드
   maxViewers   Int?     // 방송 중 최고 동시 시청자 수
   totalViewers Int?     // 방송 중 누적 시청자 수
+  // 일별 누적 시청자 수 집계 관계
+  streamDailyViewers StreamDailyViewers[]
+}
+
+// 방송별 일별 누적 시청자 수 집계 테이블
+model StreamDailyViewers {
+  id        String   @id @default(uuid())
+  streamId  String
+  date      DateTime // 일자(YYYY-MM-DD, 시간은 00:00:00)
+  count     Int      // 해당 일자의 유니크 시청자 수
+  stream    Stream   @relation(fields: [streamId], references: [id])
+  @@unique([streamId, date])
 }
 
 // 팔로우(구독) 테이블
