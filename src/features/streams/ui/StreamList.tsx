@@ -16,6 +16,14 @@ export default function StreamList() {
   const [error, setError] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [viewerCounts, setViewerCounts] = useState<Record<string, number>>({});
+  // hover 상태 관리 (streamKey 기준)
+  const [hoveredStreamKey, setHoveredStreamKey] = useState<string | null>(null);
+
+  // 썸네일 이미지 경로 생성 함수
+  const getThumbnailUrl = (streamKey: string) => `/thumbnails/${streamKey}.jpg`;
+  // HLS 미리보기 영상 경로 생성 함수
+  const getHlsUrl = (streamKey: string) => `http://localhost:8080/live/${streamKey}.m3u8`;
+  const DEFAULT_THUMBNAIL = '/images/lol.png'; // 기본 썸네일
 
   useEffect(() => {
     fetchStreams()
@@ -70,19 +78,54 @@ export default function StreamList() {
           <div>현재 라이브 방송이 없습니다.</div>
         ) : (
           streams.map((stream) => (
-            <Link key={stream.id} href={`/streams/${stream.id}`} className={styles.card}>
-              {/* 썸네일 */}
+            <Link
+              key={stream.id}
+              href={`/streams/${stream.id}`}
+              className={styles.card}
+              onMouseEnter={() => setHoveredStreamKey(stream.streamKey)}
+              onMouseLeave={() => setHoveredStreamKey(null)}
+            >
+              {/* 썸네일 또는 hover 시 미리보기 */}
               <div className={styles.thumbnail}>
                 {/* LIVE 뱃지 */}
                 {stream.isLive && <span className={styles.liveBadge}>LIVE</span>}
-                <Image
-                  src="/images/lol.png" // 기본 이미지로 변경 (stream-thumb-default.jpg 대신)
-                  alt="썸네일"
-                  fill
-                  className={styles.thumbnailImg}
-                  sizes="(max-width: 600px) 100vw, 400px"
-                  priority
-                />
+                {hoveredStreamKey === stream.streamKey ? (
+                  // hover 시 HLS 미리보기 영상 (음소거, 자동재생, 반복)
+                  <video
+                    src={getHlsUrl(stream.streamKey)}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      borderRadius: 0,
+                      background: '#000',
+                    }}
+                    // 에러 발생 시 썸네일로 fallback 처리(간단 예시)
+                    onError={(e) => {
+                      // 비디오 로딩 실패 시 썸네일로 대체
+                      (e.currentTarget as HTMLVideoElement).style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  // 썸네일 이미지 (실시간 캡처)
+                  <Image
+                    src={getThumbnailUrl(stream.streamKey)}
+                    alt="썸네일"
+                    fill
+                    className={styles.thumbnailImg}
+                    sizes="(max-width: 600px) 100vw, 400px"
+                    priority
+                    // 썸네일 로딩 실패 시 기본 이미지로 대체
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.src = DEFAULT_THUMBNAIL;
+                    }}
+                  />
+                )}
               </div>
               {/* 방송 제목 */}
               <div className={styles.title}>{stream.title}</div>
