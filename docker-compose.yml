@@ -47,8 +47,8 @@ services:
     restart: always
     networks:
       - vote-net
-    # 컨테이너 시작 시 Prisma 마이그레이션을 자동으로 실행
-    command: sh -c "npx prisma migrate dev && npm start" # 개발 환경용, 운영은 migrate deploy 사용
+    # 컨테이너 시작 시 Prisma 마이그레이션을 자동으로 실행하고, 썸네일 자동화 스크립트도 함께 실행
+    command: sh -c "npx prisma migrate dev && node thumbnail-capture.js & npm start"
     # 업로드 이미지를 컨테이너와 로컬에서 모두 접근 가능하게 볼륨 마운트
     volumes:
       - ./public/uploads:/app/public/uploads
