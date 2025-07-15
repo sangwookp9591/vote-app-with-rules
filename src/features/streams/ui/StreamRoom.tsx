@@ -9,8 +9,6 @@ import * as styles from './StreamRoom.css';
 import Image from 'next/image';
 import socket from '@/shared/api/socketClient';
 import { useSession } from 'next-auth/react';
-// hls.js 타입 에러 방지: 타입 선언 파일이 없으므로 아래 @ts-expect-error 사용
-import Hls from 'hls.js';
 
 // (LiveKit, WebRTC, SRS WebRTC Publish 관련 코드/주석/함수/변수/버튼 완전 제거)
 
@@ -76,22 +74,6 @@ export default function StreamRoom() {
       setActionLoading(false);
     }
   };
-
-  // HLS 플레이어용 ref
-  const videoRef = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    if (!stream?.isLive || !stream?.streamKey) return;
-    if (!videoRef.current) return;
-    if (user?.id === stream.streamerId) return; // 스트리머는 HLS 플레이어 안 보임
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(`http://localhost:8080/live/${stream.streamKey}.m3u8`);
-      hls.attachMedia(videoRef.current);
-      return () => hls.destroy();
-    } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-      videoRef.current.src = `http://localhost:8080/live/${stream.streamKey}.m3u8`;
-    }
-  }, [stream, user?.id]);
 
   // SRS WebRTC Publish 미리보기용 ref
   const localPreviewRef = useRef<HTMLVideoElement>(null);
@@ -234,26 +216,7 @@ export default function StreamRoom() {
           </span>
         </div>
       </div>
-      {/* 방송이 진행 중일 때 스트리머/시청자 모두에게 HLS 플레이어 노출 */}
-      {stream.isLive && (
-        <div style={{ margin: '16px 0' }}>
-          {/* 스트리머에게만 안내 문구 노출 */}
-          {isStreamer && (
-            <div style={{ color: '#888', fontSize: 13, marginBottom: 8 }}>
-              이 화면은 실제 방송 송출 미리보기(HLS 기준, 약간의 지연 있음)입니다.
-            </div>
-          )}
-          <video
-            ref={videoRef}
-            controls
-            autoPlay
-            style={{ width: '100%', maxWidth: 800 }}
-            src={`http://localhost:8080/live/${stream.streamKey}.m3u8`}
-          />
-        </div>
-      )}
-      {/* 채팅 등 부가 기능은 그대로 유지 */}
-      <ChatWidget stream={stream} user={user?.nickname || ''} />
+      <ChatWidget stream={stream} user={user} isStreamer={isStreamer} />
     </div>
   );
 }
