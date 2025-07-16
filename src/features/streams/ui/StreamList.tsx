@@ -8,6 +8,7 @@ import * as styles from './StreamList.css';
 import StreamCreateForm from './StreamCreateForm';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import PopularStreamers from '@/widgets/PopularStreamers/PopularStreamers';
 
 // --- 카테고리 대분류/소분류 옵션 정의 (폼과 동일하게 재사용) ---
 const CATEGORY_OPTIONS = [
@@ -93,6 +94,8 @@ export default function StreamList() {
 
   return (
     <div>
+      {/* --- 인기 스트리머 추천 섹션(가로 스크롤 카드형) --- */}
+      <PopularStreamers />
       {/* --- 카테고리별 필터 UI (vanilla-extract 적용) --- */}
       <div className={styles.filterRow}>
         <label className={styles.filterLabel}>
