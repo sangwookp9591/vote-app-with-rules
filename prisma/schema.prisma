@@ -252,6 +252,9 @@ model Stream {
   streamDailyViewers StreamDailyViewers[]
   // 시청 로그 반대 관계
   streamViewLogs  StreamViewLog[]
+  // --- 카테고리 필드 추가 ---
+  categoryType   CategoryType @default(GAME) // 대분류(게임/보이는 라디오/스포츠)
+  categoryDetail String       @default("ETC") // 소분류(LOL, 토크, 축구 등)
 }
 
 // 방송별 일별 누적 시청자 수 집계 테이블
@@ -394,4 +397,11 @@ enum ValorantPosition {
   SENTINEL
   INITIATOR
   CONTROLLER
+} 
+
+// --- 스트림 대분류 카테고리 Enum ---
+enum CategoryType {
+  GAME    // 게임
+  RADIO   // 보이는 라디오
+  SPORTS  // 스포츠
 } 
