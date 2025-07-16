@@ -9,6 +9,44 @@ import StreamCreateForm from './StreamCreateForm';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 
+// --- 카테고리 대분류/소분류 옵션 정의 (폼과 동일하게 재사용) ---
+const CATEGORY_OPTIONS = [
+  {
+    type: 'GAME',
+    label: '게임',
+    details: [
+      { value: 'LOL', label: 'LOL' },
+      { value: 'PUBG', label: 'PUBG' },
+      { value: 'OVERWATCH', label: 'OVERWATCH' },
+      { value: 'VALORANT', label: 'VALORANT' },
+      { value: 'CS2', label: 'CS2' },
+      { value: 'DOTA2', label: 'DOTA2' },
+      { value: 'ETC', label: '기타' },
+    ],
+  },
+  {
+    type: 'RADIO',
+    label: '보이는 라디오',
+    details: [
+      { value: '토크', label: '토크' },
+      { value: '여행', label: '여행' },
+      { value: '음악', label: '음악' },
+      { value: '버츄얼', label: '버츄얼' },
+    ],
+  },
+  {
+    type: 'SPORTS',
+    label: '스포츠',
+    details: [
+      { value: '축구', label: '축구' },
+      { value: '농구', label: '농구' },
+      { value: '야구', label: '야구' },
+      { value: '당구', label: '당구' },
+      { value: '탁구', label: '탁구' },
+    ],
+  },
+];
+
 export default function StreamList() {
   const { data: session } = useSession();
   const [streams, setStreams] = useState<Stream[]>([]);
@@ -18,6 +56,9 @@ export default function StreamList() {
   const [viewerCounts, setViewerCounts] = useState<Record<string, number>>({});
   // hover 상태 관리 (streamKey 기준)
   const [hoveredStreamKey, setHoveredStreamKey] = useState<string | null>(null);
+  // --- 카테고리 필터 상태 ---
+  const [filterType, setFilterType] = useState<string>('ALL'); // 대분류
+  const [filterDetail, setFilterDetail] = useState<string>('ALL'); // 소분류
 
   // 썸네일 이미지 경로 생성 함수
   const getThumbnailUrl = (streamKey: string) => `/thumbnails/${streamKey}.jpg`;
@@ -42,6 +83,53 @@ export default function StreamList() {
 
   return (
     <div>
+      {/* --- 카테고리별 필터 UI --- */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          margin: '0 0 16px 0',
+          padding: '0 24px',
+        }}
+      >
+        <label style={{ fontWeight: 700, fontSize: 15 }}>
+          대분류
+          <select
+            value={filterType}
+            onChange={(e) => {
+              setFilterType(e.target.value);
+              setFilterDetail('ALL'); // 대분류 변경 시 소분류 초기화
+            }}
+            style={{ marginLeft: 8, padding: 6, borderRadius: 6, border: '1px solid #e0e7ef' }}
+          >
+            <option value="ALL">전체</option>
+            {CATEGORY_OPTIONS.map((cat) => (
+              <option key={cat.type} value={cat.type}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label style={{ fontWeight: 700, fontSize: 15 }}>
+          소분류
+          <select
+            value={filterDetail}
+            onChange={(e) => setFilterDetail(e.target.value)}
+            style={{ marginLeft: 8, padding: 6, borderRadius: 6, border: '1px solid #e0e7ef' }}
+            disabled={filterType === 'ALL'}
+          >
+            <option value="ALL">전체</option>
+            {/* 대분류가 선택된 경우에만 해당 소분류 옵션 노출 */}
+            {filterType !== 'ALL' &&
+              CATEGORY_OPTIONS.find((cat) => cat.type === filterType)?.details.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+          </select>
+        </label>
+      </div>
       <div
         style={{
           display: 'flex',
