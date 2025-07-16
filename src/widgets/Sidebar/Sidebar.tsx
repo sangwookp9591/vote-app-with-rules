@@ -4,6 +4,7 @@ import styles from './Sidebar.module.css';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import PopularStreamers from '@/widgets/PopularStreamers/PopularStreamers';
 
 export default function Sidebar({ open }: { open: boolean }) {
   const { data: session } = useSession();
@@ -39,6 +40,10 @@ export default function Sidebar({ open }: { open: boolean }) {
 
   return (
     <aside className={styles.sidebar}>
+      {/* --- 인기 스트리머 추천(사이드바용, 5명만 노출) --- */}
+      <div style={{ marginBottom: 24 }}>
+        <PopularStreamers limit={5} />
+      </div>
       <div>
         <div className={styles.logo}>LoL SWL</div>
         <nav className={styles.menu}>
