@@ -9,6 +9,7 @@ import * as styles from './StreamRoom.css';
 import Image from 'next/image';
 import socket from '@/shared/api/socketClient';
 import { useSession } from 'next-auth/react';
+import { categoryBadgeRow, categoryTypeBadge, categoryDetailBadge } from './StreamList.css';
 
 // (LiveKit, WebRTC, SRS WebRTC Publish 관련 코드/주석/함수/변수/버튼 완전 제거)
 
@@ -97,6 +98,21 @@ export default function StreamRoom() {
 
   return (
     <div className={styles.container}>
+      {/* --- 카테고리 뱃지 표시 (상세 페이지) --- */}
+      <div className={categoryBadgeRow} style={{ marginBottom: 8 }}>
+        <span className={categoryTypeBadge} title="카테고리 대분류">
+          {stream.categoryType === 'GAME'
+            ? '게임'
+            : stream.categoryType === 'RADIO'
+              ? '보이는 라디오'
+              : stream.categoryType === 'SPORTS'
+                ? '스포츠'
+                : stream.categoryType}
+        </span>
+        <span className={categoryDetailBadge} title="카테고리 소분류">
+          {stream.categoryDetail}
+        </span>
+      </div>
       <h2 className={styles.titleRow}>
         {stream.title}
         {stream.isLive && <span className={styles.liveBadge}>LIVE</span>}
