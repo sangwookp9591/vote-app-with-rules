@@ -129,6 +129,43 @@ export default function StreamList() {
               </div>
               {/* 방송 제목 */}
               <div className={styles.title}>{stream.title}</div>
+              {/* --- 카테고리 뱃지 표시 (대분류/소분류) --- */}
+              <div style={{ display: 'flex', gap: 6, margin: '0 10px 6px 10px' }}>
+                {/* 대분류 뱃지 */}
+                <span
+                  style={{
+                    background: '#eaf6ff',
+                    color: '#2176d2',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    padding: '2px 8px',
+                    fontWeight: 700,
+                  }}
+                  title="카테고리 대분류"
+                >
+                  {stream.categoryType === 'GAME'
+                    ? '게임'
+                    : stream.categoryType === 'RADIO'
+                      ? '보이는 라디오'
+                      : stream.categoryType === 'SPORTS'
+                        ? '스포츠'
+                        : stream.categoryType}
+                </span>
+                {/* 소분류 뱃지 */}
+                <span
+                  style={{
+                    background: '#f5eaff',
+                    color: '#7c3aed',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    padding: '2px 8px',
+                    fontWeight: 700,
+                  }}
+                  title="카테고리 소분류"
+                >
+                  {stream.categoryDetail}
+                </span>
+              </div>
               {/* 스트리머/시청자수 */}
               <div className={styles.infoRow}>
                 <div className={styles.profile}>
