@@ -83,25 +83,17 @@ export default function StreamList() {
 
   return (
     <div>
-      {/* --- 카테고리별 필터 UI --- */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          margin: '0 0 16px 0',
-          padding: '0 24px',
-        }}
-      >
-        <label style={{ fontWeight: 700, fontSize: 15 }}>
+      {/* --- 카테고리별 필터 UI (vanilla-extract 적용) --- */}
+      <div className={styles.filterRow}>
+        <label className={styles.filterLabel}>
           대분류
           <select
+            className={styles.filterSelect}
             value={filterType}
             onChange={(e) => {
               setFilterType(e.target.value);
               setFilterDetail('ALL'); // 대분류 변경 시 소분류 초기화
             }}
-            style={{ marginLeft: 8, padding: 6, borderRadius: 6, border: '1px solid #e0e7ef' }}
           >
             <option value="ALL">전체</option>
             {CATEGORY_OPTIONS.map((cat) => (
@@ -111,12 +103,12 @@ export default function StreamList() {
             ))}
           </select>
         </label>
-        <label style={{ fontWeight: 700, fontSize: 15 }}>
+        <label className={styles.filterLabel}>
           소분류
           <select
+            className={styles.filterSelect}
             value={filterDetail}
             onChange={(e) => setFilterDetail(e.target.value)}
-            style={{ marginLeft: 8, padding: 6, borderRadius: 6, border: '1px solid #e0e7ef' }}
             disabled={filterType === 'ALL'}
           >
             <option value="ALL">전체</option>
@@ -217,20 +209,10 @@ export default function StreamList() {
               </div>
               {/* 방송 제목 */}
               <div className={styles.title}>{stream.title}</div>
-              {/* --- 카테고리 뱃지 표시 (대분류/소분류) --- */}
-              <div style={{ display: 'flex', gap: 6, margin: '0 10px 6px 10px' }}>
+              {/* --- 카테고리 뱃지 표시 (vanilla-extract 적용) --- */}
+              <div className={styles.categoryBadgeRow}>
                 {/* 대분류 뱃지 */}
-                <span
-                  style={{
-                    background: '#eaf6ff',
-                    color: '#2176d2',
-                    borderRadius: 6,
-                    fontSize: 12,
-                    padding: '2px 8px',
-                    fontWeight: 700,
-                  }}
-                  title="카테고리 대분류"
-                >
+                <span className={styles.categoryTypeBadge} title="카테고리 대분류">
                   {stream.categoryType === 'GAME'
                     ? '게임'
                     : stream.categoryType === 'RADIO'
@@ -240,17 +222,7 @@ export default function StreamList() {
                         : stream.categoryType}
                 </span>
                 {/* 소분류 뱃지 */}
-                <span
-                  style={{
-                    background: '#f5eaff',
-                    color: '#7c3aed',
-                    borderRadius: 6,
-                    fontSize: 12,
-                    padding: '2px 8px',
-                    fontWeight: 700,
-                  }}
-                  title="카테고리 소분류"
-                >
+                <span className={styles.categoryDetailBadge} title="카테고리 소분류">
                   {stream.categoryDetail}
                 </span>
               </div>
