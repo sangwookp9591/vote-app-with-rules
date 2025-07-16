@@ -81,6 +81,16 @@ export default function StreamList() {
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
+  // --- 카테고리별 필터링 로직 ---
+  const filteredStreams = streams.filter((stream) => {
+    // 전체(ALL) 선택 시 모두 표시
+    if (filterType === 'ALL') return true;
+    // 대분류만 선택된 경우
+    if (filterDetail === 'ALL') return stream.categoryType === filterType;
+    // 대분류+소분류 모두 선택된 경우
+    return stream.categoryType === filterType && stream.categoryDetail === filterDetail;
+  });
+
   return (
     <div>
       {/* --- 카테고리별 필터 UI (vanilla-extract 적용) --- */}
@@ -154,10 +164,10 @@ export default function StreamList() {
         </div>
       )}
       <div className={styles.grid}>
-        {streams.length === 0 ? (
-          <div>현재 라이브 방송이 없습니다.</div>
+        {filteredStreams.length === 0 ? (
+          <div>현재 조건에 맞는 라이브 방송이 없습니다.</div>
         ) : (
-          streams.map((stream) => (
+          filteredStreams.map((stream) => (
             <Link
               key={stream.id}
               href={`/streams/${stream.id}`}
