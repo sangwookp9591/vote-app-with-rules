@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import styles from './page.module.css';
 import ThemeToggle from '../shared/ui/ThemeToggle';
+import PopularStreamers from '@/widgets/PopularStreamers/PopularStreamers';
 
 export const metadata: Metadata = {
   title: 'LoL SWL | 메인',
@@ -52,20 +53,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Streamers Section */}
-      <section className={styles.streamers}>
-        <h2 className={styles.sectionTitle}>인기 스트리머</h2>
-        <div className={styles.streamerGrid}>
-          {/* Streamer cards will be mapped here */}
-          <div className={styles.streamerCard}>
-            <div className={styles.streamerAvatar}></div>
-            <div className={styles.streamerInfo}>
-              <h3 className={styles.streamerName}>PSW상욱</h3>
-              <p className={styles.streamerStats}>토너먼트 3회 개최</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Featured Streamers Section - 실제 인기 스트리머 추천 위젯 */}
+      <PopularStreamers />
 
       {/* How It Works Section */}
       <section className={styles.howItWorks}>
