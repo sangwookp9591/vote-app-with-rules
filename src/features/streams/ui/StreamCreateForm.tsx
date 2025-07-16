@@ -2,9 +2,50 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createStream, StartStreamResponse } from '../api/streams';
 
+// --- 카테고리 대분류/소분류 옵션 정의 ---
+const CATEGORY_OPTIONS = [
+  {
+    type: 'GAME',
+    label: '게임',
+    details: [
+      { value: 'LOL', label: 'LOL' },
+      { value: 'PUBG', label: 'PUBG' },
+      { value: 'OVERWATCH', label: 'OVERWATCH' },
+      { value: 'VALORANT', label: 'VALORANT' },
+      { value: 'CS2', label: 'CS2' },
+      { value: 'DOTA2', label: 'DOTA2' },
+      { value: 'ETC', label: '기타' },
+    ],
+  },
+  {
+    type: 'RADIO',
+    label: '보이는 라디오',
+    details: [
+      { value: '토크', label: '토크' },
+      { value: '여행', label: '여행' },
+      { value: '음악', label: '음악' },
+      { value: '버츄얼', label: '버츄얼' },
+    ],
+  },
+  {
+    type: 'SPORTS',
+    label: '스포츠',
+    details: [
+      { value: '축구', label: '축구' },
+      { value: '농구', label: '농구' },
+      { value: '야구', label: '야구' },
+      { value: '당구', label: '당구' },
+      { value: '탁구', label: '탁구' },
+    ],
+  },
+];
+
 export default function StreamCreateForm({ streamerId }: { streamerId: string }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  // 카테고리 대분류/소분류 상태
+  const [categoryType, setCategoryType] = useState('GAME');
+  const [categoryDetail, setCategoryDetail] = useState('LOL');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState<StartStreamResponse | null>(null);
@@ -16,7 +57,14 @@ export default function StreamCreateForm({ streamerId }: { streamerId: string })
     setError('');
     setInfo(null);
     try {
-      const result = await createStream({ title, description, streamerId });
+      // 방송 생성 시 카테고리 정보도 함께 전달
+      const result = await createStream({
+        title,
+        description,
+        streamerId,
+        categoryType: categoryType as 'GAME' | 'RADIO' | 'SPORTS',
+        categoryDetail,
+      });
       setInfo(result);
       setTimeout(() => {
         router.push(`/streams/${result.stream.id}`);
@@ -37,12 +85,53 @@ export default function StreamCreateForm({ streamerId }: { streamerId: string })
     }
   };
 
+  // 선택된 대분류에 따른 소분류 옵션
+  const selectedCategory = CATEGORY_OPTIONS.find((cat) => cat.type === categoryType);
+  const detailOptions = selectedCategory ? selectedCategory.details : [];
+
   return (
     <form
       onSubmit={handleSubmit}
       style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 400 }}
     >
       <h3>방송 시작</h3>
+      {/* --- 카테고리 대분류 선택 --- */}
+      <label style={{ fontWeight: 700, fontSize: 15 }}>
+        카테고리 대분류
+        <select
+          value={categoryType}
+          onChange={(e) => {
+            setCategoryType(e.target.value);
+            // 대분류 변경 시 소분류를 첫 번째 값으로 초기화
+            const next = CATEGORY_OPTIONS.find((cat) => cat.type === e.target.value);
+            setCategoryDetail(next?.details[0]?.value || '');
+          }}
+          required
+          style={{ marginLeft: 8, padding: 6, borderRadius: 6, border: '1px solid #e0e7ef' }}
+        >
+          {CATEGORY_OPTIONS.map((cat) => (
+            <option key={cat.type} value={cat.type}>
+              {cat.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      {/* --- 카테고리 소분류 선택 --- */}
+      <label style={{ fontWeight: 700, fontSize: 15 }}>
+        카테고리 소분류
+        <select
+          value={categoryDetail}
+          onChange={(e) => setCategoryDetail(e.target.value)}
+          required
+          style={{ marginLeft: 8, padding: 6, borderRadius: 6, border: '1px solid #e0e7ef' }}
+        >
+          {detailOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </label>
       <input
         type="text"
         placeholder="방송 제목"

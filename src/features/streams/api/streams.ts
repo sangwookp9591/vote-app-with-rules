@@ -15,10 +15,16 @@ export async function fetchStreams(): Promise<Stream[]> {
 }
 
 // 방송 시작
+/**
+ * 방송 시작 API 호출
+ * @param data 방송 정보 (제목, 설명, 스트리머ID, 카테고리 대분류/소분류)
+ */
 export async function createStream(data: {
   title: string;
   description?: string;
   streamerId: string;
+  categoryType: 'GAME' | 'RADIO' | 'SPORTS'; // 대분류
+  categoryDetail: string; // 소분류
 }): Promise<StartStreamResponse> {
   const res = await fetch('/api/streams/start', {
     method: 'POST',
