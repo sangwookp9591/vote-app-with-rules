@@ -117,3 +117,49 @@ export const viewers = style({
   color: '#888',
   fontSize: 12,
 });
+
+// --- 카테고리 필터 UI 스타일 ---
+export const filterRow = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 12,
+  margin: '0 0 16px 0',
+  padding: '0 24px',
+});
+
+export const filterLabel = style({
+  fontWeight: 700,
+  fontSize: 15,
+});
+
+export const filterSelect = style({
+  marginLeft: 8,
+  padding: 6,
+  borderRadius: 6,
+  border: '1px solid #e0e7ef',
+});
+
+// --- 카테고리 뱃지 스타일 ---
+export const categoryBadgeRow = style({
+  display: 'flex',
+  gap: 6,
+  margin: '0 10px 6px 10px',
+});
+
+export const categoryTypeBadge = style({
+  background: '#eaf6ff',
+  color: '#2176d2',
+  borderRadius: 6,
+  fontSize: 12,
+  padding: '2px 8px',
+  fontWeight: 700,
+});
+
+export const categoryDetailBadge = style({
+  background: '#f5eaff',
+  color: '#7c3aed',
+  borderRadius: 6,
+  fontSize: 12,
+  padding: '2px 8px',
+  fontWeight: 700,
+});
