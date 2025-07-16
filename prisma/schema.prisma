@@ -37,6 +37,10 @@ model User {
   streamerVotes     StreamerVote[]  @relation("StreamerVotes")    // 내가 받은 투표
   votedStreamers    StreamerVote[]  @relation("UserVotes")        // 내가 투표한 스트리머
 
+  // 검색/시청 로그 반대 관계
+  searchLogs      SearchLog[]
+  streamViewLogs  StreamViewLog[]
+
   @@map("users")
 }
 
@@ -246,6 +250,8 @@ model Stream {
   totalViewers Int?     // 방송 중 누적 시청자 수
   // 일별 누적 시청자 수 집계 관계
   streamDailyViewers StreamDailyViewers[]
+  // 시청 로그 반대 관계
+  streamViewLogs  StreamViewLog[]
 }
 
 // 방송별 일별 누적 시청자 수 집계 테이블
@@ -280,6 +286,27 @@ model StreamerVote {
   user       User     @relation("UserVotes", fields: [userId], references: [id])
   streamer   User     @relation("StreamerVotes", fields: [streamerId], references: [id])
   @@unique([userId, streamerId])
+}
+
+// 검색 로그 테이블
+model SearchLog {
+  id         String   @id @default(uuid())
+  userId     String?  // 검색한 유저(비회원도 가능)
+  keyword    String
+  streamerId String?  // 검색 결과로 클릭한 스트리머(선택)
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
+}
+
+// 시청 로그 테이블
+model StreamViewLog {
+  id        String   @id @default(uuid())
+  userId    String
+  streamId  String
+  enteredAt DateTime @default(now())
+  exitedAt  DateTime?
+  user      User     @relation(fields: [userId], references: [id])
+  stream    Stream   @relation(fields: [streamId], references: [id])
 }
 
 enum UserRole {
