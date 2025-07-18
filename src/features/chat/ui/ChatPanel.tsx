@@ -74,8 +74,14 @@ export default function ChatPanel({ roomId, user, userId, streamId }: ChatPanelP
       if (userId && streamId) {
         try {
           await saveChatLog({ userId, streamId, message: input });
-        } catch {
-          // TODO: 채팅 로그 저장 실패 시 무시(별도 처리 가능)
+        } catch (err) {
+          // 한글 주석: 채팅 로그 저장 실패 시 콘솔에 에러 기록
+          if (process.env.NODE_ENV !== 'production') {
+            console.error('채팅 로그 저장 실패:', err);
+          }
+          // 한글 주석: 운영 환경에서는 Sentry 등 에러 트래킹 도구 연동 권장
+          // import * as Sentry from '@sentry/nextjs';
+          // Sentry.captureException(err);
         }
       }
       setInput('');
