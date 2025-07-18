@@ -1,5 +1,6 @@
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import * as styles from './PersonalizedRecommendations.css';
 
 interface Recommendation {
   streamerId: string;
@@ -43,37 +44,18 @@ export default function PersonalizedRecommendations() {
     );
 
   return (
-    <div style={{ marginBottom: 24 }}>
-      <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>🎯 나만을 위한 추천</div>
-      <div style={{ display: 'flex', gap: 12, overflowX: 'auto' }}>
+    <div className={styles.container}>
+      <div className={styles.title}>🎯 나만을 위한 추천</div>
+      <div className={styles.cardList}>
         {recommended.map((rec) => (
-          <div
-            key={rec.streamerId}
-            style={{
-              minWidth: 140,
-              background: '#f7faff',
-              border: '1px solid #e0e7ef',
-              borderRadius: 12,
-              padding: 12,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              boxShadow: '0 2px 8px #e0e7ef33',
-            }}
-          >
+          <div key={rec.streamerId} className={styles.card}>
             <img
               src={rec.profileImageUrl || '/images/lol.png'}
               alt={rec.nickname}
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: '50%',
-                marginBottom: 8,
-                objectFit: 'cover',
-              }}
+              className={styles.profileImage}
             />
-            <div style={{ fontWeight: 600, fontSize: 15 }}>{rec.nickname}</div>
-            <div style={{ color: '#4f9fff', fontSize: 13, margin: '4px 0' }}>{rec.reason}</div>
+            <div className={styles.nickname}>{rec.nickname}</div>
+            <div className={styles.reason}>{rec.reason}</div>
           </div>
         ))}
       </div>
