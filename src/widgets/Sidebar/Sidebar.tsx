@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import PopularStreamers from '@/widgets/PopularStreamers/PopularStreamers';
+import PersonalizedRecommendations from '@/widgets/PersonalizedRecommendations/PersonalizedRecommendations';
 
 export default function Sidebar({ open }: { open: boolean }) {
   const { data: session } = useSession();
@@ -44,6 +45,8 @@ export default function Sidebar({ open }: { open: boolean }) {
       <div style={{ marginBottom: 24 }}>
         <PopularStreamers limit={5} />
       </div>
+      {/* --- 나만을 위한 추천(사이드바) --- */}
+      <PersonalizedRecommendations />
       <div>
         <div className={styles.logo}>LoL SWL</div>
         <nav className={styles.menu}>
