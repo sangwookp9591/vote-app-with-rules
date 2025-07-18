@@ -40,6 +40,7 @@ model User {
   // 검색/시청 로그 반대 관계
   searchLogs      SearchLog[]
   streamViewLogs  StreamViewLog[]
+  chatLogs        ChatLog[] // 채팅 로그 관계 추가
 
   @@map("users")
 }
@@ -255,6 +256,7 @@ model Stream {
   // --- 카테고리 필드 추가 ---
   categoryType   CategoryType @default(GAME) // 대분류(게임/보이는 라디오/스포츠)
   categoryDetail String       @default("ETC") // 소분류(LOL, 토크, 축구 등)
+  chatLogs        ChatLog[] // 채팅 로그 관계 추가
 }
 
 // 방송별 일별 누적 시청자 수 집계 테이블
@@ -308,6 +310,19 @@ model StreamViewLog {
   streamId  String
   enteredAt DateTime @default(now())
   exitedAt  DateTime?
+  user      User     @relation(fields: [userId], references: [id])
+  stream    Stream   @relation(fields: [streamId], references: [id])
+}
+
+// --- 채팅 로그 테이블 ---
+model ChatLog {
+  id        String   @id @default(uuid()) // 채팅 로그 고유 ID
+  userId    String   // 채팅을 보낸 유저 ID
+  streamId  String   // 채팅이 작성된 방송 ID
+  message   String   // 채팅 메시지
+  sentAt    DateTime @default(now()) // 채팅 전송 시각
+
+  // 관계
   user      User     @relation(fields: [userId], references: [id])
   stream    Stream   @relation(fields: [streamId], references: [id])
 }
