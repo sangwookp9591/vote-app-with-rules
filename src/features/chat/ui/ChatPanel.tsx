@@ -3,6 +3,7 @@ import socket from '@/shared/api/socketClient';
 import { sendChatMessage, joinChatRoom } from '../api/chatSocket';
 import * as styles from './ChatPanel.css';
 import { VirtualList } from '@/shared/ui/list/VirtualList';
+import { saveChatLog } from '../api/chatLog';
 
 type ChatMessage = {
   type: string;
@@ -15,6 +16,8 @@ type ChatMessage = {
 interface ChatPanelProps {
   roomId: string;
   user?: string;
+  userId?: string; // 실제 DB userId
+  streamId?: string; // 실제 방송 ID
 }
 
 function getUserColor(nickname?: string) {
@@ -27,7 +30,7 @@ function getUserColor(nickname?: string) {
 
 const MAX_MESSAGES = 100;
 
-export default function ChatPanel({ roomId, user }: ChatPanelProps) {
+export default function ChatPanel({ roomId, user, userId, streamId }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isComposing, setIsComposing] = useState(false);
@@ -64,9 +67,17 @@ export default function ChatPanel({ roomId, user }: ChatPanelProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input && user) {
       sendChatMessage(input);
+      // 채팅 로그 저장 (userId, streamId가 모두 있을 때만)
+      if (userId && streamId) {
+        try {
+          await saveChatLog({ userId, streamId, message: input });
+        } catch {
+          // TODO: 채팅 로그 저장 실패 시 무시(별도 처리 가능)
+        }
+      }
       setInput('');
     }
   };
