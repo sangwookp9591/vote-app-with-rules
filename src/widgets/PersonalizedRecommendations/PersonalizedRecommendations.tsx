@@ -1,6 +1,7 @@
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import * as styles from './PersonalizedRecommendations.css';
+import Image from 'next/image';
 
 interface Recommendation {
   streamerId: string;
@@ -49,9 +50,12 @@ export default function PersonalizedRecommendations() {
       <div className={styles.cardList}>
         {recommended.map((rec) => (
           <div key={rec.streamerId} className={styles.card}>
-            <img
+            {/* next/image로 프로필 이미지 렌더링 */}
+            <Image
               src={rec.profileImageUrl || '/images/lol.png'}
               alt={rec.nickname}
+              width={48}
+              height={48}
               className={styles.profileImage}
             />
             <div className={styles.nickname}>{rec.nickname}</div>
