@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { fetchMyStation, updateMyStation } from '../api/streamerProfile';
 
@@ -8,14 +8,31 @@ type FormState = {
   message?: string;
   error?: string;
   description?: string;
+  bannerImageUrl?: string;
 };
+
+// 배너 이미지 업로드 API 호출
+async function uploadBannerImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch('/api/uploads/banner', { method: 'POST', body: formData });
+  if (!res.ok) throw new Error('배너 이미지 업로드 실패');
+  const data = await res.json();
+  return data.url; // 업로드된 이미지의 URL
+}
 
 // form action 함수: 서버/클라이언트에서 폼 제출 처리
 async function formAction(prevState: FormState, formData: FormData): Promise<FormState> {
   try {
     const description = formData.get('description') as string;
-    await updateMyStation({ description });
-    return { message: '방송국 정보가 저장되었습니다!', description };
+    let bannerImageUrl = formData.get('bannerImageUrl') as string | undefined;
+    // 파일이 새로 선택된 경우 업로드
+    const file = formData.get('bannerFile') as File;
+    if (file && file.size > 0) {
+      bannerImageUrl = await uploadBannerImage(file);
+    }
+    await updateMyStation({ description, bannerImageUrl });
+    return { message: '방송국 정보가 저장되었습니다!', description, bannerImageUrl };
   } catch (e: unknown) {
     if (
       e &&
@@ -29,7 +46,6 @@ async function formAction(prevState: FormState, formData: FormData): Promise<For
   }
 }
 
-// 제출 버튼 (로딩 상태 표시)
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -55,23 +71,55 @@ function SubmitButton() {
 export default function StreamerStationEditForm() {
   const [state, formActionDispatch] = useFormState<FormState, FormData>(formAction, {});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | undefined>(undefined);
 
-  // 최초 로딩 시 description 불러오기
+  // 최초 로딩 시 description, bannerImageUrl 불러오기
   useEffect(() => {
     fetchMyStation()
       .then((data) => {
         if (textareaRef.current) {
           textareaRef.current.value = data.description || '';
         }
+        setBannerPreview(data.bannerImageUrl);
       })
       .catch(() => {});
   }, []);
 
+  // 파일 선택 시 미리보기
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setBannerPreview(URL.createObjectURL(file));
+    }
+  };
+
   return (
     <form action={formActionDispatch} style={{ maxWidth: 500, margin: '0 auto', padding: 24 }}>
-      <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: 16 }}>방송국 소개글 수정</h2>
+      <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: 16 }}>방송국 정보 수정</h2>
       {state.error && <div style={{ color: 'red', marginBottom: 12 }}>{state.error}</div>}
       {state.message && <div style={{ color: 'green', marginBottom: 12 }}>{state.message}</div>}
+
+      {/* 배너 이미지 미리보기 */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 8 }}>배너 이미지</div>
+        {bannerPreview && (
+          <img
+            src={bannerPreview}
+            alt="배너 미리보기"
+            style={{
+              width: '100%',
+              height: 120,
+              objectFit: 'cover',
+              borderRadius: 8,
+              marginBottom: 8,
+            }}
+          />
+        )}
+        <input type="file" name="bannerFile" accept="image/*" onChange={handleBannerChange} />
+        {/* 기존 이미지 URL도 hidden으로 전달 */}
+        <input type="hidden" name="bannerImageUrl" value={bannerPreview || ''} />
+      </div>
+
       <textarea
         name="description"
         ref={textareaRef}
