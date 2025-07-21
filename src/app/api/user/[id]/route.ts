@@ -14,12 +14,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     select: {
       id: true,
       nickname: true,
+      role: true,
       profileImageUrl: true,
       _count: {
         select: {
           followers: true,
         },
       },
+      createdAt: true,
     },
   });
   if (!user) return NextResponse.json({ error: 'not found ' }, { status: 404 });
