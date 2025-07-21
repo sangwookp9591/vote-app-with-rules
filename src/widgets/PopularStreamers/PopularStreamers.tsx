@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { fetchPopularStreamers } from '@/features/recommendation/api/popularStreamers';
 import type { PopularStreamer } from '@/entities/streamer/model/types';
