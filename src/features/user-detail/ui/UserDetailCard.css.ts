@@ -20,9 +20,9 @@ export const userInfoCard = style({
 
 export const profileSection = style({
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   gap: 16,
-  marginTop: -40,
 });
 
 export const profileImg = style({
@@ -32,6 +32,16 @@ export const profileImg = style({
   border: '4px solid #fff',
   objectFit: 'cover',
   background: '#eee',
+});
+
+export const nickname = style({
+  fontSize: '1.5rem',
+  fontWeight: 'bold',
+});
+
+export const badges = style({
+  display: 'flex',
+  gap: 8,
 });
 
 export const userBannerCard = style({
@@ -56,16 +66,6 @@ export const bannerImg = style({
   width: '100%',
   height: '100%',
   objectFit: 'cover',
-});
-
-export const nickname = style({
-  fontSize: '2rem',
-  fontWeight: 'bold',
-});
-
-export const badges = style({
-  display: 'flex',
-  gap: 8,
 });
 
 export const badge = recipe({
