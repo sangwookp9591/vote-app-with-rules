@@ -53,7 +53,7 @@ export default function PopularStreamers({ limit }: PopularStreamersProps) {
         {displayList.map((s, i) => (
           <Link
             key={s.id}
-            href={`/streams/${s.id}`}
+            href={`/user/${s.id}`}
             className={styles.card}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
