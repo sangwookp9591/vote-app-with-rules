@@ -7,7 +7,6 @@ import StreamCard from '@/features/streams/ui/StreamCard';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchUserStreams } from '../../streams/api/userStreams'; // 경로 수정
-import { style } from '@vanilla-extract/css';
 
 export default function UserDetailCard({ userDetail }: { userDetail: UserDetail }) {
   const { id, nickname, profileImageUrl, followerCount } = userDetail || {};
