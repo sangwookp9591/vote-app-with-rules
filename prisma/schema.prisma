@@ -67,7 +67,8 @@ model Streamer {
   // Relations
   userId      String    @unique
   user        User      @relation(fields: [userId], references: [id])
-  description String?   // 방송국 소개글 필드 추가
+  description String?   // 방송국 소개글
+  bannerImageUrl String? // 방송국 배너 이미지 URL (추가)
   // 게임별 프로필
   lolProfile      LolProfile?
   valorantProfile ValorantProfile?
