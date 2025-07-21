@@ -2,6 +2,7 @@
 
 import { UserDetail } from '@/entities/user/detail';
 import UserDetailCard from '@/features/user-detail/ui/UserDetailCard';
+import UserDetailVod from '@/features/user-detail/ui/UserDetailVod';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 
@@ -26,7 +27,13 @@ export default function UserDetailWidget() {
   return (
     <div>
       UserDetailWidget
-      {userDetail && <UserDetailCard userDetail={userDetail} />}
+      {userDetail && (
+        <>
+          {' '}
+          <UserDetailCard userDetail={userDetail} />
+          <UserDetailVod vods={[]} />
+        </>
+      )}
     </div>
   );
 }
