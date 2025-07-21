@@ -1,6 +1,6 @@
 import { User } from '@/entities/user';
 
-const API_BASE = '/api/user/';
+const API_BASE = '/api/users/';
 
 export async function fetchUser(id: string): Promise<User> {
   const res = await fetch(`${API_BASE}/${id}`);
