@@ -6,9 +6,16 @@ export const cardContainer = style({
   width: '90vw',
   display: 'flex',
   flexDirection: 'row',
+  gap: '10px',
+});
+
+export const leftSection = style({
+  display: 'flex',
+  flexDirection: 'column',
+  width: '10vw',
+  gap: '10px',
 });
 export const userInfoCard = style({
-  maxWidth: 600,
   margin: '0 auto',
   background: '#fff',
   borderRadius: 16,
@@ -44,8 +51,14 @@ export const badges = style({
   gap: 8,
 });
 
-export const userBannerCard = style({
+export const rightSection = style({
   width: '90vw',
+  display: 'flex',
+  flexDirection: 'column',
+});
+export const userBannerCard = style({
+  width: '100%',
+  height: '80%',
   margin: '0 auto',
   background: '#fff',
   borderRadius: 16,
@@ -56,16 +69,20 @@ export const userBannerCard = style({
 
 export const banner = style({
   width: '100%',
-  height: 160,
+  height: 300,
   overflow: 'hidden',
   borderRadius: 12,
-  marginBottom: -60,
+  position: 'relative',
+  marginBottom: 16,
 });
 
 export const bannerImg = style({
   width: '100%',
   height: '100%',
-  objectFit: 'cover',
+  objectFit: 'fill',
+  position: 'absolute',
+  left: 0,
+  top: 0,
 });
 
 export const badge = recipe({
@@ -90,10 +107,15 @@ export const badge = recipe({
     type: '기본',
   },
 });
-
+export const bottomSection = style({
+  display: 'flex',
+  gap: 10,
+  justifyContent: 'space-between',
+});
 export const stats = style({
   display: 'flex',
   gap: 24,
+  justifyContent: 'right',
   margin: '16px 0',
   fontSize: '1.1rem',
 });
