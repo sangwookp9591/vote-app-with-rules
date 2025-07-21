@@ -54,3 +54,5 @@ storybook-static
 # Gemini MCP/CLI local config
 .gemini/
 .gemini/settings.json
+
+/server/chat-server/node_modules
