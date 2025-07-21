@@ -2,8 +2,40 @@
 import { style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
 
-export const userDetailCard = style({
+export const cardContainer = style({
+  width: '90vw',
+  display: 'flex',
+  flexDirection: 'row',
+});
+export const userInfoCard = style({
   maxWidth: 600,
+  margin: '0 auto',
+  background: '#fff',
+  borderRadius: 16,
+  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+  padding: 24,
+  position: 'relative',
+  color: 'black',
+});
+
+export const profileSection = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 16,
+  marginTop: -40,
+});
+
+export const profileImg = style({
+  width: 96,
+  height: 96,
+  borderRadius: '50%',
+  border: '4px solid #fff',
+  objectFit: 'cover',
+  background: '#eee',
+});
+
+export const userBannerCard = style({
+  width: '90vw',
   margin: '0 auto',
   background: '#fff',
   borderRadius: 16,
@@ -24,22 +56,6 @@ export const bannerImg = style({
   width: '100%',
   height: '100%',
   objectFit: 'cover',
-});
-
-export const profileSection = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 16,
-  marginTop: -40,
-});
-
-export const profileImg = style({
-  width: 96,
-  height: 96,
-  borderRadius: '50%',
-  border: '4px solid #fff',
-  objectFit: 'cover',
-  background: '#eee',
 });
 
 export const nickname = style({
