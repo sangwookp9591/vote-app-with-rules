@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import io from 'socket.io-client';
+import NavbarDropdown from './NavbarDropdown';
 
 interface NavbarProps {
   onSidebarToggle?: () => void;
@@ -312,26 +313,30 @@ export default function Navbar({ onSidebarToggle, sidebarOpen }: NavbarProps) {
             </div>
           )}
         </div>
+
         {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {user?.profileImageUrl && (
-              <Image
-                src={user.profileImageUrl}
-                alt="프로필"
-                width={32}
-                height={32}
-                style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
-              />
-            )}
-            <span style={{ fontWeight: 600 }}>{user?.nickname || user?.name || user?.email}</span>
-            <button
-              className={styles.authButton}
-              onClick={() => signOut({ callbackUrl: '/' })}
-              style={{ marginLeft: 8 }}
-            >
-              로그아웃
-            </button>
-          </div>
+          <>
+            <NavbarDropdown userId={user?.id} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {user?.profileImageUrl && (
+                <Image
+                  src={user.profileImageUrl}
+                  alt="프로필"
+                  width={32}
+                  height={32}
+                  style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
+                />
+              )}
+              <span style={{ fontWeight: 600 }}>{user?.nickname || user?.name || user?.email}</span>
+              <button
+                className={styles.authButton}
+                onClick={() => signOut({ callbackUrl: '/' })}
+                style={{ marginLeft: 8 }}
+              >
+                로그아웃
+              </button>
+            </div>
+          </>
         ) : (
           <>
             <Link href={'/login'} className={styles.authButton}>
