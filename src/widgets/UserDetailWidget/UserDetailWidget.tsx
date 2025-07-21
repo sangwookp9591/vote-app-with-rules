@@ -1,12 +1,32 @@
 'use client';
 
+import { UserDetail } from '@/entities/user/detail';
 import UserDetailCard from '@/features/user-detail/ui/UserDetailCard';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
 
 export default function UserDetailWidget() {
+  const params = useParams();
+
+  const id = params?.id as string;
+  const { data: userDetail, isLoading } = useQuery<UserDetail>({
+    queryKey: ['userDetail', id],
+    queryFn: async () => {
+      const res = await fetch(`/api/user/${id}`);
+      if (!res.ok) throw new Error('유저 상세 정보 조회 실패');
+      return res.json();
+    },
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return <div>loading</div>;
+  }
+
   return (
     <div>
       UserDetailWidget
-      <UserDetailCard />
+      {userDetail && <UserDetailCard userDetail={userDetail} />}
     </div>
   );
 }
