@@ -1,7 +1,7 @@
 'use client';
 
 import { UserDetail } from '@/entities/user/detail';
-import { fetchUserDetail } from '@/features/user-detail/api/userdetail';
+import { fetchUserDetail } from '@/features/user-detail/api/userDetail';
 import UserDetailCard from '@/features/user-detail/ui/UserDetailCard';
 import UserDetailVod from '@/features/user-detail/ui/UserDetailVod';
 import { useQuery } from '@tanstack/react-query';
