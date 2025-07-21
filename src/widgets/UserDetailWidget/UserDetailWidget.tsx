@@ -1,6 +1,7 @@
 'use client';
 
 import { UserDetail } from '@/entities/user/detail';
+import { fetchUserDetail } from '@/features/user-detail/api/userDetail';
 import UserDetailCard from '@/features/user-detail/ui/UserDetailCard';
 import UserDetailVod from '@/features/user-detail/ui/UserDetailVod';
 import { useQuery } from '@tanstack/react-query';
@@ -12,11 +13,7 @@ export default function UserDetailWidget() {
   const id = params?.id as string;
   const { data: userDetail, isLoading } = useQuery<UserDetail>({
     queryKey: ['userDetail', id],
-    queryFn: async () => {
-      const res = await fetch(`/api/user/${id}`);
-      if (!res.ok) throw new Error('유저 상세 정보 조회 실패');
-      return res.json();
-    },
+    queryFn: () => fetchUserDetail(id),
     enabled: !!id,
   });
 
