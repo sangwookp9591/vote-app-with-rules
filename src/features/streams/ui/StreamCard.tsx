@@ -94,13 +94,13 @@ export default function StreamCard({
       <div className={styles.infoRow}>
         <div className={styles.profile}>
           <Image
-            src={stream.streamer.profileImageUrl || '/images/default-profile.png'}
+            src={stream?.streamer?.profileImageUrl || '/images/default-profile.png'}
             alt="프로필"
             width={28}
             height={28}
             className={styles.profileImg}
           />
-          <span className={styles.nickname}>{stream.streamer.nickname}</span>
+          <span className={styles.nickname}>{stream?.streamer?.nickname}</span>
         </div>
         <div className={styles.viewers}>
           <span role="img" aria-label="시청자">
