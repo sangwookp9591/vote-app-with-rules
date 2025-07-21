@@ -59,9 +59,9 @@ export default function Sidebar({ open }: { open: boolean }) {
           <Link href="/tournaments" className={styles.menuItem}>
             토너먼트
           </Link>
-          <a href="#" className={styles.menuItem}>
+          {/* <a href="#" className={styles.menuItem}>
             인기 스트리머
-          </a>
+          </a> */}
           {leaderTeam ? (
             <Link
               className={styles.menuItem}
