@@ -9,6 +9,7 @@ export async function fetchMyStation() {
 export async function updateMyStation(data: {
   description: string;
   bannerImageUrl: string | undefined;
+  snsLinks: { id?: string; type: string; url: string }[] | undefined;
 }) {
   const res = await fetch('/api/streamers/profile', {
     method: 'POST',
