@@ -7,11 +7,13 @@ import StreamCard from '@/features/streams/ui/StreamCard';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchUserStreams } from '../../streams/api/userStreams'; // 경로 수정
-
+import Link from 'next/link';
+import { FaInstagram, FaYoutube, FaFacebook } from 'react-icons/fa';
 export default function UserDetailCard({ userDetail }: { userDetail: UserDetail }) {
   const { id, nickname, profileImageUrl, followerCount, streamer } = userDetail || {};
   const [hoveredStreamKey, setHoveredStreamKey] = useState<string | null>(null);
 
+  console.log('streamer : ', streamer);
   // userId로 해당 사용자의 방송 목록을 가져옴
   const { data: streams, isLoading } = useQuery({
     queryKey: ['userStreams', id],
@@ -68,7 +70,26 @@ export default function UserDetailCard({ userDetail }: { userDetail: UserDetail 
             />
           </div>
           {/* SNS 링크 */}
-          <div className={styles.snsLinks}></div>
+          <div className={styles.snsLinks}>
+            {streamer?.snsLinks?.map((sns) => {
+              console.log('sns : ', sns);
+              return (
+                <Link href={sns?.url} key={sns?.id}>
+                  <div className={styles.snsIcon}>
+                    {sns?.type === 'INSTA' && (
+                      <FaInstagram size={30} color="#FFFFFF" fill="#FFFFFF" />
+                    )}
+                    {sns?.type === 'YOUTUBE' && (
+                      <FaYoutube size={30} color="#FFFFFF" fill="#FFFFFF" />
+                    )}
+                    {sns?.type === 'FACEBOOK' && (
+                      <FaFacebook size={30} color="#FFFFFF" fill="#FFFFFF" />
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
         {/* 통계 */}
         {/* 소개글 */}

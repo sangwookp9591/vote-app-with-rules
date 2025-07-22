@@ -127,10 +127,18 @@ export const description = style({
 
 export const snsLinks = style({
   display: 'flex',
+  justifyContent: 'right',
   gap: 12,
+  marginBottom: 20,
 });
 
 export const snsIcon = style({
-  width: 28,
-  height: 28,
+  display: 'flex', // flex 레이아웃 적용
+  alignItems: 'center', // 세로 중앙 정렬
+  justifyContent: 'center', // 가로 중앙 정렬
+  width: '40px', // 아이콘이 들어갈 정사각형 크기 설정 (원형이 되도록)
+  height: '40px',
+  borderRadius: '50%', // 원형
+  padding: '5px', // 필요시 조절
+  backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
 });
