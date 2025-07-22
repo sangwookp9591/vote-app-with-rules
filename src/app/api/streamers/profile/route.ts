@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
   const streamer = await prisma.streamer.findUnique({
     where: { userId: token.id as string },
     include: {
+      snsLinks: true,
       lolProfile: true,
       valorantProfile: true,
     },
