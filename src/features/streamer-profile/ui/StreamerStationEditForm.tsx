@@ -12,6 +12,7 @@ type FormState = {
   error?: string;
   description?: string;
   bannerImageUrl?: string;
+  snsLinks?: Sns[];
 };
 
 // 배너 이미지 업로드 API 호출
@@ -34,8 +35,28 @@ async function formAction(prevState: FormState, formData: FormData): Promise<For
     if (file && file.size > 0) {
       bannerImageUrl = await uploadBannerImage(file);
     }
-    await updateMyStation({ description, bannerImageUrl });
-    return { message: '방송국 정보가 저장되었습니다!', description, bannerImageUrl };
+    const snsEntries: { id?: string; type: string; url: string }[] = [];
+    const snsCount = Number(formData.get('snsCount') || 0);
+
+    for (let i = 0; i < snsCount; i++) {
+      const snsId = formData.get(`snsId-${i}`) as Sns['id'];
+      const type = formData.get(`snsType-${i}`) as Sns['type'];
+      const url = formData.get(`snsUrl-${i}`) as string;
+      if (type && url) {
+        snsEntries.push({ type, url, id: snsId });
+      }
+    }
+
+    console.log('snsCount : ', snsCount);
+    console.log('snsEntries : ', snsEntries);
+
+    const result = await updateMyStation({ description, bannerImageUrl, snsLinks: snsEntries });
+    return {
+      message: '방송국 정보가 저장되었습니다!',
+      description: result?.description,
+      bannerImageUrl: result?.bannerImageUrl,
+      snsLinks: result?.snsLinks,
+    };
   } catch (e: unknown) {
     if (
       e &&
@@ -174,6 +195,7 @@ export default function StreamerStationEditForm() {
             onChange={(e) => updateSns(index, 'url', e.target.value)}
             style={{ flex: 1 }}
           />
+          <input type="hidden" name={`snsId-${index}`} value={sns?.id} />
           <button type="button" onClick={() => deleteSns(index)} style={{ color: 'red' }}>
             삭제
           </button>
