@@ -8,17 +8,25 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchUserStreams } from '../../streams/api/userStreams'; // 경로 수정
 import Link from 'next/link';
-import { FaInstagram, FaYoutube, FaFacebook } from 'react-icons/fa';
+import { FaInstagram, FaYoutube, FaFacebook, FaStar } from 'react-icons/fa';
+import { fetchCheckFollower } from '@/features/follow/api/follow';
+import { useSession } from 'next-auth/react';
 export default function UserDetailCard({ userDetail }: { userDetail: UserDetail }) {
   const { id, nickname, profileImageUrl, followerCount, streamer } = userDetail || {};
   const [hoveredStreamKey, setHoveredStreamKey] = useState<string | null>(null);
 
-  console.log('streamer : ', streamer);
+  const { data: session } = useSession();
   // userId로 해당 사용자의 방송 목록을 가져옴
   const { data: streams, isLoading } = useQuery({
     queryKey: ['userStreams', id],
     queryFn: () => fetchUserStreams(id),
     enabled: !!id,
+  });
+
+  const { data: checkFollow } = useQuery({
+    queryKey: ['checkFollow', session?.user?.id, streamer?.id],
+    queryFn: () => fetchCheckFollower({ userId: session?.user?.id, streamerId: streamer?.id }),
+    enabled: !!session?.user?.id,
   });
 
   return (
@@ -96,8 +104,18 @@ export default function UserDetailCard({ userDetail }: { userDetail: UserDetail 
         <div className={styles.bottomSection}>
           <div className={styles.description}>{streamer?.description || '소개글이 없습니다.'}</div>
           <div className={styles.stats}>
-            <span>⭐ {followerCount}</span>
-            <span>👍 {32}</span>
+            <FaStar
+              size={25}
+              color="inherit"
+              fill={checkFollow?.isFollower ? '#FFF099' : '#FFFFFF'}
+            />{' '}
+            <div
+              style={{
+                fontSize: '1rem',
+              }}
+            >
+              {followerCount}
+            </div>
           </div>
         </div>
       </div>
