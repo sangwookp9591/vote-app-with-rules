@@ -115,31 +115,31 @@ export async function POST(req: NextRequest) {
   });
   return NextResponse.json(updatedStreamer);
 
-  // 기존 게임별 프로필 수정 로직
-  const { game, profile } = body; // game: 'lol' | 'valorant', profile: { ... }
-  if (!game || !profile) {
-    return NextResponse.json({ error: 'game, profile 필수' }, { status: 400 });
-  }
-  // 스트리머 row가 없으면 생성 (이 시점엔 무조건 있음)
-  const streamer = user.streamer;
-  // 게임별 프로필 upsert
-  if (game === 'lol') {
-    const data = { ...profile, streamerId: streamer.id };
-    const lolProfile = await prisma.lolProfile.upsert({
-      where: { streamerId: streamer.id },
-      update: data,
-      create: data,
-    });
-    return NextResponse.json(lolProfile);
-  } else if (game === 'valorant') {
-    const data = { ...profile, streamerId: streamer.id };
-    const valorantProfile = await prisma.valorantProfile.upsert({
-      where: { streamerId: streamer.id },
-      update: data,
-      create: data,
-    });
-    return NextResponse.json(valorantProfile);
-  } else {
-    return NextResponse.json({ error: '지원하지 않는 게임' }, { status: 400 });
-  }
+  // // 기존 게임별 프로필 수정 로직
+  // const { game, profile } = body; // game: 'lol' | 'valorant', profile: { ... }
+  // if (!game || !profile) {
+  //   return NextResponse.json({ error: 'game, profile 필수' }, { status: 400 });
+  // }
+  // // 스트리머 row가 없으면 생성 (이 시점엔 무조건 있음)
+  // const streamer = user.streamer;
+  // // 게임별 프로필 upsert
+  // if (game === 'lol') {
+  //   const data = { ...profile, streamerId: streamer.id };
+  //   const lolProfile = await prisma.lolProfile.upsert({
+  //     where: { streamerId: streamer.id },
+  //     update: data,
+  //     create: data,
+  //   });
+  //   return NextResponse.json(lolProfile);
+  // } else if (game === 'valorant') {
+  //   const data = { ...profile, streamerId: streamer.id };
+  //   const valorantProfile = await prisma.valorantProfile.upsert({
+  //     where: { streamerId: streamer.id },
+  //     update: data,
+  //     create: data,
+  //   });
+  //   return NextResponse.json(valorantProfile);
+  // } else {
+  //   return NextResponse.json({ error: '지원하지 않는 게임' }, { status: 400 });
+  // }
 }
