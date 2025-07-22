@@ -22,8 +22,15 @@ export interface Streamer {
   // 필요시 다른 게임 프로필, 통계 등 추가 가능
   bannerImageUrl?: string | null;
   description?: string | null;
+  sns?: Sns[] | null;
 }
 
+export interface Sns {
+  id: string;
+  type: string;
+  url: string;
+  streamerId: string;
+}
 // LoL 프로필 타입 예시
 export interface LolProfile {
   id: string;
