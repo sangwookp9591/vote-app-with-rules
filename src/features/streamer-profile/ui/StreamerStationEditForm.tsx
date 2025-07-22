@@ -5,6 +5,8 @@ import { useFormState, useFormStatus } from 'react-dom';
 import * as styles from './StreamerStationEditForm.css';
 import { fetchMyStation, updateMyStation } from '../api/streamerProfile';
 import Image from 'next/image';
+import { Sns } from '@/entities/streamer/model/types';
+import { snsLinks } from '../../user-detail/ui/UserDetailCard.css';
 
 type FormState = {
   message?: string;
@@ -57,10 +59,13 @@ function SubmitButton() {
   );
 }
 
+const SNS_TYPES = ['INSTA', 'FACEBOOK', 'YOUTUBE'] as const;
+
 export default function StreamerStationEditForm() {
   const [state, formActionDispatch] = useFormState<FormState, FormData>(formAction, {});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [bannerPreview, setBannerPreview] = useState<string | undefined>(undefined);
+  const [snsList, setSnsList] = useState<Sns[] | []>([]);
 
   // 최초 로딩 시 description, bannerImageUrl 불러오기
   useEffect(() => {
@@ -70,6 +75,7 @@ export default function StreamerStationEditForm() {
           textareaRef.current.value = data.description || '';
         }
         setBannerPreview(data.bannerImageUrl);
+        setSnsList(data?.snsLinks || []);
       })
       .catch(() => {});
   }, []);
@@ -80,6 +86,21 @@ export default function StreamerStationEditForm() {
     if (file) {
       setBannerPreview(URL.createObjectURL(file));
     }
+  };
+
+  const handleAddSns = () => {
+    setSnsList((prev) => [...prev, { id: '', type: 'INSTA', url: '', streamerId: '' }]);
+  };
+
+  const deleteSns = (index: number) => {
+    const filterSns = snsList?.filter((_, idx) => idx !== index);
+    setSnsList(filterSns);
+  };
+
+  const updateSns = (index: number, key: keyof Sns, value: string) => {
+    const newList = [...snsList];
+    newList[index][key] = value;
+    setSnsList(newList);
   };
 
   return (
@@ -115,7 +136,7 @@ export default function StreamerStationEditForm() {
         {/* 기존 이미지 URL도 hidden으로 전달 */}
         <input type="hidden" name="bannerImageUrl" value={bannerPreview || ''} />
       </div>
-
+      <div style={{ marginBottom: 8 }}>방송국 소개글</div>
       <textarea
         name="description"
         ref={textareaRef}
@@ -131,6 +152,39 @@ export default function StreamerStationEditForm() {
         placeholder="방송국 소개글을 입력하세요"
         defaultValue={state.description}
       />
+      <div style={{ marginBottom: 8 }}>SNS</div>
+      {snsList.map((sns, index) => (
+        <div key={index} style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <select
+            name={`snsType-${index}`}
+            value={sns.type}
+            onChange={(e) => updateSns(index, 'type', e.target.value)}
+            style={{ flex: '0 0 120px' }}
+          >
+            {SNS_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            name={`snsUrl-${index}`}
+            value={sns.url}
+            placeholder="URL 입력"
+            onChange={(e) => updateSns(index, 'url', e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <button type="button" onClick={() => deleteSns(index)} style={{ color: 'red' }}>
+            삭제
+          </button>
+        </div>
+      ))}
+      <input type="hidden" name="snsCount" value={snsList.length} />
+      <button type="button" onClick={handleAddSns} style={{ marginBottom: 16 }}>
+        + SNS 추가
+      </button>
+
       <SubmitButton />
     </form>
   );
