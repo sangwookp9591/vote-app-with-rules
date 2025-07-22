@@ -114,6 +114,7 @@ export const bottomSection = style({
 });
 export const stats = style({
   display: 'flex',
+  alignItems: 'center',
   gap: 24,
   justifyContent: 'right',
   margin: '16px 0',
