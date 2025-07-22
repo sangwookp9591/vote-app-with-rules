@@ -56,3 +56,4 @@ storybook-static
 .gemini/settings.json
 
 /server/chat-server/node_modules
+/server/notification-server/node_modules
