@@ -42,10 +42,11 @@ export async function POST(req: NextRequest) {
   }
 
   // 방송국 정보(소개글 등)만 수정하는 경우
-  if (body.description) {
+  const { bannerImageUrl, description } = body;
+  if (bannerImageUrl || description) {
     const updated = await prisma.streamer.update({
       where: { userId: token.id as string },
-      data: { description: body.description },
+      data: { ...(bannerImageUrl && { bannerImageUrl }), ...(description && { description }) },
     });
     return NextResponse.json(updated);
   }
