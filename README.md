@@ -86,6 +86,7 @@ vote-app-with-rules/
 │   └── shared/              # 공유 리소스 (컴포넌트, 유틸리티)
 ├── server/
 │   └── socket-server.js     # 실시간 소켓 서버
+│   └── notification-server.js # 실시간 알림 서버
 ├── prisma/
 │   └── schema.prisma        # 데이터베이스 스키마
 ├── docker-compose.yml       # Docker Compose 설정
