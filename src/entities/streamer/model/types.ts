@@ -22,7 +22,7 @@ export interface Streamer {
   // 필요시 다른 게임 프로필, 통계 등 추가 가능
   bannerImageUrl?: string | null;
   description?: string | null;
-  sns?: Sns[] | null;
+  snsLinks: Sns[] | null;
 }
 
 export interface Sns {
