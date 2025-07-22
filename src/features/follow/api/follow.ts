@@ -16,9 +16,9 @@ export async function fetchFollowToggle(data: {
 }
 
 export async function fetchCheckFollower(data: {
-  userId: string;
+  userId?: string;
   streamerId: string;
-}): Promise<boolean> {
+}): Promise<{ isFollower: boolean }> {
   const url = `${API_BASE}/check?userId=${data?.userId}&streamerId=${data?.streamerId}`;
   const res = await fetch(`${url}`, {
     method: 'GET',
