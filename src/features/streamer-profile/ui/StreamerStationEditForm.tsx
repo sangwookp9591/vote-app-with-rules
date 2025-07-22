@@ -100,6 +100,12 @@ export default function StreamerStationEditForm() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (state?.snsLinks) {
+      setSnsList(state.snsLinks);
+    }
+  }, [state?.snsLinks]);
+
   // 파일 선택 시 미리보기
   const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
