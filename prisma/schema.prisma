@@ -69,11 +69,25 @@ model Streamer {
   user        User      @relation(fields: [userId], references: [id])
   description String?   // 방송국 소개글
   bannerImageUrl String? // 방송국 배너 이미지 URL (추가)
+  sns         Sns[]
   // 게임별 프로필
   lolProfile      LolProfile?
   valorantProfile ValorantProfile?
-
   @@map("streamers")
+}
+
+model Sns {
+  id          String    @id @default(cuid())
+  type        SnsType
+  url         String
+  streamer    Streamer  @relation(fields: [streamerId], references: [id])
+  streamerId  String
+}
+
+enum SnsType {
+  INSTA
+  FACEBOOK
+  YOUTUBE
 }
 
 model LolProfile {
