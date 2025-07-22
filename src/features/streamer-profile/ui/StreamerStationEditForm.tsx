@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
+import * as styles from './StreamerStationEditForm.css';
 import { fetchMyStation, updateMyStation } from '../api/streamerProfile';
+import Image from 'next/image';
 
 type FormState = {
   message?: string;
@@ -49,20 +51,7 @@ async function formAction(prevState: FormState, formData: FormData): Promise<For
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      style={{
-        background: '#4a90e2',
-        color: '#fff',
-        border: 'none',
-        borderRadius: 8,
-        padding: '10px 24px',
-        fontWeight: 700,
-        fontSize: 16,
-        cursor: 'pointer',
-      }}
-    >
+    <button type="submit" disabled={pending} className={styles.submitButton}>
       {pending ? '저장 중...' : '저장'}
     </button>
   );
@@ -102,20 +91,27 @@ export default function StreamerStationEditForm() {
       {/* 배너 이미지 미리보기 */}
       <div style={{ marginBottom: 16 }}>
         <div style={{ marginBottom: 8 }}>배너 이미지</div>
-        {bannerPreview && (
-          <img
-            src={bannerPreview}
-            alt="배너 미리보기"
-            style={{
-              width: '100%',
-              height: 120,
-              objectFit: 'cover',
-              borderRadius: 8,
-              marginBottom: 8,
-            }}
+
+        <label className={styles.bannerImageStyle} htmlFor="bannerFile">
+          {bannerPreview && (
+            <Image
+              src={bannerPreview}
+              alt="배너 미리보기"
+              className={styles.bannerPreview}
+              fill // 부모를 꽉 채움
+              priority
+              sizes="100vw"
+            />
+          )}
+          <input
+            type="file"
+            id="bannerFile"
+            name="bannerFile"
+            className={styles.bannerImageInput}
+            accept="image/*"
+            onChange={handleBannerChange}
           />
-        )}
-        <input type="file" name="bannerFile" accept="image/*" onChange={handleBannerChange} />
+        </label>
         {/* 기존 이미지 URL도 hidden으로 전달 */}
         <input type="hidden" name="bannerImageUrl" value={bannerPreview || ''} />
       </div>
