@@ -21,7 +21,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           followers: true,
         },
       },
-      streamer: true,
+      streamer: {
+        select: {
+          id: true,
+          description: true,
+          bannerImageUrl: true,
+          snsLinks: true,
+        },
+      },
       createdAt: true,
     },
   });
