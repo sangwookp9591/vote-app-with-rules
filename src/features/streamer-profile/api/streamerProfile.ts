@@ -6,7 +6,10 @@ export async function fetchMyStation() {
 }
 
 // 방송국(스트리머) 정보 수정
-export async function updateMyStation(data: { description: string }) {
+export async function updateMyStation(data: {
+  description: string;
+  bannerImageUrl: string | undefined;
+}) {
   const res = await fetch('/api/streamers/profile', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
