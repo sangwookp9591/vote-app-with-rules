@@ -1,11 +1,10 @@
 import { prisma } from '@/shared/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ userId: string; streamerId: string }> },
-) {
-  const { userId, streamerId } = await params;
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get('userId');
+  const streamerId = searchParams.get('streamerId');
 
   if (userId && streamerId) {
     const followers = await prisma.follower.findMany({
