@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchUserStreams } from '../../streams/api/userStreams'; // 경로 수정
 
 export default function UserDetailCard({ userDetail }: { userDetail: UserDetail }) {
-  const { id, nickname, profileImageUrl, followerCount } = userDetail || {};
+  const { id, nickname, profileImageUrl, followerCount, streamer } = userDetail || {};
   const [hoveredStreamKey, setHoveredStreamKey] = useState<string | null>(null);
 
   // userId로 해당 사용자의 방송 목록을 가져옴
@@ -59,7 +59,7 @@ export default function UserDetailCard({ userDetail }: { userDetail: UserDetail 
           {/* 배너 */}
           <div className={styles.banner}>
             <Image
-              src={'/images/attactontitan.jpg'}
+              src={streamer?.bannerImageUrl || '/images/attactontitan.jpg'}
               alt="배너"
               fill // 부모를 꽉 채움
               className={styles.bannerImg}
