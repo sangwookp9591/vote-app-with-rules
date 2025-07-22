@@ -15,7 +15,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         id: true,
       },
     });
-    if (followers) {
+    if (followers?.length > 0) {
       await prisma.follower.delete({
         where: {
           id: followers[0]?.id,

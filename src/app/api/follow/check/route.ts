@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
         streamerId,
       },
     });
-    return NextResponse.json(followers ? { isFollower: true } : { isFollower: false });
+    return NextResponse.json(followers?.length > 0 ? { isFollower: true } : { isFollower: false });
   } else {
     return NextResponse.json({ error: '토너먼트를 찾을 수 없습니다.' }, { status: 404 });
   }
