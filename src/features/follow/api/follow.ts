@@ -3,7 +3,7 @@ import { Follow } from '@/entities/follow';
 const API_BASE = '/api/follow';
 
 export async function fetchFollowToggle(data: {
-  userId: string;
+  userId?: string;
   streamerId: string;
 }): Promise<Follow> {
   const res = await fetch(`${API_BASE}/toggle`, {
