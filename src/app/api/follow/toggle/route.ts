@@ -4,8 +4,15 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const body = await req.json();
   const { userId, streamerId } = body;
-
+  console.log('userId, streamerId  : ', userId, streamerId);
   try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const streamer = await prisma.user.findUnique({ where: { id: streamerId } });
+
+    if (!user || !streamer) {
+      return NextResponse.json({ error: '존재하지 않는 사용자입니다.' }, { status: 400 });
+    }
+
     const followers = await prisma.follower.findMany({
       where: {
         userId,
@@ -15,6 +22,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         id: true,
       },
     });
+
+    console.log('followers : ', followers);
     if (followers?.length > 0) {
       await prisma.follower.delete({
         where: {
