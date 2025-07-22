@@ -73,7 +73,7 @@ export default function UserDetailCard({ userDetail }: { userDetail: UserDetail 
         {/* 통계 */}
         {/* 소개글 */}
         <div className={styles.bottomSection}>
-          <div className={styles.description}>{'description'}</div>
+          <div className={styles.description}>{streamer?.description || '소개글이 없습니다.'}</div>
           <div className={styles.stats}>
             <span>⭐ {followerCount}</span>
             <span>👍 {32}</span>
