@@ -21,6 +21,7 @@ export interface Streamer {
   valorantProfile?: ValorantProfile | null;
   // 필요시 다른 게임 프로필, 통계 등 추가 가능
   bannerImageUrl?: string | null;
+  description?: string | null;
 }
 
 // LoL 프로필 타입 예시
