@@ -6,7 +6,6 @@ import * as styles from './StreamerStationEditForm.css';
 import { fetchMyStation, updateMyStation } from '../api/streamerProfile';
 import Image from 'next/image';
 import { Sns } from '@/entities/streamer/model/types';
-import { snsLinks } from '../../user-detail/ui/UserDetailCard.css';
 
 type FormState = {
   message?: string;
