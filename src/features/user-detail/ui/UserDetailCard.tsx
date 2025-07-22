@@ -4,17 +4,22 @@ import * as styles from './UserDetailCard.css';
 import { UserDetail } from '../../../entities/user/detail/model/types';
 import Image from 'next/image';
 import StreamCard from '@/features/streams/ui/StreamCard';
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchUserStreams } from '../../streams/api/userStreams'; // 경로 수정
 import Link from 'next/link';
 import { FaInstagram, FaYoutube, FaFacebook, FaStar } from 'react-icons/fa';
-import { fetchCheckFollower } from '@/features/follow/api/follow';
+import { fetchCheckFollower, fetchFollowToggle } from '@/features/follow/api/follow';
 import { useSession } from 'next-auth/react';
-export default function UserDetailCard({ userDetail }: { userDetail: UserDetail }) {
-  const { id, nickname, profileImageUrl, followerCount, streamer } = userDetail || {};
-  const [hoveredStreamKey, setHoveredStreamKey] = useState<string | null>(null);
 
+export default function UserDetailCard({ userDetail }: { userDetail: UserDetail }) {
+  const queryClient = useQueryClient();
+  const { id, nickname, profileImageUrl, followerCount, streamer } = userDetail || {};
+
+  console.log('streamer : ', streamer);
+  const [hoveredStreamKey, setHoveredStreamKey] = useState<string | null>(null);
+  const [followerCountState, setFollowerCountState] = useState(followerCount || 0);
+  const [isFollower, setIsFollower] = useState(false);
   const { data: session } = useSession();
   // userId로 해당 사용자의 방송 목록을 가져옴
   const { data: streams, isLoading } = useQuery({
@@ -25,9 +30,44 @@ export default function UserDetailCard({ userDetail }: { userDetail: UserDetail 
 
   const { data: checkFollow } = useQuery({
     queryKey: ['checkFollow', session?.user?.id, streamer?.id],
-    queryFn: () => fetchCheckFollower({ userId: session?.user?.id, streamerId: streamer?.id }),
-    enabled: !!session?.user?.id,
+    queryFn: () => fetchCheckFollower({ userId: session?.user?.id, streamerId: id }),
+    enabled: !!session?.user?.id && !!streamer?.id,
   });
+
+  useEffect(() => {
+    if (checkFollow?.isFollower) {
+      setIsFollower(checkFollow?.isFollower);
+    }
+  }, [checkFollow?.isFollower]);
+
+  const followToggleMutation = useMutation({
+    mutationFn: () => fetchFollowToggle({ userId: session?.user?.id, streamerId: id }),
+    onSuccess: () => {
+      //토글 후 팔로우 상태를 갱신
+      queryClient.invalidateQueries({
+        queryKey: ['checkFollow', session?.user?.id, id],
+      });
+    },
+    onError: () => {
+      console.log('팔로우 상태 변경에 실패했습니다.');
+    },
+  });
+
+  const handleToggleFollow = () => {
+    if (!session?.user?.id || !id) {
+      console.log('로그인 필요');
+      return;
+    }
+    console.log('isFollower : ', isFollower);
+    if (isFollower) {
+      setFollowerCountState((prev) => (prev === 0 ? 0 : prev - 1));
+      setIsFollower(false);
+    } else {
+      setFollowerCountState((prev) => prev + 1);
+      setIsFollower(true);
+    }
+    followToggleMutation.mutate();
+  };
 
   return (
     <div className={styles.cardContainer}>
@@ -103,18 +143,14 @@ export default function UserDetailCard({ userDetail }: { userDetail: UserDetail 
         {/* 소개글 */}
         <div className={styles.bottomSection}>
           <div className={styles.description}>{streamer?.description || '소개글이 없습니다.'}</div>
-          <div className={styles.stats}>
-            <FaStar
-              size={25}
-              color="inherit"
-              fill={checkFollow?.isFollower ? '#FFF099' : '#FFFFFF'}
-            />{' '}
+          <div className={styles.stats} onClick={handleToggleFollow}>
+            <FaStar size={25} color="inherit" fill={isFollower ? '#FFF099' : '#FFFFFF'} />{' '}
             <div
               style={{
                 fontSize: '1rem',
               }}
             >
-              {followerCount}
+              {followerCountState}
             </div>
           </div>
         </div>
