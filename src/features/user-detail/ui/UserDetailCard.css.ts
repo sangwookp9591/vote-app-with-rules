@@ -143,3 +143,8 @@ export const snsIcon = style({
   padding: '5px', // 필요시 조절
   backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
 });
+
+export const starIcon = style({
+  transition: 'fill 0.4s ease', // fill 색상 애니메이션
+  cursor: 'pointer',
+});

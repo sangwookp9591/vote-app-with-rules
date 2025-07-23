@@ -144,7 +144,12 @@ export default function UserDetailCard({ userDetail }: { userDetail: UserDetail 
         <div className={styles.bottomSection}>
           <div className={styles.description}>{streamer?.description || '소개글이 없습니다.'}</div>
           <div className={styles.stats} onClick={handleToggleFollow}>
-            <FaStar size={25} color="inherit" fill={isFollower ? '#FFF099' : '#FFFFFF'} />{' '}
+            <FaStar
+              className={styles.starIcon}
+              size={25}
+              color="inherit"
+              fill={isFollower ? '#FFF099' : '#FFFFFF'}
+            />
             <div
               style={{
                 fontSize: '1rem',
