@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import styles from './page.module.css';
 import ThemeToggle from '../shared/ui/ThemeToggle';
 import PopularStreamers from '@/widgets/PopularStreamers/PopularStreamers';
-
+import * as titleStyles from '../shared/ui/modal/modal.css';
 export const metadata: Metadata = {
   title: 'LoL SWL | 메인',
   description: 'PSW 리그오브레전드 상욱 리그 투표 시스템',
@@ -16,7 +16,9 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <h1 className={styles.title}>LoL SWL</h1>
-          <p className={styles.subtitle}>PSW 최고의 리그오브레전드 상욱 리그</p>
+          <p className={`${styles.subtitle} ${titleStyles.underlineText}`}>
+            PSW 최고의 리그오브레전드 상욱 리그
+          </p>
           <div className={styles.cta}>
             <button className={styles.primaryButton}>토너먼트 참가</button>
             <button className={styles.secondaryButton}>투표하기</button>
@@ -52,10 +54,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Featured Streamers Section - 실제 인기 스트리머 추천 위젯 */}
       <PopularStreamers />
-
       {/* How It Works Section */}
       <section className={styles.howItWorks}>
         <h2 className={styles.sectionTitle}>참여 방법</h2>
