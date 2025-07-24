@@ -3,12 +3,13 @@
 import { useFormStatus } from 'react-dom';
 import * as styles from './UserProfileEditForm.css';
 import Image from 'next/image';
-import { useActionState, useRef, useState } from 'react';
+import { use, useActionState, useRef, useState } from 'react';
 import { updateProfileAction, UpdateProfileState } from './actions';
+import { User } from '@/entities/user';
 
-export default function UserProfileEditForm() {
+export default function UserProfileEditForm({ user }: { user: User }) {
   const [state, formAction] = useActionState<UpdateProfileState, FormData>(updateProfileAction, {});
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | undefined>(user?.profileImageUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -18,14 +19,12 @@ export default function UserProfileEditForm() {
       reader.onloadend = () => setPreview(reader.result as string);
       reader.readAsDataURL(file);
     } else {
-      setPreview(null);
+      setPreview(undefined);
     }
   }
 
   return (
     <form action={formAction} className={styles.formStyle}>
-      {/* <Image src="/globe.svg" alt="Signup" width={64} height={64} className={imageStyle} /> */}
-      {/* <h2 className={titleStyle}>회원가입</h2> */}
       <div className={styles.profileImageUploadWrapperStyle}>
         <label className={styles.profileImageLabelStyle} htmlFor="profileImage">
           {preview ? (
@@ -52,19 +51,24 @@ export default function UserProfileEditForm() {
       </div>
       <label className={styles.labelStyle}>
         이메일
-        <input name="email" type="email" required className={styles.inputStyle} />
+        <input
+          name="email"
+          type="email"
+          required
+          className={styles.inputStyle}
+          disabled={true}
+          value={user?.email}
+        />
       </label>
       <label className={styles.labelStyle}>
         닉네임
-        <input name="nickname" type="text" required className={styles.inputStyle} />
-      </label>
-      <label className={styles.labelStyle}>
-        비밀번호
-        <input name="password" type="password" required className={styles.inputStyle} />
-      </label>
-      <label className={styles.checkboxLabelStyle}>
-        <input name="isStreamer" type="checkbox" className={styles.checkboxInputStyle} />
-        스트리머로 신청합니다
+        <input
+          name="nickname"
+          type="text"
+          required
+          className={styles.inputStyle}
+          value={user?.nickname}
+        />
       </label>
       {state?.error && <div className={styles.errorStyle}>{state.error}</div>}
       {state?.success && <div className={styles.successStyle}>{state.success}</div>}
