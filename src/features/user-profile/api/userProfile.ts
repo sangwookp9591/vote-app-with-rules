@@ -1,24 +1,14 @@
-'use server';
-
-import { LocalStorageProvider } from '@/shared/storage/LocalStorageProvider';
-
-const API_URL = `/api/user/`;
+const API_URL = `/api/users/`;
 export type UpdateProfileState = { error?: string; success?: string };
 
 export async function updateMyProfile(prevState: UpdateProfileState, formData: FormData) {
-  const nickname = formData.get('nickname') as string;
   const userId = formData.get('userId') as string;
   // 프로필 이미지 파일 저장
-  let profileImageUrl: string | undefined = undefined;
-  const profileImage = formData.get('profileImage');
-  if (profileImage && typeof profileImage === 'object' && 'arrayBuffer' in profileImage) {
-    const storage = new LocalStorageProvider();
-    profileImageUrl = await storage.upload(profileImage as File, { folder: 'user' });
-  }
+
   const res = await fetch(`${API_URL}${userId}/profile`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, nickname, profileImageUrl }),
+    method: 'PATCH',
+    // headers: { 'Content-Type': 'application/json' },
+    body: formData,
   });
   if (!res.ok) throw new Error('이용자 정보 수정 실패');
   return res.json();
