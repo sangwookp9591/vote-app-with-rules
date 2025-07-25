@@ -259,6 +259,12 @@ model Stream {
   endedAt      DateTime?
   viewers      Int      @default(0)
   streamKey    String   @unique
+  
+  //vod 정보
+  vodUrl       String?
+  vodDuration  Int?
+  vodVisible   Boolean  @default(true) // ✅ 기본은 공개
+  
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   // 인기 스트리머 랭킹용 필드
