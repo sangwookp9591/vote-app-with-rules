@@ -3,7 +3,7 @@
 import { useFormStatus } from 'react-dom';
 import * as styles from './UserProfileEditForm.css';
 import Image from 'next/image';
-import { use, useActionState, useRef, useState } from 'react';
+import { useActionState, useRef, useState } from 'react';
 import { updateProfileAction, UpdateProfileState } from './actions';
 import { User } from '@/entities/user';
 
