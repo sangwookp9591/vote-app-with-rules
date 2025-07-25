@@ -53,6 +53,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         update: { count: dailyCount },
         create: { streamId: id, date: new Date(today), count: dailyCount },
       });
+      const stream = await prisma.stream.findUnique({
+        where: { id },
+      });
+      // duration 계산 전에 startedAt이 있는지 확인
+      if (stream?.startedAt) {
+        const duration = new Date(endedAt).getTime() - new Date(stream.startedAt).getTime();
+
+        await prisma.stream.update({
+          where: { id: stream.id },
+          data: {
+            vodUrl: `/live/${stream.streamKey}.m3u8`,
+            vodDuration: Math.floor(duration / 1000), // 초 단위
+            vodVisible: true,
+          },
+        });
+      }
     } catch (err) {
       // Redis/DB 에러는 무시하고 진행
       console.error('maxViewers/totalViewers/일별 누적 시청자 기록 실패:', err);
