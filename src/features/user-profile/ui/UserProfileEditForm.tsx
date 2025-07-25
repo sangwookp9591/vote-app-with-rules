@@ -11,6 +11,7 @@ export default function UserProfileEditForm({ user }: { user: User }) {
   const [state, formAction] = useActionState<UpdateProfileState, FormData>(updateMyProfile, {});
   const [preview, setPreview] = useState<string | undefined>(user?.profileImageUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [formData, setFormData] = useState({ email: user?.email, nickname: user?.nickname });
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -21,6 +22,14 @@ export default function UserProfileEditForm({ user }: { user: User }) {
     } else {
       setPreview(undefined);
     }
+  }
+
+  function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
 
   return (
@@ -57,7 +66,7 @@ export default function UserProfileEditForm({ user }: { user: User }) {
           required
           className={styles.inputStyle}
           disabled={true}
-          value={user?.email}
+          value={formData?.email}
         />
       </label>
       <label className={styles.labelStyle}>
@@ -66,8 +75,9 @@ export default function UserProfileEditForm({ user }: { user: User }) {
           name="nickname"
           type="text"
           required
+          onChange={handleOnChange}
           className={styles.inputStyle}
-          value={user?.nickname}
+          value={formData?.nickname}
         />
       </label>
       <input name="userId" type="hidden" value={user?.id} />
