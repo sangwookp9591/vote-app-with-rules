@@ -4,11 +4,11 @@ import { useFormStatus } from 'react-dom';
 import * as styles from './UserProfileEditForm.css';
 import Image from 'next/image';
 import { useActionState, useRef, useState } from 'react';
-import { updateProfileAction, UpdateProfileState } from './actions';
 import { User } from '@/entities/user';
+import { updateMyProfile, UpdateProfileState } from '../api/userProfile';
 
 export default function UserProfileEditForm({ user }: { user: User }) {
-  const [state, formAction] = useActionState<UpdateProfileState, FormData>(updateProfileAction, {});
+  const [state, formAction] = useActionState<UpdateProfileState, FormData>(updateMyProfile, {});
   const [preview, setPreview] = useState<string | undefined>(user?.profileImageUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,6 +70,7 @@ export default function UserProfileEditForm({ user }: { user: User }) {
           value={user?.nickname}
         />
       </label>
+      <input name="userId" type="hidden" value={user?.id} />
       {state?.error && <div className={styles.errorStyle}>{state.error}</div>}
       {state?.success && <div className={styles.successStyle}>{state.success}</div>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
